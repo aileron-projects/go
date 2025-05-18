@@ -1,0 +1,23 @@
+listen: ":8080"
+reportIntervalSec: 1
+useLimiter: leakyBucketLimiter
+
+concurrentLimiter:
+  limit: 10 # Allowed max concurrency.
+
+fixedWindowLimiter:
+  limit: 100 # Limit within the window.
+  width: 1000 # Window width in millisecond.
+
+slidingWindowLimiter:
+  limit: 100 # Limit within the window.
+  width: 1000 # Window width in millisecond.
+
+tokenBucketLimiter:
+  bucketSize: 150 # Number of tokens that can be stored in the bucket.
+  fillRate: 100 # Number of tokens filled in the bucket every fillInterval.
+  fillInterval: 1000 # Token fill interval in millisecond.
+
+leakyBucketLimiter:
+  queueSize: 100 # Number of requests that can wait in the queue.
+  interval: 10 # Dequeue interval in millisecond.

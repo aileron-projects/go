@@ -1,0 +1,81 @@
+name: Go Test
+
+on:
+  workflow_dispatch: {}
+  workflow_call: {}
+  push: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  test-curr:
+    name: ${{ matrix.runner }}-curr
+    runs-on: ${{ matrix.runner }}-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        include:
+          - { runner: "ubuntu", os: "linux" }
+          - { runner: "windows", os: "windows" }
+          - { runner: "macos", os: "darwin" }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: aileron-projects/_scripts/.github/actions/go-test@main
+        with:
+          go-os: ${{ matrix.os }}
+          go-version: "stable"
+      - uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: ./_output/coverage.out
+          fail_ci_if_error: true
+          verbose: true
+          env_vars: ${{ matrix.os }}
+          name: ${{ matrix.os }}
+
+  test-prev:
+    name: ${{ matrix.runner }}-prev
+    runs-on: ${{ matrix.runner }}-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        include:
+          - { runner: "ubuntu", os: "linux" }
+          - { runner: "windows", os: "windows" }
+          - { runner: "macos", os: "darwin" }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: aileron-projects/_scripts/.github/actions/go-test@main
+        with:
+          go-os: ${{ matrix.os }}
+          go-version: "oldstable"
+
+  # test-min:
+  #   name: ${{ matrix.runner }}-min
+  #   runs-on: ${{ matrix.runner }}-latest
+  #   timeout-minutes: 15
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - { runner: "ubuntu", os: "linux" }
+  #         - { runner: "windows", os: "windows" }
+  #         - { runner: "macos", os: "darwin" }
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+  #         submodules: true
+  #     - uses: aileron-projects/_scripts/.github/actions/go-test@main
+  #       with:
+  #         go-os: ${{ matrix.os }}
+  #         go-version: "1.24.0"

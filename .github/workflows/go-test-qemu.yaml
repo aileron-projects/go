@@ -1,0 +1,46 @@
+name: Go Test QEMU
+
+on:
+  workflow_dispatch: {}
+  workflow_call: {}
+  push: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.arch }}${{ matrix.arm }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        include:
+          - { arch: "amd64", arm: "" }
+          - { arch: "arm", arm: "5" }
+          - { arch: "arm", arm: "6" }
+          - { arch: "arm", arm: "7" }
+          - { arch: "arm64", arm: "" }
+          - { arch: "ppc64", arm: "" }
+          - { arch: "ppc64le", arm: "" }
+          - { arch: "riscv64", arm: "" }
+          - { arch: "s390x", arm: "" }
+          - { arch: "loong64", arm: "" }
+          - { arch: "386", arm: "" }
+          - { arch: "mips", arm: "" }
+          - { arch: "mips64", arm: "" }
+          - { arch: "mips64le", arm: "" }
+          - { arch: "mipsle", arm: "" }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true
+      - uses: aileron-projects/_scripts/.github/actions/go-test-qemu@main
+        with:
+          go-arch: ${{ matrix.arch }}
+          go-arm: ${{ matrix.arm }}

@@ -1,0 +1,37 @@
+fixedBackoff:
+  value: 500_000 # Fixed value in microsecond.
+
+randomBackoff:
+  offset: 0 # Offset in microsecond.
+  fluctuation: 1_000_000 # Fluctuation in microsecond.
+
+linearBackoff:
+  offset: 0 # Offset in microsecond.
+  fluctuation: 1_000_000 # Fluctuation in microsecond.
+  coeff: 10000 # Increase rate in microsecond.
+
+polynomialBackoff:
+  offset: 0 # Offset in microsecond.
+  fluctuation: 1_000_000 # Fluctuation in microsecond.
+  coeff: 1000 # Increase rate in microsecond.
+  exponent: 1.5 # Exponent in float64 for exponential function.
+
+exponentialBackoff:
+  offset: 0 # Offset in microsecond.
+  fluctuation: 1_000_000 # Fluctuation in microsecond.
+  coeff: 10 # Increase rate in nanosecond.
+
+exponentialBackoffFullJitter:
+  offset: 0 # Offset in microsecond.
+  fluctuation: 1_000_000 # Fluctuation in microsecond.
+  coeff: 10 # Increase rate in nanosecond.
+
+exponentialBackoffEqualJitter:
+  offset: 0 # Offset in microsecond.
+  fluctuation: 1_000_000 # Fluctuation in microsecond.
+  coeff: 10 # Increase rate in nanosecond.
+
+fibonacciBackoff:
+  offset: 0 # Offset in microsecond.
+  fluctuation: 1_000_000 # Fluctuation in microsecond.
+  coeff: 10 # Increase rate in nanosecond.
