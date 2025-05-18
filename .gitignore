@@ -2,17 +2,30 @@
 .vscode/
 .idea/
 
-_bin/
-_output/
+# Project
+_output/**
 *.env.mk
 *.env
 *.test
 *.out
+*.a
+*.o
+*.so
+*.dll
 *.exe
 *.exe~
-*.dll
-*.so
-*.dylib
 *.gz
 
+# For convenience
+bin/
+tmp/
+temp/
+work/
+study/
+local/
+*.tmp
+*.temp
+
+!**/testdata/**
 !*.gitkeep
+!*.gitignore
