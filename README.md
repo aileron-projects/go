@@ -16,7 +16,7 @@
 
 </div>
 
-## Key features
+## Key Features
 
 - Logging [zlog](./zlog/).
 - Debugging [zruntime/zdebug](./zruntime/zdebug/).
@@ -28,7 +28,7 @@
 - Rate Limiting [ztime/zrate](./ztime/zrate/).
 - Load Balancer [zx/zlb](./zx/zlb/).
 
-## Package dependency policy
+## Package Dependency Policy
 
 Package structure, or directory structure, basically follows the [Go standard library](https://pkg.go.dev/std).
 
@@ -93,6 +93,11 @@ using [QEMU User space emulator](https://www.qemu.org/docs/master/user/main.html
 - `mips64`
 - `mips64le`
 - `mipsle`
+
+## Release Cycle
+
+- Releases are made as needed.
+- Versions follow [Semantic Versioning](https://semver.org/).
 
 ## License
 
