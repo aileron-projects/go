@@ -98,6 +98,10 @@ using [QEMU User space emulator](https://www.qemu.org/docs/master/user/main.html
 
 - Releases are made as needed.
 - Versions follow [Semantic Versioning](https://semver.org/).
+  - `vZ.Y.Z`
+  - `vZ.Y.Z-rc.N`
+  - `vZ.Y.Z-beta.N`
+  - `vZ.Y.Z-alpha.N`
 
 ## License
 
