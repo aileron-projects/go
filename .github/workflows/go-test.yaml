@@ -32,6 +32,7 @@ jobs:
           go-os: ${{ matrix.os }}
           go-version: "stable"
       - uses: codecov/codecov-action@v4
+        if: github.ref == 'refs/heads/main'
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
