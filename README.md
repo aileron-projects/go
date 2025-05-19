@@ -5,6 +5,7 @@
 <div align="center">
 
 [![GoDoc](https://godoc.org/github.com/aileron-projects/go?status.svg)](http://godoc.org/github.com/aileron-projects/go)
+[![AI Docs](https://img.shields.io/badge/AI%20Docs-DeepWiki-blue.svg)](https://deepwiki.com/aileron-projects/go)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aileron-projects/go)](https://goreportcard.com/report/github.com/aileron-projects/go)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](./LICENSE)
 
