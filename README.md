@@ -17,11 +17,23 @@
 
 </div>
 
+## Usage
+
+This project is provided as a Go module.
+
+Use go command to use from your project.
+
+```bash
+go get github.com/aileron-projects/go@latest
+go mod tidy
+```
+
 ## Key Features
 
 - Logging [zlog](./zlog/).
 - Debugging [zruntime/zdebug](./zruntime/zdebug/).
 - Environmental Variables [zio](./zio/).
+- HTTP Middleware Chains [znet/zhttp](./znet/zhttp/).
 - HTTP Reverse Proxy [znet/zhttp](./znet/zhttp/).
 - TCP Proxy [znet/ztcp](./znet/ztcp/).
 - UDP Proxy [znet/zudp](./znet/zudp/).
