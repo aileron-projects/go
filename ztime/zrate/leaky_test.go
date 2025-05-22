@@ -162,9 +162,10 @@ func TestLeakyBucketLimiter_WaitNow(t *testing.T) {
 		ztesting.AssertEqual(t, "process allowed", false, t1.OK())
 	})
 	t.Run("canceled context", func(t *testing.T) {
-		lim := NewLeakyBucketLimiter(1, time.Second)
+		lim := NewLeakyBucketLimiter(1, time.Minute)
 		dc, cancel := context.WithDeadline(context.Background(), time.Now())
 		cancel()
+		lim.AllowNow() // Remove token if exists
 		t1 := lim.WaitNow(dc)
 		ztesting.AssertEqual(t, "process allowed", false, t1.OK())
 		ztesting.AssertEqualErr(t, "wrong error reason", context.DeadlineExceeded, t1.Err())
