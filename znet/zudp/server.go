@@ -3,8 +3,10 @@ package zudp
 import (
 	"context"
 	"errors"
+	"log"
 	"net"
 	"os"
+	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -177,9 +179,9 @@ func (s *Server) serve(ctx context.Context, laddr, raddr net.Addr, conn *conn) {
 			return
 		}
 		if err != ErrAbortHandler {
-			// buf := make([]byte, 64<<10)
-			// buf = buf[:runtime.Stack(buf, false)]
-			// log.Printf("znet/zudp: panic serving %v: %v\n%s", raddr, err, buf)
+			buf := make([]byte, 64<<10)
+			buf = buf[:runtime.Stack(buf, false)]
+			log.Printf("znet/zudp: panic serving %v: %v\n%s", raddr, err, buf)
 		}
 	}()
 	s.Handler.ServeUDP(ctx, c)
