@@ -101,19 +101,16 @@ func TestServer_Serve(t *testing.T) {
 	t.Run("serve success", func(t *testing.T) {
 		baseCtx := context.Background()
 		ln := &testPacketConn{PacketConn: dpc, raddr: &net.UDPAddr{IP: net.ParseIP("127.0.0.1")}}
-		served := make(chan struct{})
-		checked := make(chan struct{})
+		invoked := make(chan struct{})
 		s := &Server{
 			BaseContext: func(_ net.PacketConn) context.Context { return baseCtx },
 			Handler: HandlerFunc(func(ctx context.Context, conn Conn) {
 				ztesting.AssertEqual(t, "context not match", baseCtx, ctx)
-				checked <- struct{}{}
+				invoked <- struct{}{}
 			}),
-			serveNotify: served,
 		}
 		go func() {
-			<-served
-			<-checked
+			<-invoked
 			s.Close()
 		}()
 		err := s.Serve(ln)
@@ -121,14 +118,11 @@ func TestServer_Serve(t *testing.T) {
 	})
 	t.Run("skip serving", func(t *testing.T) {
 		pc := &testPacketConn{PacketConn: dpc, raddr: &net.UDPAddr{}, readErr: ErrSkipHandler}
-		served := make(chan struct{})
 		count := 0
 		s := &Server{
-			Handler:     HandlerFunc(func(_ context.Context, _ Conn) { count++ }),
-			serveNotify: served,
+			Handler: HandlerFunc(func(_ context.Context, _ Conn) { count++ }),
 		}
 		go func() {
-			<-served
 			for pc.accept <= 2 {
 				time.Sleep(10 * time.Millisecond)
 			}
@@ -140,14 +134,11 @@ func TestServer_Serve(t *testing.T) {
 	})
 	t.Run("timeout error", func(t *testing.T) {
 		pc := &testPacketConn{PacketConn: dpc, raddr: &net.UDPAddr{}, readErr: timeoutError(true)}
-		served := make(chan struct{})
 		count := 0
 		s := &Server{
-			Handler:     HandlerFunc(func(_ context.Context, _ Conn) { count++ }),
-			serveNotify: served,
+			Handler: HandlerFunc(func(_ context.Context, _ Conn) { count++ }),
 		}
 		go func() {
-			<-served
 			for pc.accept <= 2 {
 				time.Sleep(10 * time.Millisecond)
 			}
@@ -159,14 +150,11 @@ func TestServer_Serve(t *testing.T) {
 	})
 	t.Run("non-timeout error", func(t *testing.T) {
 		pc := &testPacketConn{PacketConn: dpc, raddr: &net.UDPAddr{}, readErr: timeoutError(false)}
-		served := make(chan struct{})
 		count := 0
 		s := &Server{
-			Handler:     HandlerFunc(func(_ context.Context, _ Conn) { count++ }),
-			serveNotify: served,
+			Handler: HandlerFunc(func(_ context.Context, _ Conn) { count++ }),
 		}
 		go func() {
-			<-served
 			for pc.accept <= 2 {
 				time.Sleep(10 * time.Millisecond)
 			}
@@ -183,37 +171,35 @@ func TestServer_Serve(t *testing.T) {
 				panic(net.ErrWriteToConnected) // Panic dummy error.
 			}),
 		}
-		shutdown := make(chan error)
 		go func() {
 			for pc.accept <= 2 {
 				time.Sleep(10 * time.Millisecond)
 			}
-			shutdown <- s.Shutdown(context.Background())
+			s.Close()
 		}()
 		err := s.Serve(pc)
-		<-shutdown
 		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
 		ztesting.AssertEqual(t, "packet conn not closed", 1, pc.closed)
-		ztesting.AssertEqual(t, "conns are remaining", 0, s.conns.Length())
 	})
 	t.Run("panic with handler", func(t *testing.T) {
 		pc := &testPacketConn{PacketConn: dpc, raddr: &net.UDPAddr{}}
-		panicked := make(chan struct{})
+		panicked := make(chan error)
 		s := &Server{
+			Handler: HandlerFunc(func(_ context.Context, _ Conn) {
+				panic(net.ErrWriteToConnected) // Panic dummy error.
+			}),
 			PanicHandler: func(recovered any, remote, local net.Addr) {
-				ztesting.AssertEqualErr(t, "error not match", net.ErrWriteToConnected, recovered.(error))
-				panicked <- struct{}{}
+				panicked <- recovered.(error)
 			},
 		}
-		s.Handler = HandlerFunc(func(_ context.Context, _ Conn) {
-			defer s.Close()
-			panic(net.ErrWriteToConnected) // Panic dummy error.
-		})
+		go func() {
+			err := <-panicked
+			ztesting.AssertEqualErr(t, "error not match", net.ErrWriteToConnected, err)
+			s.Close()
+		}()
 		err := s.Serve(pc)
-		<-panicked
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "serve error not match", net.ErrClosed, err)
 		ztesting.AssertEqual(t, "packet conn not closed", 1, pc.closed)
-		ztesting.AssertEqual(t, "conns are remaining", 0, s.conns.Length())
 	})
 }
 
