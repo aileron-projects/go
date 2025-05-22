@@ -5,20 +5,7 @@ import (
 	"hash"
 	"hash/fnv"
 
-	"github.com/aileron-projects/go/internal/ihash"
 	"github.com/aileron-projects/go/zhash"
-)
-
-var (
-	_ ihash.SumFunc = Sum32
-	_ ihash.SumFunc = Sum32a
-	_ ihash.SumFunc = Sum64
-	_ ihash.SumFunc = Sum64a
-
-	_ ihash.EqualSumFunc = EqualSum32
-	_ ihash.EqualSumFunc = EqualSum32a
-	_ ihash.EqualSumFunc = EqualSum64
-	_ ihash.EqualSumFunc = EqualSum64a
 )
 
 func init() {

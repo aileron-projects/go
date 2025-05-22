@@ -1,12 +1,12 @@
 package zbcrypt
 
 import (
-	"github.com/aileron-projects/go/internal/ihash"
+	"github.com/aileron-projects/go/zcrypto/internal"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var (
-	_ ihash.PWHasher = &BCrypt{}
+	_ internal.PWHasher = &BCrypt{}
 )
 
 // New returns a new instance of BCrypt hasher with given parameters.

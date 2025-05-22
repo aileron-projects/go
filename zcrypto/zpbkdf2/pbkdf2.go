@@ -7,13 +7,12 @@ import (
 	"errors"
 	"hash"
 
-	"github.com/aileron-projects/go/internal/ihash"
 	"github.com/aileron-projects/go/zcrypto/internal"
 	"golang.org/x/crypto/pbkdf2"
 )
 
 var (
-	_ ihash.PWHasher = &PBKDF2{}
+	_ internal.PWHasher = &PBKDF2{}
 )
 
 var (

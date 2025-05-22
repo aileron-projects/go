@@ -6,14 +6,6 @@ import (
 	"errors"
 	"hash"
 	"strconv"
-
-	"github.com/aileron-projects/go/internal/ihash"
-)
-
-var (
-	_ ihash.SumFunc        = Hash(0).Sum
-	_ ihash.EqualSumFunc   = Hash(0).Equal
-	_ ihash.CompareSumFunc = Hash(0).Compare
 )
 
 var (

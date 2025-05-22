@@ -5,18 +5,18 @@ import (
 	"crypto/hmac"
 	"crypto/sha512"
 
-	"github.com/aileron-projects/go/internal/ihash"
+	"github.com/aileron-projects/go/zcrypto/internal"
 )
 
 var (
-	_ ihash.SumFunc      = Sum224
-	_ ihash.SumFunc      = Sum256
-	_ ihash.SumFunc      = Sum384
-	_ ihash.SumFunc      = Sum512
-	_ ihash.EqualSumFunc = EqualSum224
-	_ ihash.EqualSumFunc = EqualSum256
-	_ ihash.EqualSumFunc = EqualSum384
-	_ ihash.EqualSumFunc = EqualSum512
+	_ internal.SumFunc      = Sum224
+	_ internal.SumFunc      = Sum256
+	_ internal.SumFunc      = Sum384
+	_ internal.SumFunc      = Sum512
+	_ internal.EqualSumFunc = EqualSum224
+	_ internal.EqualSumFunc = EqualSum256
+	_ internal.EqualSumFunc = EqualSum384
+	_ internal.EqualSumFunc = EqualSum512
 )
 
 // Sum224 returns SHA512/224 hash.
@@ -76,14 +76,14 @@ func EqualSum512(b []byte, sum []byte) bool {
 }
 
 var (
-	_ ihash.HMACSumFunc      = HMACSum224
-	_ ihash.HMACSumFunc      = HMACSum256
-	_ ihash.HMACSumFunc      = HMACSum384
-	_ ihash.HMACSumFunc      = HMACSum512
-	_ ihash.HMACEqualSumFunc = HMACEqualSum224
-	_ ihash.HMACEqualSumFunc = HMACEqualSum256
-	_ ihash.HMACEqualSumFunc = HMACEqualSum384
-	_ ihash.HMACEqualSumFunc = HMACEqualSum512
+	_ internal.HMACSumFunc      = HMACSum224
+	_ internal.HMACSumFunc      = HMACSum256
+	_ internal.HMACSumFunc      = HMACSum384
+	_ internal.HMACSumFunc      = HMACSum512
+	_ internal.HMACEqualSumFunc = HMACEqualSum224
+	_ internal.HMACEqualSumFunc = HMACEqualSum256
+	_ internal.HMACEqualSumFunc = HMACEqualSum384
+	_ internal.HMACEqualSumFunc = HMACEqualSum512
 )
 
 // HMACSum224 returns HMAC-SHA512/224 hash.

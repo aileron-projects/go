@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"crypto/hmac"
 
-	"github.com/aileron-projects/go/internal/ihash"
+	"github.com/aileron-projects/go/zcrypto/internal"
 	"golang.org/x/crypto/md4"
 )
 
 var (
-	_ ihash.SumFunc      = Sum
-	_ ihash.EqualSumFunc = EqualSum
+	_ internal.SumFunc      = Sum
+	_ internal.EqualSumFunc = EqualSum
 )
 
 // Sum returns MD4 hash.
@@ -28,8 +28,8 @@ func EqualSum(b []byte, sum []byte) bool {
 }
 
 var (
-	_ ihash.HMACSumFunc      = HMACSum
-	_ ihash.HMACEqualSumFunc = HMACEqualSum
+	_ internal.HMACSumFunc      = HMACSum
+	_ internal.HMACEqualSumFunc = HMACEqualSum
 )
 
 // HMACSum returns HMAC-MD4 hash.

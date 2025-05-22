@@ -5,16 +5,7 @@ import (
 	"hash"
 	"hash/crc64"
 
-	"github.com/aileron-projects/go/internal/ihash"
 	"github.com/aileron-projects/go/zhash"
-)
-
-var (
-	_ ihash.SumFunc = SumISO
-	_ ihash.SumFunc = SumECMA
-
-	_ ihash.EqualSumFunc = EqualSumISO
-	_ ihash.EqualSumFunc = EqualSumECMA
 )
 
 var (

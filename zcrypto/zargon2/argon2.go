@@ -6,14 +6,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/aileron-projects/go/internal/ihash"
 	"github.com/aileron-projects/go/zcrypto/internal"
 	"golang.org/x/crypto/argon2"
 )
 
 var (
-	_ ihash.PWHasher = &Argon2i{}
-	_ ihash.PWHasher = &Argon2id{}
+	_ internal.PWHasher = &Argon2i{}
+	_ internal.PWHasher = &Argon2id{}
 )
 
 var (

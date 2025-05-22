@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"crypto/sha256"
 
-	"github.com/aileron-projects/go/internal/ihash"
+	"github.com/aileron-projects/go/zcrypto/internal"
 	"golang.org/x/crypto/blake2s"
 )
 
 var (
-	_ ihash.SumFunc      = Sum256
-	_ ihash.EqualSumFunc = EqualSum256
+	_ internal.SumFunc      = Sum256
+	_ internal.EqualSumFunc = EqualSum256
 )
 
 // Sum256 returns BLAKE2s-256 hash.
@@ -28,8 +28,8 @@ func EqualSum256(b []byte, sum []byte) bool {
 }
 
 var (
-	_ ihash.HMACSumFunc      = HMACSum256
-	_ ihash.HMACEqualSumFunc = HMACEqualSum256
+	_ internal.HMACSumFunc      = HMACSum256
+	_ internal.HMACEqualSumFunc = HMACEqualSum256
 )
 
 // HMACSum256 returns HMAC-BLAKE2s/256 hash.

@@ -5,13 +5,12 @@ import (
 	"crypto/rand"
 	"errors"
 
-	"github.com/aileron-projects/go/internal/ihash"
 	"github.com/aileron-projects/go/zcrypto/internal"
 	"golang.org/x/crypto/scrypt"
 )
 
 var (
-	_ ihash.PWHasher = &SCrypt{}
+	_ internal.PWHasher = &SCrypt{}
 )
 
 var (
