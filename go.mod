@@ -3,7 +3,7 @@ module github.com/aileron-projects/go
 go 1.24
 
 require (
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
+	github.com/davecgh/go-spew v1.1.1
 	github.com/kr/pretty v0.3.1
 	golang.org/x/crypto v0.38.0
 	golang.org/x/net v0.40.0
