@@ -23,7 +23,7 @@ func TestNewProxy(t *testing.T) {
 			r := recover()
 			ztesting.AssertEqual(t, "recovered value not match", r.(error), ErrNoTarget)
 		}()
-		NewProxy()
+		_ = NewProxy()
 	})
 	t.Run("with targets", func(t *testing.T) {
 		p := NewProxy("foo", "bar")

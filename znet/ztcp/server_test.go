@@ -49,14 +49,6 @@ func TestServer_ListenAndServe(t *testing.T) {
 
 func TestServer_ListenAndServeTLS(t *testing.T) {
 	t.Parallel()
-	// Obtain available address.
-	ln, err := net.Listen("tcp4", ":0")
-	if err != nil {
-		panic(err)
-	}
-	ln.Close()
-	addr := ln.Addr().String()
-
 	t.Run("already shutdown", func(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
@@ -70,15 +62,18 @@ func TestServer_ListenAndServeTLS(t *testing.T) {
 		ztesting.AssertEqual(t, "addr error should be returned", true, ok)
 	})
 	t.Run("listen success", func(t *testing.T) {
+		// Obtain available address.
+		ln, _ := net.Listen("tcp4", ":0")
+		ln.Close()
 		served := make(chan struct{})
 		s := &Server{
-			Addr:        addr,
+			Addr:        ln.Addr().String(),
 			Handler:     HandlerFunc(func(ctx context.Context, conn net.Conn) {}),
 			serveNotify: served,
 		}
 		go func() {
 			<-served
-			cn, err := net.Dial("tcp4", addr)
+			cn, err := net.Dial("tcp4", ln.Addr().String())
 			ztesting.AssertEqual(t, "dial failed", nil, err)
 			cn.Close()
 			s.Close()
@@ -90,14 +85,6 @@ func TestServer_ListenAndServeTLS(t *testing.T) {
 
 func TestServer_ServeTLS(t *testing.T) {
 	t.Parallel()
-	// Obtain available address.
-	ln, err := net.Listen("tcp4", ":0")
-	if err != nil {
-		panic(err)
-	}
-	ln.Close()
-	addr := ln.Addr().String()
-
 	t.Run("already shutdown", func(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
@@ -111,21 +98,20 @@ func TestServer_ServeTLS(t *testing.T) {
 		ztesting.AssertEqual(t, "path error should be returned", true, ok)
 	})
 	t.Run("non-nil config", func(t *testing.T) {
+		ln, _ := net.Listen("tcp4", ":0") // Obtain available address.
 		served := make(chan struct{})
 		s := &Server{
-			Addr:        addr,
 			TLSConfig:   &tls.Config{},
 			Handler:     HandlerFunc(func(ctx context.Context, conn net.Conn) {}),
 			serveNotify: served,
 		}
 		go func() {
 			<-served
-			conn, err := net.Dial("tcp4", addr)
+			conn, err := net.Dial("tcp4", ln.Addr().String())
 			ztesting.AssertEqual(t, "dial failed", nil, err)
 			conn.Close()
 			s.Close()
 		}()
-		ln, _ := net.Listen("tcp4", addr)
 		err := s.ServeTLS(ln, "./testdata/cert.pem", "./testdata/key.pem")
 		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
 	})
@@ -384,27 +370,19 @@ func TestServer_Shutdown(t *testing.T) {
 
 func TestNewListener(t *testing.T) {
 	t.Parallel()
-	// Obtain available address.
-	ln, err := net.Listen("tcp4", ":0")
-	if err != nil {
-		panic(err)
-	}
-	ln.Close()
-	addr := ln.Addr().String()
-
 	t.Run("listen tcp without prefix", func(t *testing.T) {
-		ln, err := newListener("" + addr)
+		ln, err := newListener(":0")
 		ztesting.AssertEqual(t, "non nil error returned", nil, err)
 		defer ln.Close()
-		cn, err := net.Dial("tcp", addr)
+		cn, err := net.Dial("tcp", ln.Addr().String())
 		ztesting.AssertEqual(t, "dial failed", nil, err)
 		cn.Close()
 	})
 	t.Run("listen tcp4 success", func(t *testing.T) {
-		ln, err := newListener("tcp4://" + addr)
+		ln, err := newListener("tcp4://:0")
 		ztesting.AssertEqual(t, "non nil error returned", nil, err)
 		defer ln.Close()
-		cn, err := net.Dial("tcp4", addr)
+		cn, err := net.Dial("tcp4", ln.Addr().String())
 		ztesting.AssertEqual(t, "dial failed", nil, err)
 		cn.Close()
 	})
@@ -420,8 +398,8 @@ func TestNewListener(t *testing.T) {
 		cn, err := net.Dial("unix", s)
 		ztesting.AssertEqual(t, "dial failed", nil, err)
 		cn.Close()
-		ln.Close() // Socket file should be removed.
-		_, err = os.Stat(s)
+		ln.Close()          // Socket file should be removed.
+		_, err = os.Stat(s) // Check socket file removed
 		ztesting.AssertEqual(t, "socket not removed", true, os.IsNotExist(err))
 	})
 	t.Run("fallback to tcp", func(t *testing.T) {
@@ -490,7 +468,7 @@ func TestOCListener(t *testing.T) {
 	t.Run("close path name socket", func(t *testing.T) {
 		sock := t.TempDir() + "/test.sock"
 		f, _ := os.Create(sock)
-		f.Close()
+		_ = f.Close()
 		store := internal.UniqueStore[*ocListener]{}
 		l := &nopCloseListener{addr: &net.UnixAddr{Net: "unix", Name: sock}}
 		ln := &ocListener{Listener: l, store: &store}

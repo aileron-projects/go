@@ -39,7 +39,7 @@ func TestServer_ListenAndServe(t *testing.T) {
 			shutdwon <- s.Shutdown(context.Background())
 		}()
 		err := s.ListenAndServe()
-		ztesting.AssertEqualErr(t, "listen and serve error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "serve error not match", net.ErrClosed, err)
 		err = <-shutdwon
 		ztesting.AssertEqualErr(t, "shutdown error not match", nil, err)
 	})
@@ -285,27 +285,19 @@ func TestServer_Shutdown(t *testing.T) {
 
 func TestNewPacketConn(t *testing.T) {
 	t.Parallel()
-	// Obtain available address.
-	pc, err := net.ListenPacket("udp4", ":0")
-	if err != nil {
-		panic(err)
-	}
-	pc.Close()
-	addr := pc.LocalAddr().String()
-
 	t.Run("udp without prefix", func(t *testing.T) {
-		ln, err := newPacketConn("" + addr)
+		ln, err := newPacketConn(":0")
 		ztesting.AssertEqual(t, "non nil error returned", nil, err)
 		defer ln.Close()
-		cn, err := net.Dial("udp", addr)
+		cn, err := net.Dial("udp", ln.LocalAddr().String())
 		ztesting.AssertEqual(t, "dial failed", nil, err)
 		cn.Close()
 	})
 	t.Run("listen udp4 success", func(t *testing.T) {
-		ln, err := newPacketConn("udp4://" + addr)
+		ln, err := newPacketConn("udp4://:0")
 		ztesting.AssertEqual(t, "non nil error returned", nil, err)
 		defer ln.Close()
-		cn, err := net.Dial("udp4", addr)
+		cn, err := net.Dial("udp4", ln.LocalAddr().String())
 		ztesting.AssertEqual(t, "dial failed", nil, err)
 		cn.Close()
 	})
