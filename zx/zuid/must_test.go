@@ -1,10 +1,8 @@
-package helper_test
+package zuid
 
 import (
 	"io"
 	"testing"
-
-	"github.com/aileron-projects/go/internal/helper"
 )
 
 func TestMustNil(t *testing.T) {
@@ -16,7 +14,7 @@ func TestMustNil(t *testing.T) {
 				t.Error("recovered value is not nil")
 			}
 		}()
-		helper.MustNil(nil)
+		mustNil(nil)
 	})
 	t.Run("non nil", func(t *testing.T) {
 		defer func() {
@@ -25,6 +23,6 @@ func TestMustNil(t *testing.T) {
 				t.Error("recovered error is not io.EOF")
 			}
 		}()
-		helper.MustNil(io.EOF)
+		mustNil(io.EOF)
 	})
 }

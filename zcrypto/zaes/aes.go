@@ -6,7 +6,6 @@ import (
 	"crypto/rand"
 	"strconv"
 
-	"github.com/aileron-projects/go/internal/helper"
 	"github.com/aileron-projects/go/zcrypto/internal"
 )
 
@@ -43,6 +42,6 @@ func newAES(key []byte) (cipher.Block, []byte, error) {
 	}
 	iv := make([]byte, aes.BlockSize)
 	_, err = rand.Read(iv)
-	helper.MustNil(err)
+	internal.MustNil(err)
 	return c, iv, nil
 }

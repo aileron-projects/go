@@ -4,7 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 
-	"github.com/aileron-projects/go/internal/helper"
+	"github.com/aileron-projects/go/zcrypto/internal"
 )
 
 // EncryptGCM encrypts plaintext with AES GCM cipher.
@@ -22,7 +22,7 @@ func EncryptGCM(key []byte, plaintext []byte) ([]byte, error) {
 		return nil, err
 	}
 	aead, err := cipher.NewGCM(c) // cipher with 12 bytes nonce, 16 bytes tag.
-	helper.MustNil(err)
+	internal.MustNil(err)
 	// nonce should be an unique value. No need to be a random value.
 	// NewGCM uses standard nonce size of 12 bytes.
 	nonce = nonce[:aead.NonceSize()] // Adjust size.
@@ -42,7 +42,7 @@ func DecryptGCM(key []byte, ciphertext []byte) ([]byte, error) {
 		return nil, err
 	}
 	aead, err := cipher.NewGCM(c) // cipher with 12 bytes nonce, 16 bytes tag.
-	helper.MustNil(err)
+	internal.MustNil(err)
 	if len(ciphertext) < aead.NonceSize() {
 		return nil, ErrCipherLength(len(ciphertext))
 	}

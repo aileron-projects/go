@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/aileron-projects/go/internal/helper"
 	"github.com/aileron-projects/go/internal/ihash"
+	"github.com/aileron-projects/go/zcrypto/internal"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -82,7 +82,7 @@ func (c *Argon2i) Split(hashedPW []byte) (salt, hash []byte, err error) {
 func (c *Argon2i) Sum(password []byte) ([]byte, error) {
 	salt := make([]byte, c.saltLen)
 	_, err := rand.Read(salt)
-	helper.MustNil(err)
+	internal.MustNil(err)
 	hashed := argon2.Key(password, salt, c.time, c.memory, c.threads, c.keyLen)
 	return append(salt, hashed...), nil
 }
@@ -173,7 +173,7 @@ func (c *Argon2id) Split(hashedPW []byte) (salt, hash []byte, err error) {
 func (c *Argon2id) Sum(password []byte) ([]byte, error) {
 	salt := make([]byte, c.saltLen)
 	_, err := rand.Read(salt)
-	helper.MustNil(err)
+	internal.MustNil(err)
 	hashed := argon2.IDKey(password, salt, c.time, c.memory, c.threads, c.keyLen)
 	return append(salt, hashed...), nil
 }

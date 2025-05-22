@@ -1,4 +1,4 @@
-name: Go Test QEMU
+name: Test Suite QEMU
 
 on:
   workflow_dispatch: {}
