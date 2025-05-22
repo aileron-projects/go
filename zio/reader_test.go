@@ -83,13 +83,11 @@ func TestTeeReadCloser(t *testing.T) {
 		tr := zio.TeeReadCloser(nil, w)
 		ztesting.AssertEqual(t, "reader does not match", nil, tr)
 	})
-
 	t.Run("nil writer", func(t *testing.T) {
 		r := zio.NopReadCloser(strings.NewReader("abc"))
 		tr := zio.TeeReadCloser(r, nil)
 		ztesting.AssertEqual(t, "reader does not match", io.ReadCloser(r), tr)
 	})
-
 	t.Run("no error", func(t *testing.T) {
 		r := zio.NopReadCloser(strings.NewReader("abc"))
 		w := bytes.NewBuffer(nil)
@@ -101,7 +99,6 @@ func TestTeeReadCloser(t *testing.T) {
 		ztesting.AssertEqual(t, "wrong content written to writer", "abc", w.String())
 		ztesting.AssertEqual(t, "wrong content read", "abc", string(buf[:n]))
 	})
-
 	t.Run("read error", func(t *testing.T) {
 		r := zio.NopReadCloser(ziotest.ErrReader(strings.NewReader("abc"), 1))
 		w := bytes.NewBuffer(nil)
@@ -113,7 +110,6 @@ func TestTeeReadCloser(t *testing.T) {
 		ztesting.AssertEqual(t, "wrong content written to writer", "a", w.String())
 		ztesting.AssertEqual(t, "wrong content read", "a", string(buf[:n]))
 	})
-
 	t.Run("write error", func(t *testing.T) {
 		r := zio.NopReadCloser(strings.NewReader("abc"))
 		w := bytes.NewBuffer(nil)
@@ -125,7 +121,6 @@ func TestTeeReadCloser(t *testing.T) {
 		ztesting.AssertEqual(t, "wrong content written to writer", "a", w.String())
 		ztesting.AssertEqual(t, "wrong content read", "a", string(buf[:n]))
 	})
-
 	t.Run("read write error", func(t *testing.T) {
 		r := zio.NopReadCloser(ziotest.ErrReader(strings.NewReader("abc"), 1))
 		w := bytes.NewBuffer(nil)
@@ -137,7 +132,6 @@ func TestTeeReadCloser(t *testing.T) {
 		ztesting.AssertEqual(t, "wrong content written to writer", "a", w.String())
 		ztesting.AssertEqual(t, "wrong content read", "a", string(buf[:n]))
 	})
-
 	t.Run("no close error", func(t *testing.T) {
 		r := zio.NopReadCloser(strings.NewReader("abc"))
 		w := bytes.NewBuffer(nil)
@@ -145,28 +139,43 @@ func TestTeeReadCloser(t *testing.T) {
 		err := tr.Close()
 		ztesting.AssertEqualErr(t, "error mismatch", nil, err)
 	})
-
 	t.Run("reader close error", func(t *testing.T) {
-		r := ziotest.ErrReadCloser(strings.NewReader("abc"), os.ErrClosed)
+		r := &errReadCloser{Reader: strings.NewReader("abc"), err: os.ErrClosed}
 		w := bytes.NewBuffer(nil)
 		tr := zio.TeeReadCloser(r, zio.NopWriteCloser(w))
 		err := tr.Close()
 		ztesting.AssertEqualErr(t, "error mismatch", os.ErrClosed, err)
 	})
-
 	t.Run("writer close error", func(t *testing.T) {
 		r := zio.NopReadCloser(ziotest.ErrReader(strings.NewReader("abc"), 1))
 		w := bytes.NewBuffer(nil)
-		tr := zio.TeeReadCloser(r, ziotest.ErrWriteCloser(w, os.ErrClosed))
+		tr := zio.TeeReadCloser(r, &errWriteCloser{Writer: w, err: os.ErrClosed})
 		err := tr.Close()
 		ztesting.AssertEqualErr(t, "error mismatch", os.ErrClosed, err)
 	})
-
 	t.Run("reader writer close error", func(t *testing.T) {
-		r := ziotest.ErrReadCloser(strings.NewReader("abc"), os.ErrPermission)
+		r := &errReadCloser{Reader: strings.NewReader("abc"), err: os.ErrPermission}
 		w := bytes.NewBuffer(nil)
-		tr := zio.TeeReadCloser(r, ziotest.ErrWriteCloser(w, os.ErrClosed))
+		tr := zio.TeeReadCloser(r, &errWriteCloser{Writer: w, err: os.ErrClosed})
 		err := tr.Close()
 		ztesting.AssertEqualErr(t, "error mismatch", errors.Join(os.ErrPermission, os.ErrClosed), err)
 	})
+}
+
+type errReadCloser struct {
+	io.Reader
+	err error
+}
+
+func (r *errReadCloser) Close() error {
+	return r.err
+}
+
+type errWriteCloser struct {
+	io.Writer
+	err error
+}
+
+func (w *errWriteCloser) Close() error {
+	return w.err
 }

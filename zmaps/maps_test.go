@@ -23,7 +23,7 @@ func TestKeys(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			v := zmaps.Keys(tc.input)
 			slices.Sort(v)
-			ztesting.AssertEqualSlice(t, "wrong element returned.", tc.want, v)
+			ztesting.AssertEqual(t, "wrong element returned.", tc.want, v)
 		})
 	}
 }
@@ -43,7 +43,7 @@ func TestValues(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			v := zmaps.Values(tc.input)
 			slices.Sort(v)
-			ztesting.AssertEqualSlice(t, "wrong element returned.", tc.want, v)
+			ztesting.AssertEqual(t, "wrong element returned.", tc.want, v)
 		})
 	}
 }

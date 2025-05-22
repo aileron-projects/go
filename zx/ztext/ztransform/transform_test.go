@@ -119,7 +119,7 @@ func TestStringSlice(t *testing.T) {
 				ztesting.AssertEqual(t, "non zeo length slice returned", 0, len(got))
 				return
 			}
-			ztesting.AssertEqualSlice(t, "string slice not match", tc.want, got)
+			ztesting.AssertEqual(t, "string slice not match", tc.want, got)
 		})
 	}
 }
@@ -154,7 +154,7 @@ func TestBytesSlice(t *testing.T) {
 				return
 			}
 			for i := range tc.want {
-				ztesting.AssertEqualSlice(t, "bytes slice not match", tc.want[i], got[i])
+				ztesting.AssertEqual(t, "bytes slice not match", tc.want[i], got[i])
 			}
 		})
 	}

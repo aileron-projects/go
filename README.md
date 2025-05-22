@@ -32,7 +32,7 @@ go mod tidy
 
 - Logging [zlog](./zlog/).
 - Debugging [zruntime/zdebug](./zruntime/zdebug/).
-- Environmental Variables [zio](./zio/).
+- Environmental Variables [zos](./zos/).
 - HTTP Middleware Chains [znet/zhttp](./znet/zhttp/).
 - HTTP Reverse Proxy [znet/zhttp](./znet/zhttp/).
 - TCP Proxy [znet/ztcp](./znet/ztcp/).

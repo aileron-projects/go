@@ -90,6 +90,6 @@ func TestHookDumpFunc(t *testing.T) {
 		var buf bytes.Buffer
 		returnBool = false // Set value false.
 		zdebug.DumpTo(&buf, int(0), int(1))
-		ztesting.AssertNotEqual(t, "dump does not output any information.", "", buf.String())
+		ztesting.AssertEqual(t, "dump should output information.", false, buf.String() == "")
 	})
 }

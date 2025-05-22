@@ -58,7 +58,7 @@ type Proxy struct {
 	// The first argument err is always non-nil.
 	// Downstream connection and upstream connection are
 	// passed as dc and uc each.
-	ErrorHandler func(err error, dc Conn, uc net.Conn)
+	ErrorHandler func(dc Conn, uc net.Conn, err error)
 	// IdleTimeout sets the idle timeout of the connection.
 	// Duration after last read or write of upstream connection
 	// and downstream connection is used for checking the timeout.
@@ -66,12 +66,12 @@ type Proxy struct {
 	IdleTimeout time.Duration
 }
 
-func (p *Proxy) handleError(err error, dc Conn, uc net.Conn) {
+func (p *Proxy) handleError(dc Conn, uc net.Conn, err error) {
 	if err == nil {
 		return
 	}
 	if eh := p.ErrorHandler; eh != nil {
-		eh(err, dc, uc)
+		eh(dc, uc, err)
 	}
 }
 
@@ -83,12 +83,15 @@ func (p *Proxy) ServeUDP(ctx context.Context, conn Conn) {
 
 	upConn, err := p.Dial(ctx, conn)
 	if err != nil {
-		p.handleError(err, conn, upConn)
+		p.handleError(conn, upConn, err)
 		return
 	}
 	defer upConn.Close() // Ensure close upstream connection.
 
 	var lastActive atomic.Pointer[time.Time]
+	now := time.Now()
+	lastActive.Store(&now)
+
 	errChan := make(chan error)
 	go copyBuf(conn, upConn, errChan, &lastActive) // downstream --> proxy --> upstream
 	go copyBuf(upConn, conn, errChan, &lastActive) // downstream <-- proxy <-- upstream
@@ -97,12 +100,10 @@ func (p *Proxy) ServeUDP(ctx context.Context, conn Conn) {
 		select {
 		case <-time.After(timeout):
 			if time.Since(*lastActive.Load()) > timeout {
-				_ = conn.Close() // Early close.
 				return
 			}
 		case err = <-errChan:
-			_ = conn.Close() // Early close.
-			p.handleError(err, conn, upConn)
+			p.handleError(conn, upConn, err)
 			return
 		}
 	}
@@ -113,13 +114,13 @@ func copyBuf(dst io.Writer, src io.Reader, errChan chan<- error, active *atomic.
 	for {
 		nr, err := src.Read(buf)
 		if nr > 0 {
+			now := time.Now()
+			active.Store(&now)
 			nw, ew := dst.Write(buf[:nr])
 			if ew != nil || nr != nw {
 				errChan <- cmp.Or(ew, io.ErrShortWrite)
 				return
 			}
-			now := time.Now()
-			active.Store(&now)
 		}
 		if err != nil {
 			if err == io.EOF {

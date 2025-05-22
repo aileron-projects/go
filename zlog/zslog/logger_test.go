@@ -326,27 +326,27 @@ func TestZSLogger_nilContext(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(zlog.LvTrace - 9)})
 		lg.Debug(nil, "test message")
-		ztesting.AssertNotEqual(t, "log line is not written.", "", buf.String())
+		ztesting.AssertEqual(t, "log line should be written", false, buf.String() == "")
 	})
 
 	t.Run("info", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(zlog.LvTrace - 9)})
 		lg.Info(nil, "test message")
-		ztesting.AssertNotEqual(t, "log line is not written.", "", buf.String())
+		ztesting.AssertEqual(t, "log line should be written", false, buf.String() == "")
 	})
 
 	t.Run("warn", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(zlog.LvTrace - 9)})
 		lg.Warn(nil, "test message")
-		ztesting.AssertNotEqual(t, "log line is not written.", "", buf.String())
+		ztesting.AssertEqual(t, "log line should be written", false, buf.String() == "")
 	})
 
 	t.Run("error", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(zlog.LvTrace - 9)})
 		lg.Error(nil, "test message")
-		ztesting.AssertNotEqual(t, "log line is not written.", "", buf.String())
+		ztesting.AssertEqual(t, "log line should be written", false, buf.String() == "")
 	})
 }

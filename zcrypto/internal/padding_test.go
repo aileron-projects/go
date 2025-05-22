@@ -19,9 +19,21 @@ func TestPadPKCS7(t *testing.T) {
 		want      []byte
 		err       error
 	}{
-		"size=0":   {blockSize: 0, err: internal.ErrBlockSize},
-		"size=256": {blockSize: 256, err: internal.ErrBlockSize},
-		"size=1":   {blockSize: 1, want: bytes.Repeat([]byte{'\x01'}, 1)},
+		"size=0": {
+			blockSize: 0,
+			data:      []byte{},
+			err:       internal.ErrBlockSize,
+		},
+		"size=256": {
+			blockSize: 256,
+			data:      []byte{},
+			err:       internal.ErrBlockSize,
+		},
+		"size=1": {
+			blockSize: 1,
+			data:      []byte{},
+			want:      bytes.Repeat([]byte{'\x01'}, 1),
+		},
 		"size=1 data=1": {
 			blockSize: 1,
 			data:      bytes.Repeat([]byte{'\x00'}, 1),
@@ -32,7 +44,11 @@ func TestPadPKCS7(t *testing.T) {
 			data:      bytes.Repeat([]byte{'\x00'}, 100),
 			want:      append(bytes.Repeat([]byte{'\x00'}, 100), bytes.Repeat([]byte{'\x01'}, 1)...),
 		},
-		"size=100": {blockSize: 100, want: bytes.Repeat([]byte{'\x64'}, 100)},
+		"size=100": {
+			blockSize: 100,
+			data:      []byte{},
+			want:      bytes.Repeat([]byte{'\x64'}, 100),
+		},
 		"size=100 data=1": {
 			blockSize: 100,
 			data:      bytes.Repeat([]byte{'\x00'}, 1),
@@ -53,7 +69,11 @@ func TestPadPKCS7(t *testing.T) {
 			data:      bytes.Repeat([]byte{'\x00'}, 150),
 			want:      append(bytes.Repeat([]byte{'\x00'}, 150), bytes.Repeat([]byte{'\x32'}, 50)...),
 		},
-		"size=255": {blockSize: 255, want: bytes.Repeat([]byte{'\xff'}, 255)},
+		"size=255": {
+			blockSize: 255,
+			data:      []byte{},
+			want:      bytes.Repeat([]byte{'\xff'}, 255),
+		},
 		"size=255 data=1": {
 			blockSize: 255,
 			data:      bytes.Repeat([]byte{'\x00'}, 1),
@@ -70,16 +90,15 @@ func TestPadPKCS7(t *testing.T) {
 			want:      append(bytes.Repeat([]byte{'\x00'}, 260), bytes.Repeat([]byte{'\xfa'}, 250)...),
 		},
 	}
-
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			b, err := internal.PadPKCS7(tc.blockSize, tc.data)
 			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqualSlice(t, "data not match", tc.want, b)
+			ztesting.AssertEqual(t, "data not match", tc.want, b)
 			if len(b) > 0 {
 				bb, err := internal.UnpadPKCS7(tc.blockSize, b)
 				ztesting.AssertEqualErr(t, "non nil error", nil, err)
-				ztesting.AssertEqualSlice(t, "data not match", tc.data, bb)
+				ztesting.AssertEqual(t, "data not match", tc.data, bb)
 			}
 		})
 	}
@@ -98,7 +117,11 @@ func TestUnpadPKCS7(t *testing.T) {
 		"size=50 invalid data":  {blockSize: 100, data: bytes.Repeat([]byte{'\xff'}, 100), err: internal.ErrPaddingSize},
 		"size=100 invalid data": {blockSize: 100, data: bytes.Repeat([]byte{'\x00'}, 99), err: internal.ErrDataLength},
 		"size=255 invalid data": {blockSize: 100, data: bytes.Repeat([]byte{'\x00'}, 256), err: internal.ErrDataLength},
-		"size=1":                {blockSize: 1, data: bytes.Repeat([]byte{'\x01'}, 1)},
+		"size=1": {
+			blockSize: 1,
+			data:      bytes.Repeat([]byte{'\x01'}, 1),
+			want:      []byte{},
+		},
 		"size=1 data=1": {
 			blockSize: 1,
 			data:      append(bytes.Repeat([]byte{'\x00'}, 1), bytes.Repeat([]byte{'\x01'}, 1)...),
@@ -109,7 +132,11 @@ func TestUnpadPKCS7(t *testing.T) {
 			data:      append(bytes.Repeat([]byte{'\x00'}, 100), bytes.Repeat([]byte{'\x01'}, 1)...),
 			want:      bytes.Repeat([]byte{'\x00'}, 100),
 		},
-		"size=100": {blockSize: 100, data: bytes.Repeat([]byte{'\x64'}, 100)},
+		"size=100": {
+			blockSize: 100,
+			data:      bytes.Repeat([]byte{'\x64'}, 100),
+			want:      []byte{},
+		},
 		"size=100 data=1": {
 			blockSize: 100,
 			data:      append(bytes.Repeat([]byte{'\x00'}, 1), bytes.Repeat([]byte{'\x63'}, 99)...),
@@ -130,7 +157,11 @@ func TestUnpadPKCS7(t *testing.T) {
 			data:      append(bytes.Repeat([]byte{'\x00'}, 150), bytes.Repeat([]byte{'\x32'}, 50)...),
 			want:      bytes.Repeat([]byte{'\x00'}, 150),
 		},
-		"size=255": {blockSize: 255, data: bytes.Repeat([]byte{'\xff'}, 255)},
+		"size=255": {
+			blockSize: 255,
+			data:      bytes.Repeat([]byte{'\xff'}, 255),
+			want:      []byte{},
+		},
 		"size=255 data=1": {
 			blockSize: 255,
 			data:      append(bytes.Repeat([]byte{'\x00'}, 1), bytes.Repeat([]byte{'\xfe'}, 254)...),
@@ -152,11 +183,11 @@ func TestUnpadPKCS7(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			b, err := internal.UnpadPKCS7(tc.blockSize, tc.data)
 			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqualSlice(t, "data not match", tc.want, b)
+			ztesting.AssertEqual(t, "data not match", tc.want, b)
 			if tc.err == nil {
 				bb, err := internal.PadPKCS7(tc.blockSize, b)
 				ztesting.AssertEqualErr(t, "non nil error", nil, err)
-				ztesting.AssertEqualSlice(t, "data not match", tc.data, bb)
+				ztesting.AssertEqual(t, "data not match", tc.data, bb)
 			}
 		})
 	}
@@ -174,6 +205,7 @@ func TestPadISO7816(t *testing.T) {
 		"size=256": {blockSize: 256, err: internal.ErrBlockSize},
 		"size=1": {
 			blockSize: 1,
+			data:      []byte{},
 			want:      bytes.Repeat([]byte{'\x80'}, 1),
 		},
 		"size=1 data=1": {
@@ -188,6 +220,7 @@ func TestPadISO7816(t *testing.T) {
 		},
 		"size=100": {
 			blockSize: 100,
+			data:      []byte{},
 			want:      append([]byte{'\x80'}, bytes.Repeat([]byte{'\x00'}, 99)...),
 		},
 		"size=100 data=1": {
@@ -212,6 +245,7 @@ func TestPadISO7816(t *testing.T) {
 		},
 		"size=255": {
 			blockSize: 255,
+			data:      []byte{},
 			want:      append([]byte{'\x80'}, bytes.Repeat([]byte{'\x00'}, 254)...),
 		},
 		"size=255 data=1": {
@@ -235,11 +269,11 @@ func TestPadISO7816(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			b, err := internal.PadISO7816(tc.blockSize, tc.data)
 			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqualSlice(t, "data not match", tc.want, b)
+			ztesting.AssertEqual(t, "data not match", tc.want, b)
 			if len(b) > 0 {
 				bb, err := internal.UnpadISO7816(tc.blockSize, b)
 				ztesting.AssertEqualErr(t, "non nil error", nil, err)
-				ztesting.AssertEqualSlice(t, "data not match", tc.data, bb)
+				ztesting.AssertEqual(t, "data not match", tc.data, bb)
 			}
 		})
 	}
@@ -261,6 +295,7 @@ func TestUnpadISO7816(t *testing.T) {
 		"size=1": {
 			blockSize: 1,
 			data:      bytes.Repeat([]byte{'\x80'}, 1),
+			want:      []byte{},
 		},
 		"size=1 data=1": {
 			blockSize: 1,
@@ -275,6 +310,7 @@ func TestUnpadISO7816(t *testing.T) {
 		"size=100": {
 			blockSize: 100,
 			data:      append([]byte{'\x80'}, bytes.Repeat([]byte{'\x00'}, 99)...),
+			want:      []byte{},
 		},
 		"size=100 data=1": {
 			blockSize: 100,
@@ -299,6 +335,7 @@ func TestUnpadISO7816(t *testing.T) {
 		"size=255": {
 			blockSize: 255,
 			data:      append([]byte{'\x80'}, bytes.Repeat([]byte{'\x00'}, 254)...),
+			want:      []byte{},
 		},
 		"size=255 data=1": {
 			blockSize: 255,
@@ -321,11 +358,11 @@ func TestUnpadISO7816(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			b, err := internal.UnpadISO7816(tc.blockSize, tc.data)
 			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqualSlice(t, "data not match", tc.want, b)
+			ztesting.AssertEqual(t, "data not match", tc.want, b)
 			if tc.err == nil {
 				bb, err := internal.PadISO7816(tc.blockSize, b)
 				ztesting.AssertEqualErr(t, "non nil error", nil, err)
-				ztesting.AssertEqualSlice(t, "data not match", tc.data, bb)
+				ztesting.AssertEqual(t, "data not match", tc.data, bb)
 			}
 		})
 	}
@@ -344,6 +381,7 @@ func TestPadISO10126(t *testing.T) {
 		"size=256": {blockSize: 256, err: internal.ErrBlockSize},
 		"size=1": {
 			blockSize: 1,
+			data:      []byte{},
 			want:      bytes.Repeat([]byte{'\x01'}, 1),
 		},
 		"size=1 data=1": {
@@ -358,6 +396,7 @@ func TestPadISO10126(t *testing.T) {
 		},
 		"size=100": {
 			blockSize: 100,
+			data:      []byte{},
 			want:      append(append(bytes.Repeat([]byte{'\x01'}, 0), bytes.Repeat([]byte{'\x00'}, 99)...), []byte{'\x64'}...),
 		},
 		"size=100 data=1": {
@@ -382,6 +421,7 @@ func TestPadISO10126(t *testing.T) {
 		},
 		"size=255": {
 			blockSize: 255,
+			data:      []byte{},
 			want:      append(append(bytes.Repeat([]byte{'\x01'}, 0), bytes.Repeat([]byte{'\x00'}, 254)...), []byte{'\xff'}...),
 		},
 		"size=255 data=1": {
@@ -405,11 +445,11 @@ func TestPadISO10126(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			b, err := internal.PadISO10126(tc.blockSize, tc.data)
 			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqualSlice(t, "data not match", tc.want, b)
+			ztesting.AssertEqual(t, "data not match", tc.want, b)
 			if len(b) > 0 {
 				bb, err := internal.UnpadISO10126(tc.blockSize, b)
 				ztesting.AssertEqualErr(t, "non nil error", nil, err)
-				ztesting.AssertEqualSlice(t, "data not match", tc.data, bb)
+				ztesting.AssertEqual(t, "data not match", tc.data, bb)
 			}
 		})
 	}
@@ -420,7 +460,7 @@ func TestPadISO10126_ReadError(t *testing.T) {
 	defer done()
 	b, err := internal.PadISO10126(10, []byte("12345"))
 	ztesting.AssertEqualErr(t, "error not match", io.ErrUnexpectedEOF, err)
-	ztesting.AssertEqualSlice(t, "data not match", nil, b)
+	ztesting.AssertEqual(t, "data not match", nil, b)
 }
 
 func TestUnpadISO10126(t *testing.T) {
@@ -439,6 +479,7 @@ func TestUnpadISO10126(t *testing.T) {
 		"size=1": {
 			blockSize: 1,
 			data:      bytes.Repeat([]byte{'\x01'}, 1),
+			want:      []byte{},
 		},
 		"size=1 data=1": {
 			blockSize: 1,
@@ -453,6 +494,7 @@ func TestUnpadISO10126(t *testing.T) {
 		"size=100": {
 			blockSize: 100,
 			data:      append(append(bytes.Repeat([]byte{'\x01'}, 0), bytes.Repeat([]byte{'\x00'}, 99)...), []byte{'\x64'}...),
+			want:      []byte{},
 		},
 		"size=100 data=1": {
 			blockSize: 100,
@@ -477,6 +519,7 @@ func TestUnpadISO10126(t *testing.T) {
 		"size=255": {
 			blockSize: 255,
 			data:      append(append(bytes.Repeat([]byte{'\x01'}, 0), bytes.Repeat([]byte{'\x00'}, 254)...), []byte{'\xff'}...),
+			want:      []byte{},
 		},
 		"size=255 data=1": {
 			blockSize: 255,
@@ -499,11 +542,11 @@ func TestUnpadISO10126(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			b, err := internal.UnpadISO10126(tc.blockSize, tc.data)
 			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqualSlice(t, "data not match", tc.want, b)
+			ztesting.AssertEqual(t, "data not match", tc.want, b)
 			if tc.err == nil {
 				bb, err := internal.PadISO10126(tc.blockSize, b)
 				ztesting.AssertEqualErr(t, "non nil error", nil, err)
-				ztesting.AssertEqualSlice(t, "data not match", tc.data, bb)
+				ztesting.AssertEqual(t, "data not match", tc.data, bb)
 			}
 		})
 	}

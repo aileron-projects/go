@@ -1,6 +1,7 @@
 package znet_test
 
 import (
+	"crypto/tls"
 	"errors"
 	"io"
 	"net"
@@ -66,11 +67,10 @@ func TestNewBlackListListener(t *testing.T) {
 func TestWhiteListListener(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
-		ln        net.Listener
-		allow     []string
-		allowFunc func(host, port string) bool
-		closed    bool  // want
-		err       error // want
+		ln     net.Listener
+		allow  []string
+		closed bool  // want
+		err    error // want
 	}{
 		"allowed": {
 			ln:    &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}},
@@ -90,22 +90,10 @@ func TestWhiteListListener(t *testing.T) {
 			ln:     &testListener{remote: &net.UnixAddr{Name: "@example"}},
 			closed: true,
 		},
-		"optionally allowed": {
-			ln:        &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}},
-			allow:     []string{"127.0.0.0/24"},
-			allowFunc: func(host, port string) bool { return port == "80" },
-		},
-		"optionally not allowed": {
-			ln:        &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}},
-			allow:     []string{"127.0.0.0/24"},
-			allowFunc: func(host, port string) bool { return port == "8080" },
-			closed:    true,
-		},
 	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			ln, _ := znet.NewWhiteListListener(tc.ln, tc.allow...)
-			ln.Allow = tc.allowFunc
 			conn, err := ln.Accept()
 			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
 			ztesting.AssertEqual(t, "closed not match", tc.closed, conn.(*testConn).closed)
@@ -116,11 +104,10 @@ func TestWhiteListListener(t *testing.T) {
 func TestBlackListListener(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
-		ln        net.Listener
-		disallow  []string
-		allowFunc func(host, port string) bool
-		closed    bool  // want
-		err       error // want
+		ln       net.Listener
+		disallow []string
+		closed   bool  // want
+		err      error // want
 	}{
 		"allowed": {
 			ln:       &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}},
@@ -140,20 +127,10 @@ func TestBlackListListener(t *testing.T) {
 			ln:     &testListener{remote: &net.UnixAddr{Name: "@example"}},
 			closed: true,
 		},
-		"optionally allowed": {
-			ln:        &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}},
-			allowFunc: func(host, port string) bool { return port == "80" },
-		},
-		"optionally not allowed": {
-			ln:        &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}},
-			allowFunc: func(host, port string) bool { return port == "8080" },
-			closed:    true,
-		},
 	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			ln, _ := znet.NewBlackListListener(tc.ln, tc.disallow...)
-			ln.Allow = tc.allowFunc
 			conn, err := ln.Accept()
 			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
 			ztesting.AssertEqual(t, "closed not match", tc.closed, conn.(*testConn).closed)
@@ -201,4 +178,99 @@ func TestLimitListener(t *testing.T) {
 		ztesting.AssertEqualErr(t, "error not match", io.EOF, err)
 		ztesting.AssertEqual(t, "closed count not match", "1", conn.Close().Error())
 	})
+}
+
+func TestNewTLSListener(t *testing.T) {
+	t.Parallel()
+	t.Run("error", func(t *testing.T) {
+		_, err := znet.NewTLSListener(nil, &tls.Config{}, "127.0.0.1")
+		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+	})
+	t.Run("no error", func(t *testing.T) {
+		_, err := znet.NewTLSListener(nil, &tls.Config{}, "127.0.0.1/32")
+		ztesting.AssertEqual(t, "error should be nil", true, err == nil)
+	})
+}
+
+func TestTLSListener(t *testing.T) {
+	t.Parallel()
+	testCases := map[string]struct {
+		ln        net.Listener
+		nonTLS    []string
+		shouldTLS bool
+		err       error // want
+	}{
+		"non TSL": {
+			ln:        &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}},
+			nonTLS:    []string{"127.0.0.0/24"},
+			shouldTLS: false,
+		},
+		"should TLS": {
+			ln:        &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}},
+			nonTLS:    []string{"127.0.1.0/24"},
+			shouldTLS: true,
+		},
+		"listener error": {
+			ln:     &testListener{err: io.EOF}, // dummy error
+			nonTLS: []string{"127.0.1.0/24"},
+			err:    io.EOF,
+		},
+		"non IP addr": {
+			ln:        &testListener{remote: &net.UnixAddr{Name: "@example"}},
+			shouldTLS: true,
+		},
+	}
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			ln, _ := znet.NewTLSListener(tc.ln, &tls.Config{}, tc.nonTLS...)
+			conn, err := ln.Accept()
+			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			_, isTLS := conn.(*tls.Conn)
+			ztesting.AssertEqual(t, "connection is not TLS", tc.shouldTLS, isTLS)
+		})
+	}
+}
+
+func TestACMEListener(t *testing.T) {
+	t.Parallel()
+	testCases := map[string]struct {
+		ln      net.Listener
+		domains []string
+		modify  bool
+		err     error // want
+	}{
+		"allowed": {
+			ln:      &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}},
+			domains: []string{"foo.com", "bar.com"},
+		},
+		"modify": {
+			ln:      &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}},
+			domains: []string{"foo.com", "bar.com"},
+			modify:  true,
+		},
+		"listener error": {
+			ln:  &testListener{err: io.EOF}, // dummy error
+			err: io.EOF,
+		},
+		"non IP addr": {
+			ln: &testListener{remote: &net.UnixAddr{Name: "@example"}},
+		},
+	}
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			ln := znet.NewACMEListener(tc.ln, tc.domains...)
+			if tc.modify {
+				ln.Modifier = func(c *tls.Config) {
+					ztesting.AssertEqual(t, "TLS config is nil", true, c != nil)
+				}
+			}
+			conn, err := ln.Accept()
+			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			if err != nil {
+				return
+			}
+			_, isTLS := conn.(*tls.Conn)
+			ztesting.AssertEqual(t, "connection is not TLS", true, isTLS)
+		})
+	}
 }

@@ -14,12 +14,12 @@ func TestHTTPHeader(t *testing.T) {
 		h := httpHeader{}
 		h.Add("Test", "v1")
 		h.Add("Test", "v2")
-		ztesting.AssertEqualSlice(t, "values not match", []string{"v1", "v2"}, h["Test"])
+		ztesting.AssertEqual(t, "values not match", []string{"v1", "v2"}, h["Test"])
 	})
 	t.Run("del", func(t *testing.T) {
 		h := httpHeader{"Test": {"value"}}
 		h.Del("Test")
-		ztesting.AssertEqualSlice(t, "values not match", []string{}, h["Test"])
+		ztesting.AssertEqual(t, "values not match", nil, h["Test"])
 	})
 	t.Run("get exist", func(t *testing.T) {
 		h := httpHeader{"Test": {"v1", "v2"}}
@@ -32,11 +32,11 @@ func TestHTTPHeader(t *testing.T) {
 	t.Run("set", func(t *testing.T) {
 		h := httpHeader{"Test": {"v1", "v2"}}
 		h.Set("Test", "v3")
-		ztesting.AssertEqualSlice(t, "values not match", []string{"v3"}, h["Test"])
+		ztesting.AssertEqual(t, "values not match", []string{"v3"}, h["Test"])
 	})
 	t.Run("values", func(t *testing.T) {
 		h := httpHeader{"Test": {"v1", "v2"}}
-		ztesting.AssertEqualSlice(t, "values not match", []string{"v1", "v2"}, h.Values("Test"))
+		ztesting.AssertEqual(t, "values not match", []string{"v1", "v2"}, h.Values("Test"))
 	})
 }
 
@@ -200,9 +200,9 @@ func TestCopyHeaders(t *testing.T) {
 		"Baz": []string{"baz"},
 	}
 	CopyHeaders(dst, src)
-	ztesting.AssertEqualSlice(t, "value not match", []string{"foo"}, dst.Values("Foo"))
-	ztesting.AssertEqualSlice(t, "value not match", []string{"bar1", "bar2"}, dst.Values("Bar"))
-	ztesting.AssertEqualSlice(t, "value not match", []string{"baz"}, dst.Values("Baz"))
+	ztesting.AssertEqual(t, "value not match", []string{"foo"}, dst.Values("Foo"))
+	ztesting.AssertEqual(t, "value not match", []string{"bar1", "bar2"}, dst.Values("Bar"))
+	ztesting.AssertEqual(t, "value not match", []string{"baz"}, dst.Values("Baz"))
 }
 
 func TestCopyTrailers(t *testing.T) {
@@ -216,10 +216,10 @@ func TestCopyTrailers(t *testing.T) {
 		"Baz": []string{"baz"},
 	}
 	CopyTrailers(dst, src)
-	ztesting.AssertEqualSlice(t, "value not match", []string{"foo"}, dst.Values("Foo"))
-	ztesting.AssertEqualSlice(t, "value not match", []string{"bar1"}, dst.Values("Bar"))
-	ztesting.AssertEqualSlice(t, "value not match", []string{"bar2"}, dst.Values(http.TrailerPrefix+"Bar"))
-	ztesting.AssertEqualSlice(t, "value not match", []string{"baz"}, dst.Values(http.TrailerPrefix+"Baz"))
+	ztesting.AssertEqual(t, "value not match", []string{"foo"}, dst.Values("Foo"))
+	ztesting.AssertEqual(t, "value not match", []string{"bar1"}, dst.Values("Bar"))
+	ztesting.AssertEqual(t, "value not match", []string{"bar2"}, dst.Values(http.TrailerPrefix+"Bar"))
+	ztesting.AssertEqual(t, "value not match", []string{"baz"}, dst.Values(http.TrailerPrefix+"Baz"))
 }
 
 func TestParseQualifiedHeader(t *testing.T) {
@@ -265,9 +265,9 @@ func TestParseQualifiedHeader(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			values, params := ParseQualifiedHeader(tc.header)
-			ztesting.AssertEqualSlice(t, "values not match", tc.values, values)
+			ztesting.AssertEqual(t, "values not match", tc.values, values)
 			for i := range tc.params {
-				ztesting.AssertEqualMap(t, "params not match", tc.params[i], params[i])
+				ztesting.AssertEqual(t, "params not match", tc.params[i], params[i])
 			}
 		})
 	}
@@ -294,9 +294,9 @@ func TestParseHeader(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			values, params := ParseHeader(tc.header)
-			ztesting.AssertEqualSlice(t, "values not match", tc.values, values)
+			ztesting.AssertEqual(t, "values not match", tc.values, values)
 			for i := range tc.params {
-				ztesting.AssertEqualMap(t, "params not match", tc.params[i], params[i])
+				ztesting.AssertEqual(t, "params not match", tc.params[i], params[i])
 			}
 		})
 	}
@@ -342,9 +342,9 @@ func TestScanElement(t *testing.T) {
 		elements string
 		want     []string
 	}{
-		"case01": {"", []string{}},                                          // Example in RFC9110
-		"case02": {",", []string{}},                                         // Example in RFC9110
-		"case03": {",   ,", []string{}},                                     // Example in RFC9110
+		"case01": {"", nil},                                                 // Example in RFC9110
+		"case02": {",", nil},                                                // Example in RFC9110
+		"case03": {",   ,", nil},                                            // Example in RFC9110
 		"case04": {"foo,bar", []string{"foo", "bar"}},                       // Example in RFC9110
 		"case05": {"foo ,bar,", []string{"foo", "bar"}},                     // Example in RFC9110
 		"case06": {"foo , ,bar,charlie", []string{"foo", "bar", "charlie"}}, // Example in RFC9110
@@ -360,7 +360,7 @@ func TestScanElement(t *testing.T) {
 					got = append(got, e)
 				}
 			}
-			ztesting.AssertEqualSlice(t, "elems not match", tc.want, got)
+			ztesting.AssertEqual(t, "elems not match", tc.want, got)
 		})
 	}
 }

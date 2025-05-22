@@ -22,7 +22,7 @@ func TestNewDES(t *testing.T) {
 		cb, iv, err := newDES([]byte("short"))
 		ztesting.AssertEqualErr(t, "unexpected error", des.KeySizeError(5), err)
 		ztesting.AssertEqual(t, "non nil cipher block returned", nil, cb)
-		ztesting.AssertEqualSlice(t, "non empty iv returned", nil, iv)
+		ztesting.AssertEqual(t, "non empty iv returned", nil, iv)
 	})
 	t.Run("valid key", func(t *testing.T) {
 		_, iv, err := newDES([]byte("12345678"))
@@ -37,7 +37,7 @@ func TestNew3DES(t *testing.T) {
 		cb, iv, err := new3DES([]byte("short"))
 		ztesting.AssertEqualErr(t, "unexpected error", des.KeySizeError(5), err)
 		ztesting.AssertEqual(t, "non nil cipher block returned", nil, cb)
-		ztesting.AssertEqualSlice(t, "non empty iv returned", nil, iv)
+		ztesting.AssertEqual(t, "non empty iv returned", nil, iv)
 	})
 	t.Run("valid key", func(t *testing.T) {
 		_, iv, err := new3DES([]byte("123456781234567812345678"))

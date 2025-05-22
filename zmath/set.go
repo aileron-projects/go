@@ -248,7 +248,7 @@ func ProperSubset[E cmp.Ordered](a, b Set[E]) bool {
 func Union[E cmp.Ordered](a, b Set[E]) Set[E] {
 	n, m := len(a), len(b)
 	if n == 0 && m == 0 {
-		return nil // ∅∪∅
+		return make(Set[E], 0) // ∅∪∅
 	}
 	if n == 0 {
 		return b // ∅∪B
@@ -300,7 +300,7 @@ func Union[E cmp.Ordered](a, b Set[E]) Set[E] {
 func Intersection[E cmp.Ordered](a, b Set[E]) Set[E] {
 	n, m := len(a), len(b)
 	if n == 0 || m == 0 {
-		return nil // ∅∩∅, ∅∩B, A∩∅
+		return make(Set[E], 0) // ∅∩∅, ∅∩B, A∩∅
 	}
 	set := Set[E]{}
 	aIter := uniqueIterator(a)
@@ -333,7 +333,7 @@ func Intersection[E cmp.Ordered](a, b Set[E]) Set[E] {
 func Difference[E cmp.Ordered](a, b Set[E]) Set[E] {
 	n, m := len(a), len(b)
 	if n == 0 {
-		return nil // ∅−∅, ∅−B
+		return make(Set[E], 0) // ∅−∅, ∅−B
 	}
 	if m == 0 {
 		return a // A−∅

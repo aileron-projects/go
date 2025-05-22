@@ -12,10 +12,12 @@ func TestNoopToken(t *testing.T) {
 	t.Run("true", func(t *testing.T) {
 		ztesting.AssertEqual(t, "incorrect status of the token", true, TokenOK.OK())
 		ztesting.AssertEqual(t, "non nil error returned", nil, TokenOK.Err())
+		TokenOK.Release() // Nothing happens. Just for taking coverage.
 	})
 	t.Run("false", func(t *testing.T) {
 		ztesting.AssertEqual(t, "incorrect status of the token", false, TokenNG.OK())
 		ztesting.AssertEqual(t, "non nil error returned", nil, TokenNG.Err())
+		TokenNG.Release() // Nothing happens. Just for taking coverage.
 	})
 }
 

@@ -58,7 +58,7 @@ type Proxy struct {
 	ErrorHandler func(dc, uc net.Conn, err error)
 }
 
-func (p *Proxy) handleError(err error, dc, uc net.Conn) {
+func (p *Proxy) handleError(dc, uc net.Conn, err error) {
 	if err == nil {
 		return
 	}
@@ -70,7 +70,7 @@ func (p *Proxy) handleError(err error, dc, uc net.Conn) {
 func (p *Proxy) ServeTCP(ctx context.Context, conn net.Conn) {
 	upConn, err := p.Dial(ctx, conn)
 	if err != nil {
-		p.handleError(err, conn, upConn)
+		p.handleError(conn, upConn, err)
 		return
 	}
 	defer upConn.Close() // Ensure close upstream connection.
@@ -80,13 +80,11 @@ func (p *Proxy) ServeTCP(ctx context.Context, conn net.Conn) {
 	go copyBuf(upConn, conn, errChan) // downstream <-- proxy <-- upstream
 
 	if err := <-errChan; err != nil {
-		_ = conn.Close() // Early close.
-		p.handleError(ctx.Err(), conn, upConn)
+		p.handleError(conn, upConn, err)
 		return
 	}
 	if err := <-errChan; err != nil {
-		_ = conn.Close() // Early close.
-		p.handleError(ctx.Err(), conn, upConn)
+		p.handleError(conn, upConn, err)
 		return
 	}
 }
@@ -106,9 +104,8 @@ func copyBuf(dst io.Writer, src io.Reader, errChan chan<- error) {
 	errChan <- err
 }
 
-// roundRobinDialer dials to the address in addrs
-// with round-robin algorithm.
-// It does not do any health checks.
+// roundRobinDialer dials to the address
+// in addrs with round-robin algorithm.
 type roundRobinDialer struct {
 	mu    sync.Mutex
 	index int

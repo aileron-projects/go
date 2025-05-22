@@ -22,7 +22,7 @@ func TestNewAES(t *testing.T) {
 		cb, iv, err := newAES([]byte("short"))
 		ztesting.AssertEqualErr(t, "unexpected error", aes.KeySizeError(5), err)
 		ztesting.AssertEqual(t, "non nil cipher block returned", nil, cb)
-		ztesting.AssertEqualSlice(t, "non empty iv returned", nil, iv)
+		ztesting.AssertEqual(t, "non empty iv returned", nil, iv)
 	})
 	t.Run("16 bytes key", func(t *testing.T) {
 		_, iv, err := newAES([]byte("1234567890123456"))

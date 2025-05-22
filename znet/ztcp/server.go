@@ -172,9 +172,6 @@ func (s *Server) Serve(l net.Listener) error {
 	if s.shutdown.Load() {
 		return net.ErrClosed
 	}
-	if s.serveNotify != nil {
-		s.serveNotify <- struct{}{}
-	}
 
 	ctx := context.Background()
 	if bc := s.BaseContext; bc != nil {
@@ -187,6 +184,10 @@ func (s *Server) Serve(l net.Listener) error {
 	}
 	s.listeners.Set(ln)
 	defer ln.Close()
+
+	if s.serveNotify != nil {
+		s.serveNotify <- struct{}{}
+	}
 
 	wait := int64(1)
 	for {
@@ -218,12 +219,9 @@ func (s *Server) serve(ctx context.Context, conn net.Conn) {
 		store: &s.conns,
 	}
 	s.conns.Set(c)
+	defer c.Close()
 	defer func() {
-		_ = c.Close()
 		err := recover()
-		if err == nil {
-			return
-		}
 		if ph := s.PanicHandler; ph != nil {
 			ph(err, conn.RemoteAddr(), conn.LocalAddr())
 			return
