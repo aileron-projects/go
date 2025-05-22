@@ -14,19 +14,19 @@ func TestCBC(t *testing.T) {
 		key := []byte("short")
 		ciphertext, err := zdes.EncryptCBC(key, nil)
 		ztesting.AssertEqualErr(t, "error not match", des.KeySizeError(5), err)
-		ztesting.AssertEqualSlice(t, "ciphertext is not nil", nil, ciphertext)
+		ztesting.AssertEqual(t, "ciphertext is not nil", nil, ciphertext)
 	})
 	t.Run("decrypt key invalid", func(t *testing.T) {
 		key := []byte("short")
 		plaintext, err := zdes.DecryptCBC(key, []byte("1234567812345678"))
 		ztesting.AssertEqualErr(t, "error not match", des.KeySizeError(5), err)
-		ztesting.AssertEqualSlice(t, "plaintext is not nil", nil, plaintext)
+		ztesting.AssertEqual(t, "plaintext is not nil", nil, plaintext)
 	})
 	t.Run("decrypt invalid ciphertext length", func(t *testing.T) {
 		key := []byte("12345678")
 		plaintext, err := zdes.DecryptCBC(key, []byte("short"))
 		ztesting.AssertEqualErr(t, "error not match", zdes.ErrCipherLength(5), err)
-		ztesting.AssertEqualSlice(t, "plaintext is not nil", nil, plaintext)
+		ztesting.AssertEqual(t, "plaintext is not nil", nil, plaintext)
 	})
 	t.Run("encrypt-decrypt empty", func(t *testing.T) {
 		key := []byte("12345678")
@@ -34,7 +34,7 @@ func TestCBC(t *testing.T) {
 		ztesting.AssertEqualErr(t, "error not match", nil, err)
 		plaintext, err := zdes.DecryptCBC(key, ciphertext)
 		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqualSlice(t, "plaintext does not match", nil, plaintext)
+		ztesting.AssertEqual(t, "plaintext does not match", []byte{}, plaintext)
 	})
 	t.Run("encrypt-decrypt", func(t *testing.T) {
 		key := []byte("12345678")
@@ -43,7 +43,7 @@ func TestCBC(t *testing.T) {
 		ztesting.AssertEqualErr(t, "error not match", nil, err)
 		plaintext, err := zdes.DecryptCBC(key, ciphertext)
 		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqualSlice(t, "plaintext does not match", msg, plaintext)
+		ztesting.AssertEqual(t, "plaintext does not match", msg, plaintext)
 	})
 }
 
@@ -53,19 +53,19 @@ func TestCBC3(t *testing.T) {
 		key := []byte("short")
 		ciphertext, err := zdes.EncryptCBC3(key, nil)
 		ztesting.AssertEqualErr(t, "error not match", des.KeySizeError(5), err)
-		ztesting.AssertEqualSlice(t, "ciphertext is not nil", nil, ciphertext)
+		ztesting.AssertEqual(t, "ciphertext is not nil", nil, ciphertext)
 	})
 	t.Run("decrypt key invalid", func(t *testing.T) {
 		key := []byte("short")
 		plaintext, err := zdes.DecryptCBC3(key, []byte("1234567812345678"))
 		ztesting.AssertEqualErr(t, "error not match", des.KeySizeError(5), err)
-		ztesting.AssertEqualSlice(t, "plaintext is not nil", nil, plaintext)
+		ztesting.AssertEqual(t, "plaintext is not nil", nil, plaintext)
 	})
 	t.Run("decrypt invalid ciphertext length", func(t *testing.T) {
 		key := []byte("123456781234567812345678")
 		plaintext, err := zdes.DecryptCBC3(key, []byte("short"))
 		ztesting.AssertEqualErr(t, "error not match", zdes.ErrCipherLength(5), err)
-		ztesting.AssertEqualSlice(t, "plaintext is not nil", nil, plaintext)
+		ztesting.AssertEqual(t, "plaintext is not nil", nil, plaintext)
 	})
 	t.Run("encrypt-decrypt empty", func(t *testing.T) {
 		key := []byte("123456781234567812345678")
@@ -73,7 +73,7 @@ func TestCBC3(t *testing.T) {
 		ztesting.AssertEqualErr(t, "error not match", nil, err)
 		plaintext, err := zdes.DecryptCBC3(key, ciphertext)
 		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqualSlice(t, "plaintext does not match", nil, plaintext)
+		ztesting.AssertEqual(t, "plaintext does not match", []byte{}, plaintext)
 	})
 	t.Run("encrypt-decrypt", func(t *testing.T) {
 		key := []byte("123456781234567812345678")
@@ -82,6 +82,6 @@ func TestCBC3(t *testing.T) {
 		ztesting.AssertEqualErr(t, "error not match", nil, err)
 		plaintext, err := zdes.DecryptCBC3(key, ciphertext)
 		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqualSlice(t, "plaintext does not match", msg, plaintext)
+		ztesting.AssertEqual(t, "plaintext does not match", msg, plaintext)
 	})
 }

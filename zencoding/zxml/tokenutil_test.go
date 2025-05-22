@@ -103,7 +103,7 @@ func TestParseNamespace(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			ns := parseNamespace(tc.attrs, nil)
-			ztesting.AssertEqualSlice(t, "namespace not match", tc.ns, ns)
+			ztesting.AssertEqual(t, "namespace not match", tc.ns, ns)
 		})
 	}
 }

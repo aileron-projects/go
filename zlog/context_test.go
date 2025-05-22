@@ -15,7 +15,7 @@ func TestContextWithAttrs(t *testing.T) {
 		ctx := zlog.ContextWithAttrs(nil, "foo", "bar")
 		attrs := zlog.AttrsFromContext(ctx)
 		ztesting.AssertEqual(t, "invalid number of attributes.", 2, len(attrs))
-		ztesting.AssertEqualSlice(t, "invalid content of attributes.", []any{"foo", "bar"}, attrs)
+		ztesting.AssertEqual(t, "invalid content of attributes.", []any{"foo", "bar"}, attrs)
 	})
 
 	t.Run("empty context", func(t *testing.T) {
@@ -23,7 +23,7 @@ func TestContextWithAttrs(t *testing.T) {
 		ctx = zlog.ContextWithAttrs(ctx, "foo", "bar")
 		attrs := zlog.AttrsFromContext(ctx)
 		ztesting.AssertEqual(t, "invalid number of attributes.", 2, len(attrs))
-		ztesting.AssertEqualSlice(t, "invalid content of attributes.", []any{"foo", "bar"}, attrs)
+		ztesting.AssertEqual(t, "invalid content of attributes.", []any{"foo", "bar"}, attrs)
 	})
 
 	t.Run("non empty context", func(t *testing.T) {
@@ -32,7 +32,7 @@ func TestContextWithAttrs(t *testing.T) {
 		ctx = zlog.ContextWithAttrs(ctx, "bar")
 		attrs := zlog.AttrsFromContext(ctx)
 		ztesting.AssertEqual(t, "invalid number of attributes.", 2, len(attrs))
-		ztesting.AssertEqualSlice(t, "invalid content of attributes.", []any{"foo", "bar"}, attrs)
+		ztesting.AssertEqual(t, "invalid content of attributes.", []any{"foo", "bar"}, attrs)
 	})
 }
 
@@ -53,7 +53,7 @@ func TestAttrsFromContext(t *testing.T) {
 		ctx := zlog.ContextWithAttrs(context.Background(), "foo", "bar")
 		attrs := zlog.AttrsFromContext(ctx)
 		ztesting.AssertEqual(t, "invalid number of attributes.", 2, len(attrs))
-		ztesting.AssertEqualSlice(t, "invalid content of attributes.", []any{"foo", "bar"}, attrs)
+		ztesting.AssertEqual(t, "invalid content of attributes.", []any{"foo", "bar"}, attrs)
 	})
 }
 

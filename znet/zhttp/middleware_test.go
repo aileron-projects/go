@@ -76,7 +76,7 @@ func TestNewHandler(t *testing.T) {
 				ms = append(ms, &testMiddleware{name: n, list: &list})
 			}
 			zhttp.NewHandler(nopHandler, ms...).ServeHTTP(nil, nil)
-			ztesting.AssertEqualSlice(t, "middleware not match", tc.want, list)
+			ztesting.AssertEqual(t, "middleware not match", tc.want, list)
 		})
 	}
 }
@@ -110,7 +110,7 @@ func TestServerMiddlewareChain_Handler(t *testing.T) {
 				ms = append(ms, &testMiddleware{name: n, list: &list})
 			}
 			chain.Handler(nopHandler, ms...).ServeHTTP(nil, nil)
-			ztesting.AssertEqualSlice(t, "middleware not match", tc.want, list)
+			ztesting.AssertEqual(t, "middleware not match", tc.want, list)
 		})
 	}
 }
@@ -158,7 +158,7 @@ func TestServerMiddlewareChain_Insert(t *testing.T) {
 			}
 			chain.Insert(tc.index, ms...)
 			chain.ServerMiddleware(nopHandler).ServeHTTP(nil, nil)
-			ztesting.AssertEqualSlice(t, "middleware not match", tc.want, list)
+			ztesting.AssertEqual(t, "middleware not match", tc.want, list)
 		})
 	}
 }
@@ -193,7 +193,7 @@ func TestServerMiddlewareChain_InsertAll(t *testing.T) {
 			}
 			chain.InsertAll(ms...)
 			chain.ServerMiddleware(nopHandler).ServeHTTP(nil, nil)
-			ztesting.AssertEqualSlice(t, "middleware not match", tc.want, list)
+			ztesting.AssertEqual(t, "middleware not match", tc.want, list)
 		})
 	}
 }
@@ -228,7 +228,7 @@ func TestServerMiddlewareChain_BeforeAll(t *testing.T) {
 			}
 			chain.BeforeAll(ms...)
 			chain.ServerMiddleware(nopHandler).ServeHTTP(nil, nil)
-			ztesting.AssertEqualSlice(t, "middleware not match", tc.want, list)
+			ztesting.AssertEqual(t, "middleware not match", tc.want, list)
 		})
 	}
 }
@@ -263,7 +263,7 @@ func TestServerMiddlewareChain_AfterAll(t *testing.T) {
 			}
 			chain.AfterAll(ms...)
 			chain.ServerMiddleware(nopHandler).ServeHTTP(nil, nil)
-			ztesting.AssertEqualSlice(t, "middleware not match", tc.want, list)
+			ztesting.AssertEqual(t, "middleware not match", tc.want, list)
 		})
 	}
 }
@@ -286,7 +286,7 @@ func TestNewRoundTripper(t *testing.T) {
 				ms = append(ms, &testMiddleware{name: n, list: &list})
 			}
 			zhttp.NewRoundTripper(nopRoundTripper, ms...).RoundTrip(nil)
-			ztesting.AssertEqualSlice(t, "middleware not match", tc.want, list)
+			ztesting.AssertEqual(t, "middleware not match", tc.want, list)
 		})
 	}
 }
@@ -320,7 +320,7 @@ func TestClientMiddlewareChain_RoundTripper(t *testing.T) {
 				ms = append(ms, &testMiddleware{name: n, list: &list})
 			}
 			chain.RoundTripper(nopRoundTripper, ms...).RoundTrip(nil)
-			ztesting.AssertEqualSlice(t, "middleware not match", tc.want, list)
+			ztesting.AssertEqual(t, "middleware not match", tc.want, list)
 		})
 	}
 }
@@ -368,7 +368,7 @@ func TestClientMiddlewareChain_Insert(t *testing.T) {
 			}
 			chain.Insert(tc.index, ms...)
 			chain.ClientMiddleware(nopRoundTripper).RoundTrip(nil)
-			ztesting.AssertEqualSlice(t, "middleware not match", tc.want, list)
+			ztesting.AssertEqual(t, "middleware not match", tc.want, list)
 		})
 	}
 }
@@ -403,7 +403,7 @@ func TestClientMiddlewareChain_InsertAll(t *testing.T) {
 			}
 			chain.InsertAll(ms...)
 			chain.ClientMiddleware(nopRoundTripper).RoundTrip(nil)
-			ztesting.AssertEqualSlice(t, "middleware not match", tc.want, list)
+			ztesting.AssertEqual(t, "middleware not match", tc.want, list)
 		})
 	}
 }
@@ -438,7 +438,7 @@ func TestClientMiddlewareChain_BeforeAll(t *testing.T) {
 			}
 			chain.BeforeAll(ms...)
 			chain.ClientMiddleware(nopRoundTripper).RoundTrip(nil)
-			ztesting.AssertEqualSlice(t, "middleware not match", tc.want, list)
+			ztesting.AssertEqual(t, "middleware not match", tc.want, list)
 		})
 	}
 }
@@ -473,7 +473,7 @@ func TestClientMiddlewareChain_AfterAll(t *testing.T) {
 			}
 			chain.AfterAll(ms...)
 			chain.ClientMiddleware(nopRoundTripper).RoundTrip(nil)
-			ztesting.AssertEqualSlice(t, "middleware not match", tc.want, list)
+			ztesting.AssertEqual(t, "middleware not match", tc.want, list)
 		})
 	}
 }

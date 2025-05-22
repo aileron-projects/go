@@ -103,7 +103,7 @@ func TestFileManager_Manager(t *testing.T) {
 		err := m.Manage()
 		ztesting.AssertEqual(t, "error should be nil", nil, err)
 		want := []string{"test.5.txt", "test.6.txt", "test.9.txt"}
-		ztesting.AssertEqualSlice(t, "files not match", want, listDirFiles(dir))
+		ztesting.AssertEqual(t, "files not match", want, listDirFiles(dir))
 	})
 	t.Run("limit max history gzip", func(t *testing.T) {
 		dir := t.TempDir()
@@ -112,7 +112,7 @@ func TestFileManager_Manager(t *testing.T) {
 		err := m.Manage()
 		ztesting.AssertEqual(t, "error should be nil", nil, err)
 		want := []string{"test.5.txt.gz", "test.6.txt.gz", "test.9.txt.gz"}
-		ztesting.AssertEqualSlice(t, "files not match", want, listDirFiles(dir))
+		ztesting.AssertEqual(t, "files not match", want, listDirFiles(dir))
 	})
 	t.Run("limit max age", func(t *testing.T) {
 		dir := t.TempDir()
@@ -127,7 +127,7 @@ func TestFileManager_Manager(t *testing.T) {
 		err := m.Manage()
 		ztesting.AssertEqual(t, "error should be nil", nil, err)
 		want := []string{"test." + time2 + ".txt", "test." + time1 + ".txt"}
-		ztesting.AssertEqualSlice(t, "files not match", want, listDirFiles(dir))
+		ztesting.AssertEqual(t, "files not match", want, listDirFiles(dir))
 	})
 	t.Run("limit total size", func(t *testing.T) {
 		dir := t.TempDir()
@@ -136,7 +136,7 @@ func TestFileManager_Manager(t *testing.T) {
 		err := m.Manage()
 		ztesting.AssertEqual(t, "error should be nil", nil, err)
 		want := []string{"test.4.txt", "test.5.txt"}
-		ztesting.AssertEqualSlice(t, "files not match", want, listDirFiles(dir))
+		ztesting.AssertEqual(t, "files not match", want, listDirFiles(dir))
 	})
 	t.Run("limit total size", func(t *testing.T) {
 		dir := t.TempDir()
@@ -145,7 +145,7 @@ func TestFileManager_Manager(t *testing.T) {
 		err := m.Manage()
 		ztesting.AssertEqual(t, "error should be nil", nil, err)
 		want := []string{"test.4.txt.gz", "test.5.txt.gz"}
-		ztesting.AssertEqualSlice(t, "files not match", want, listDirFiles(dir))
+		ztesting.AssertEqual(t, "files not match", want, listDirFiles(dir))
 	})
 }
 

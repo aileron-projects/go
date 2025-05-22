@@ -6,9 +6,9 @@ import (
 	"os"
 )
 
-// ReplaceRandReader replaces [rand.Reader] to the r.
+// ReplaceRandReader replaces [rand.Reader] with r.
 // Do not run test parallel when using this.
-// Call done function returned from it when tests are completed.
+// Call done after the test finished to set original rand.Reader.
 //
 //	done := ztesting.ReplaceRandReader(YourReader)
 //	defer done()
@@ -22,7 +22,7 @@ func ReplaceRandReader(r io.Reader) (done func()) {
 
 // ReplaceStdout replaces [os.Stdout] and return reader.
 // Do not run test parallel when using this.
-// Call done function returned from it when tests are completed.
+// Call done after the test finished to set original Stdout.
 //
 //	r, done := ztesting.ReplaceStdout()
 //	defer done()
@@ -37,7 +37,7 @@ func ReplaceStdout() (r *os.File, done func()) {
 
 // ReplaceStderr replaces [os.Stderr] and return reader.
 // Do not run test parallel when using this.
-// Call done function returned from it when tests are completed.
+// Call done after the test finished to set original Stderr.
 //
 //	r, done := ztesting.ReplaceStderr()
 //	defer done()
@@ -52,7 +52,7 @@ func ReplaceStderr() (r *os.File, done func()) {
 
 // ReplaceStdin replaces [os.Stdin] and return writer.
 // Do not run test parallel when using this.
-// Call done function returned from it when tests are completed.
+// Call done after the test finished to set original Stdin.
 //
 //	w, done := ztesting.ReplaceStdin()
 //	defer done()

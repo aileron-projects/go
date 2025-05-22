@@ -19,7 +19,7 @@ func False[T comparable](b bool, yes, no T) T {
 }
 
 // OrSlice returns the first of its arguments that is not empty.
-// If no argument has element, it returns the nil slice.
+// If no argument has element, it returns a nil slice.
 func OrSlice[S []V, V any](vals ...S) S {
 	for _, v := range vals {
 		if len(v) > 0 {

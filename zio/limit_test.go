@@ -22,7 +22,7 @@ func TestLimitReader(t *testing.T) {
 		n, err := r.Read(buf)
 		ztesting.AssertEqual(t, "read bytes not match", 0, n)
 		ztesting.AssertEqual(t, "error not match", zio.ErrReadLimit, err)
-		ztesting.AssertEqualSlice(t, "read content invalid", make([]byte, 10), buf)
+		ztesting.AssertEqual(t, "read content invalid", make([]byte, 10), buf)
 	})
 
 	t.Run("limit=0", func(t *testing.T) {
@@ -31,7 +31,7 @@ func TestLimitReader(t *testing.T) {
 		n, err := r.Read(buf)
 		ztesting.AssertEqual(t, "read bytes not match", 0, n)
 		ztesting.AssertEqual(t, "error not match", zio.ErrReadLimit, err)
-		ztesting.AssertEqualSlice(t, "read content invalid", make([]byte, 10), buf)
+		ztesting.AssertEqual(t, "read content invalid", make([]byte, 10), buf)
 	})
 
 	t.Run("limit=1", func(t *testing.T) {
@@ -40,7 +40,7 @@ func TestLimitReader(t *testing.T) {
 		n, err := r.Read(buf)
 		ztesting.AssertEqual(t, "read bytes not match", 1, n)
 		ztesting.AssertEqual(t, "error not match", zio.ErrReadLimit, err)
-		ztesting.AssertEqualSlice(t, "read content invalid", []byte{'1', 0, 0, 0, 0, 0, 0, 0, 0, 0}, buf)
+		ztesting.AssertEqual(t, "read content invalid", []byte{'1', 0, 0, 0, 0, 0, 0, 0, 0, 0}, buf)
 	})
 
 	t.Run("limit=5", func(t *testing.T) {
@@ -49,7 +49,7 @@ func TestLimitReader(t *testing.T) {
 		n, err := r.Read(buf)
 		ztesting.AssertEqual(t, "read bytes not match", 5, n)
 		ztesting.AssertEqual(t, "error not match", zio.ErrReadLimit, err)
-		ztesting.AssertEqualSlice(t, "read content invalid", []byte{'1', '2', '3', '4', '5', 0, 0, 0, 0, 0}, buf)
+		ztesting.AssertEqual(t, "read content invalid", []byte{'1', '2', '3', '4', '5', 0, 0, 0, 0, 0}, buf)
 	})
 
 	t.Run("limit=10", func(t *testing.T) {
@@ -58,7 +58,7 @@ func TestLimitReader(t *testing.T) {
 		n, err := r.Read(buf)
 		ztesting.AssertEqual(t, "read bytes not match", 10, n)
 		ztesting.AssertEqual(t, "error not match", nil, err)
-		ztesting.AssertEqualSlice(t, "read content invalid", []byte("1234567890"), buf)
+		ztesting.AssertEqual(t, "read content invalid", []byte("1234567890"), buf)
 	})
 
 	t.Run("read multiple times", func(t *testing.T) {

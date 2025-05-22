@@ -128,7 +128,7 @@ func TestReadFiles(t *testing.T) {
 		for k, v := range want {
 			vv := contents[k]
 			if !slices.Equal(v, vv) {
-				ztesting.AssertEqualSlice(t, "content not match for key="+k, v, contents[k])
+				ztesting.AssertEqual(t, "content not match for key="+k, v, contents[k])
 			}
 		}
 		ztesting.AssertEqual(t, "returned data size not match", 1, len(contents))
@@ -142,7 +142,7 @@ func TestReadFiles(t *testing.T) {
 		for k, v := range want {
 			vv := contents[k]
 			if !slices.Equal(v, vv) {
-				ztesting.AssertEqualSlice(t, "content not match for key="+k, v, contents[k])
+				ztesting.AssertEqual(t, "content not match for key="+k, v, contents[k])
 			}
 		}
 		ztesting.AssertEqual(t, "returned data size not match", 2, len(contents))
@@ -154,18 +154,18 @@ func TestListFiles(t *testing.T) {
 	t.Parallel()
 	t.Run("contain empty", func(t *testing.T) {
 		paths, err := zos.ListFiles(false, "")
-		ztesting.AssertEqualSlice(t, "paths not match", []string{}, paths)
+		ztesting.AssertEqual(t, "paths not match", nil, paths)
 		ztesting.AssertEqual(t, "non nil error returned", nil, err)
 	})
 	t.Run("invalid file path", func(t *testing.T) {
 		paths, err := zos.ListFiles(false, "./not-found/")
-		ztesting.AssertEqualSlice(t, "paths not match", []string{}, paths)
+		ztesting.AssertEqual(t, "paths not match", nil, paths)
 		ztesting.AssertEqual(t, "expected error not occurred", true, err != nil)
 	})
 	t.Run("not recursive", func(t *testing.T) {
 		paths, err := zos.ListFiles(false, "./testdata/regular-file.txt", "./testdata/files/")
 		want := []string{filepath.Clean("./testdata/regular-file.txt")}
-		ztesting.AssertEqualSlice(t, "paths not match", want, paths)
+		ztesting.AssertEqual(t, "paths not match", want, paths)
 		ztesting.AssertEqual(t, "non nil error returned", nil, err)
 	})
 	t.Run("recursive", func(t *testing.T) {
@@ -173,7 +173,7 @@ func TestListFiles(t *testing.T) {
 		want := []string{}
 		want = append(want, filepath.Clean("./testdata/files/level0.txt"))
 		want = append(want, filepath.Clean("./testdata/files/level1/level1.txt"))
-		ztesting.AssertEqualSlice(t, "paths not match", want, paths)
+		ztesting.AssertEqual(t, "paths not match", want, paths)
 		ztesting.AssertEqual(t, "non nil error returned", nil, err)
 	})
 }

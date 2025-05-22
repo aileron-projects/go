@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 	"testing/iotest"
 
@@ -92,24 +91,6 @@ func ExampleErrWriterWith() {
 	// 4 <nil>
 	// 2 EOF
 	// 0 EOF
-}
-
-func ExampleErrReadCloser() {
-	r := strings.NewReader("abc")
-	erc := ziotest.ErrReadCloser(r, os.ErrClosed)
-
-	fmt.Println(erc.Close())
-	// Output:
-	// file already closed
-}
-
-func ExampleErrWriteCloser() {
-	w := bytes.NewBuffer(nil)
-	ewc := ziotest.ErrWriteCloser(w, os.ErrClosed)
-
-	fmt.Println(ewc.Close())
-	// Output:
-	// file already closed
 }
 
 func ExampleShortReader() {

@@ -3,10 +3,8 @@ package zudp
 import (
 	"context"
 	"errors"
-	"log"
 	"net"
 	"os"
-	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -42,6 +40,13 @@ type Handler interface {
 	ServeUDP(ctx context.Context, conn Conn)
 }
 
+// HandlerFunc implements [Handler] interface to the function.
+type HandlerFunc func(ctx context.Context, conn Conn)
+
+func (f HandlerFunc) ServeUDP(ctx context.Context, conn Conn) {
+	f(ctx, conn)
+}
+
 // Server is a UDP server.
 type Server struct {
 	// Addr is the address to listen to.
@@ -73,6 +78,11 @@ type Server struct {
 	shutdown    atomic.Bool
 	packetConns internal.UniqueStore[*ocPacketConn]
 	conns       internal.UniqueStore[*ocConn]
+
+	// serveNotify notifies the inner listener is working
+	// and the Server.Serve is called.
+	// serveNotify is used for testing.
+	serveNotify chan struct{}
 }
 
 func (s *Server) ListenAndServe() error {
@@ -108,6 +118,10 @@ func (s *Server) Serve(p net.PacketConn) error {
 	}
 	s.packetConns.Set(pc)
 	defer pc.Close()
+
+	if s.serveNotify != nil {
+		s.serveNotify <- struct{}{}
+	}
 
 	var channels sync.Map
 	wait := int64(1)
@@ -155,20 +169,17 @@ func (s *Server) serve(ctx context.Context, laddr, raddr net.Addr, conn *conn) {
 		store: &s.conns,
 	}
 	s.conns.Set(c)
+	defer c.Close()
 	defer func() {
-		_ = c.Close()
 		err := recover()
-		if err == nil {
-			return
-		}
 		if ph := s.PanicHandler; ph != nil {
 			ph(err, laddr, raddr)
 			return
 		}
 		if err != ErrAbortHandler {
-			buf := make([]byte, 64<<10)
-			buf = buf[:runtime.Stack(buf, false)]
-			log.Printf("znet/zudp: panic serving %v: %v\n%s", raddr, err, buf)
+			// buf := make([]byte, 64<<10)
+			// buf = buf[:runtime.Stack(buf, false)]
+			// log.Printf("znet/zudp: panic serving %v: %v\n%s", raddr, err, buf)
 		}
 	}()
 	s.Handler.ServeUDP(ctx, c)
@@ -186,14 +197,10 @@ func (s *Server) Close() error {
 	s.shutdown.Store(true)
 	var errs []error
 	for ocl := range s.packetConns.Values() {
-		if err := ocl.Close(); err != nil {
-			errs = append(errs, err)
-		}
+		errs = appendNonNil(errs, ocl.Close())
 	}
 	for occ := range s.conns.Values() {
-		if err := occ.Close(); err != nil {
-			errs = append(errs, err)
-		}
+		errs = appendNonNil(errs, occ.Close())
 	}
 	return errors.Join(errs...)
 }
@@ -218,9 +225,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	}
 	var errs []error
 	for ocl := range s.packetConns.Values() {
-		if err := ocl.Close(); err != nil {
-			errs = append(errs, err)
-		}
+		errs = appendNonNil(errs, ocl.Close())
 	}
 	for s.conns.Length() > 0 {
 		select {
@@ -230,6 +235,13 @@ func (s *Server) Shutdown(ctx context.Context) error {
 		}
 	}
 	return errors.Join(errs...)
+}
+
+func appendNonNil(errs []error, err error) []error {
+	if err == nil {
+		return errs
+	}
+	return append(errs, err)
 }
 
 func newPacketConn(addr string) (pc net.PacketConn, err error) {

@@ -4,6 +4,8 @@ on:
   workflow_dispatch: {}
   workflow_call: {}
   push: {}
+  schedule:
+    - cron: "0 20 * * *"
 
 permissions:
   contents: read
@@ -13,8 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-curr:
-    name: ${{ matrix.runner }}-curr
+  test-stable:
+    name: ${{ matrix.runner }}-stable
     runs-on: ${{ matrix.runner }}-latest
     timeout-minutes: 15
     strategy:
@@ -32,7 +34,7 @@ jobs:
           go-os: ${{ matrix.os }}
           go-version: "stable"
       - uses: codecov/codecov-action@v4
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'schedule'
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -42,8 +44,8 @@ jobs:
           env_vars: ${{ matrix.os }}
           name: ${{ matrix.os }}
 
-  test-prev:
-    name: ${{ matrix.runner }}-prev
+  test-oldstable:
+    name: ${{ matrix.runner }}-oldstable
     runs-on: ${{ matrix.runner }}-latest
     timeout-minutes: 15
     strategy:
@@ -61,8 +63,8 @@ jobs:
           go-os: ${{ matrix.os }}
           go-version: "oldstable"
 
-  # test-min:
-  #   name: ${{ matrix.runner }}-min
+  # test-minimum:
+  #   name: ${{ matrix.runner }}-minimum
   #   runs-on: ${{ matrix.runner }}-latest
   #   timeout-minutes: 15
   #   strategy:

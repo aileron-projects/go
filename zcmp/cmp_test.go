@@ -65,18 +65,17 @@ func TestFalse(t *testing.T) {
 
 func TestOrSlice(t *testing.T) {
 	t.Parallel()
-
 	testCases := map[string]struct {
 		vals [][]int
 		want []int
 	}{
 		"no slice": {
 			vals: [][]int{},
-			want: []int{},
+			want: nil,
 		},
 		"nil slice": {
 			vals: [][]int{{}},
-			want: []int{},
+			want: nil,
 		},
 		"non-nil slice": {
 			vals: [][]int{{1}},
@@ -91,29 +90,27 @@ func TestOrSlice(t *testing.T) {
 			want: []int{1},
 		},
 	}
-
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			v := zcmp.OrSlice(tc.vals...)
-			ztesting.AssertEqualSlice(t, "wrong element returned.", tc.want, v)
+			ztesting.AssertEqual(t, "wrong element returned.", tc.want, v)
 		})
 	}
 }
 
 func TestOrMap(t *testing.T) {
 	t.Parallel()
-
 	testCases := map[string]struct {
 		vals []map[int]string
 		want map[int]string
 	}{
 		"no map": {
 			vals: []map[int]string{},
-			want: map[int]string{},
+			want: nil,
 		},
 		"nil map": {
 			vals: []map[int]string{{}},
-			want: map[int]string{},
+			want: nil,
 		},
 		"non-nil map": {
 			vals: []map[int]string{{1: "1"}},
@@ -128,11 +125,10 @@ func TestOrMap(t *testing.T) {
 			want: map[int]string{1: "1"},
 		},
 	}
-
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			v := zcmp.OrMap(tc.vals...)
-			ztesting.AssertEqualMap(t, "wrong element returned.", tc.want, v)
+			ztesting.AssertEqual(t, "wrong element returned.", tc.want, v)
 		})
 	}
 }

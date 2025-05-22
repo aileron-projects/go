@@ -38,7 +38,7 @@ type charsetReader struct {
 func (r *charsetReader) Read(p []byte) (n int, err error) {
 	length := len(r.chars)
 	written := 0
-	for i := 0; i < len(p); i++ {
+	for i := range len(p) {
 		if r.current >= length {
 			if r.loop {
 				r.current = 0
@@ -113,23 +113,4 @@ func (r *errReader) Read(p []byte) (n int, err error) {
 		return n, r.err
 	}
 	return n, nil
-}
-
-// ErrReadCloser returns the given error
-// when [io.ReadCloser].Close is called
-// for the returned ReadCloser.
-func ErrReadCloser(r io.Reader, err error) io.ReadCloser {
-	return &errReadCloser{
-		Reader: r,
-		err:    err,
-	}
-}
-
-type errReadCloser struct {
-	io.Reader
-	err error
-}
-
-func (r *errReadCloser) Close() error {
-	return r.err
 }

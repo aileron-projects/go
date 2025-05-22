@@ -34,7 +34,7 @@ func TestUnwrapErrs(t *testing.T) {
 	t.Parallel()
 	t.Run("nil", func(t *testing.T) {
 		err := zerrors.UnwrapErrs(nil)
-		ztesting.AssertEqualSlice(t, "unexpected error returned.", nil, err)
+		ztesting.AssertEqual(t, "unexpected error returned.", nil, err)
 	})
 
 	t.Run("has no interface", func(t *testing.T) {
@@ -42,13 +42,13 @@ func TestUnwrapErrs(t *testing.T) {
 			Err: io.EOF,
 			Msg: "outer error",
 		})
-		ztesting.AssertEqualSlice(t, "unexpected error returned.", nil, err)
+		ztesting.AssertEqual(t, "unexpected error returned.", nil, err)
 	})
 
 	t.Run("has interface", func(t *testing.T) {
 		errs := zerrors.UnwrapErrs(errors.Join(io.EOF, io.ErrUnexpectedEOF)) // Implements interface{ Unwrap() []error }
 		ztesting.AssertEqual(t, "wrong number of errors.", 2, len(errs))
-		ztesting.AssertEqualSlice(t, "wrong unwrapped error returned.", []error{io.EOF, io.ErrUnexpectedEOF}, errs)
+		ztesting.AssertEqual(t, "wrong unwrapped error returned.", []error{io.EOF, io.ErrUnexpectedEOF}, errs)
 	})
 }
 

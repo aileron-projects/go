@@ -16,14 +16,6 @@ import (
 
 func TestServer_ListenAndServe(t *testing.T) {
 	t.Parallel()
-	// Obtain available address.
-	ln, err := net.Listen("tcp4", ":0")
-	if err != nil {
-		panic(err)
-	}
-	ln.Close()
-	addr := ln.Addr().String()
-
 	t.Run("already shutdown", func(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
@@ -39,19 +31,19 @@ func TestServer_ListenAndServe(t *testing.T) {
 	t.Run("listen success", func(t *testing.T) {
 		served := make(chan struct{})
 		s := &Server{
-			Addr:        addr,
+			Addr:        "tcp://:0",
 			Handler:     HandlerFunc(func(ctx context.Context, conn net.Conn) {}),
 			serveNotify: served,
 		}
+		shutdown := make(chan error)
 		go func() {
 			<-served
-			cn, err := net.Dial("tcp4", addr)
-			ztesting.AssertEqual(t, "dial failed", nil, err)
-			cn.Close()
-			s.Close()
+			shutdown <- s.Shutdown(context.Background())
 		}()
 		err := s.ListenAndServe()
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "serve error not match", net.ErrClosed, err)
+		err = <-shutdown
+		ztesting.AssertEqualErr(t, "shutdown error not match", nil, err)
 	})
 }
 
@@ -151,6 +143,13 @@ func (e timeoutError) Timeout() bool {
 
 type testConn struct {
 	net.Conn
+	// Recorded values
+	closed int
+}
+
+func (c *testConn) Close() error {
+	c.closed++
+	return nil
 }
 
 type testListener struct {
@@ -180,153 +179,157 @@ func (l *testListener) Close() error {
 	return l.closeErr
 }
 
-// func TestServer_Serve(t *testing.T) {
-// 	t.Parallel()
-// 	t.Run("already shutdown", func(t *testing.T) {
-// 		s := &Server{}
-// 		s.Shutdown(context.Background())
-// 		err := s.Serve(nil)
-// 		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
-// 	})
-// 	t.Run("create listener error", func(t *testing.T) {
-// 		s := &Server{Addr: "tcp4://1234567890"}
-// 		err := s.ListenAndServe()
-// 		_, ok := err.(*net.AddrError)
-// 		ztesting.AssertEqual(t, "addr error should be returned", true, ok)
-// 	})
-// 	t.Run("serve success", func(t *testing.T) {
-// 		conn := net.Conn(&nopCloseConn{})
-// 		ctx := context.Background()
-// 		ln := &testListener{conn: conn, addr: &net.TCPAddr{}}
-// 		served := make(chan struct{})
-// 		checked := make(chan struct{})
-// 		s := &Server{
-// 			BaseContext: func(l net.Listener) context.Context { return ctx },
-// 			Handler: HandlerFunc(func(x context.Context, c net.Conn) {
-// 				ztesting.AssertEqual(t, "context not match", ctx, x)
-// 				ztesting.AssertEqual(t, "connection not match", conn, c)
-// 				checked <- struct{}{}
-// 			}),
-// 			serveNotify: served,
-// 		}
-// 		go func() {
-// 			<-served
-// 			<-checked
-// 			s.Close()
-// 		}()
-// 		err := s.Serve(ln)
-// 		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
-// 	})
-// 	t.Run("skip serving", func(t *testing.T) {
-// 		ln := &testListener{conn: &nopCloseConn{}, addr: &net.TCPAddr{}, acceptErr: ErrSkipHandler}
-// 		served := make(chan struct{})
-// 		count := 0
-// 		s := &Server{
-// 			Handler:     HandlerFunc(func(_ context.Context, _ net.Conn) { count++ }),
-// 			serveNotify: served,
-// 		}
-// 		go func() {
-// 			<-served
-// 			for ln.accept <= 2 {
-// 				time.Sleep(10 * time.Millisecond)
-// 			}
-// 			ztesting.AssertEqual(t, "handler should not be called", 0, count)
-// 			s.Close()
-// 		}()
-// 		err := s.Serve(ln)
-// 		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
-// 	})
-// 	t.Run("timeout error", func(t *testing.T) {
-// 		ln := &testListener{conn: &nopCloseConn{}, addr: &net.TCPAddr{}, acceptErr: timeoutError(true)}
-// 		served := make(chan struct{})
-// 		count := 0
-// 		s := &Server{
-// 			Handler:     HandlerFunc(func(_ context.Context, _ net.Conn) { count++ }),
-// 			serveNotify: served,
-// 		}
-// 		go func() {
-// 			<-served
-// 			for ln.accept <= 2 {
-// 				time.Sleep(10 * time.Millisecond)
-// 			}
-// 			ztesting.AssertEqual(t, "handler should not be called", 0, count)
-// 			s.Close()
-// 		}()
-// 		err := s.Serve(ln)
-// 		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
-// 	})
-// 	t.Run("non-timeout error", func(t *testing.T) {
-// 		ln := &testListener{conn: &nopCloseConn{}, addr: &net.TCPAddr{}, acceptErr: timeoutError(false)}
-// 		served := make(chan struct{})
-// 		count := 0
-// 		s := &Server{
-// 			Handler:     HandlerFunc(func(_ context.Context, _ net.Conn) { count++ }),
-// 			serveNotify: served,
-// 		}
-// 		go func() {
-// 			<-served
-// 			for ln.accept <= 2 {
-// 				time.Sleep(10 * time.Millisecond)
-// 			}
-// 			ztesting.AssertEqual(t, "handler should not be called", 0, count)
-// 			s.Close()
-// 		}()
-// 		err := s.Serve(ln)
-// 		ztesting.AssertEqualErr(t, "error not match", timeoutError(false), err)
-// 	})
-// 	t.Run("panic error", func(t *testing.T) {
-// 		ln := &testListener{conn: &testConn{Conn: &net.TCPConn{}}, addr: &net.TCPAddr{}}
-// 		served := make(chan struct{})
-// 		panicked := make(chan struct{})
-// 		s := &Server{
-// 			Handler: HandlerFunc(func(_ context.Context, _ net.Conn) {
-// 				defer func() { panicked <- struct{}{} }()
-// 				panic(net.ErrWriteToConnected) // Panic dummy error.
-// 			}),
-// 			serveNotify: served,
-// 		}
-// 		go func() {
-// 			<-served
-// 			<-panicked
-// 			s.Close()
-// 		}()
-// 		err := s.Serve(ln)
-// 		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
-// 	})
-// 	t.Run("panic with handler", func(t *testing.T) {
-// 		ln := &testListener{conn: &testConn{Conn: &net.TCPConn{}}, addr: &net.TCPAddr{}}
-// 		served := make(chan struct{})
-// 		panicked := make(chan struct{})
-// 		s := &Server{
-// 			Handler: HandlerFunc(func(_ context.Context, _ net.Conn) {
-// 				defer func() { panicked <- struct{}{} }()
-// 				panic(net.ErrWriteToConnected) // Panic dummy error.
-// 			}),
-// 			serveNotify: served,
-// 			PanicHandler: func(recovered any, remote, local net.Addr) {
-// 				ztesting.AssertEqualErr(t, "error not match", net.ErrWriteToConnected, recovered.(error))
-// 			},
-// 		}
-// 		go func() {
-// 			<-served
-// 			<-panicked
-// 			s.Close()
-// 		}()
-// 		err := s.Serve(ln)
-// 		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
-// 	})
-// }
-
-func TestServer_Close(t *testing.T) {
+func TestServer_Serve(t *testing.T) {
 	t.Parallel()
 	dln, _ := net.Listen("tcp", ":0")
 	dln.Close()
+	t.Run("already shutdown", func(t *testing.T) {
+		s := &Server{}
+		s.Shutdown(context.Background())
+		err := s.Serve(nil)
+		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+	})
+	t.Run("create listener error", func(t *testing.T) {
+		s := &Server{Addr: "tcp4://1234567890"}
+		err := s.ListenAndServe()
+		_, ok := err.(*net.AddrError)
+		ztesting.AssertEqual(t, "addr error should be returned", true, ok)
+	})
+	t.Run("serve success", func(t *testing.T) {
+		baseCtx := context.Background()
+		cn := &testConn{Conn: &net.TCPConn{}}
+		ln := &testListener{Listener: dln, conn: cn}
+		served := make(chan struct{})
+		checked := make(chan struct{})
+		s := &Server{
+			BaseContext: func(l net.Listener) context.Context { return baseCtx },
+			Handler: HandlerFunc(func(ctx context.Context, conn net.Conn) {
+				ztesting.AssertEqual(t, "context not match", baseCtx, ctx)
+				ztesting.AssertEqual(t, "connection not match", net.Conn(cn), conn)
+				checked <- struct{}{}
+			}),
+			serveNotify: served,
+		}
+		go func() {
+			<-served
+			<-checked
+			s.Close()
+		}()
+		err := s.Serve(ln)
+		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
+	})
+	t.Run("skip serving", func(t *testing.T) {
+		cn := &testConn{Conn: &net.TCPConn{}}
+		ln := &testListener{Listener: dln, conn: cn, acceptErr: ErrSkipHandler}
+		served := make(chan struct{})
+		count := 0
+		s := &Server{
+			Handler:     HandlerFunc(func(_ context.Context, _ net.Conn) { count++ }),
+			serveNotify: served,
+		}
+		go func() {
+			<-served
+			for cn.closed == 0 {
+				time.Sleep(10 * time.Millisecond)
+			}
+			ztesting.AssertEqual(t, "handler should not be called", 0, count)
+			s.Close()
+		}()
+		err := s.Serve(ln)
+		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
+	})
+	t.Run("timeout error", func(t *testing.T) {
+		cn := &testConn{Conn: &net.TCPConn{}}
+		ln := &testListener{Listener: dln, conn: cn, acceptErr: timeoutError(true)}
+		served := make(chan struct{})
+		count := 0
+		s := &Server{
+			Handler:     HandlerFunc(func(_ context.Context, _ net.Conn) { count++ }),
+			serveNotify: served,
+		}
+		go func() {
+			<-served
+			for ln.accept <= 2 {
+				time.Sleep(10 * time.Millisecond)
+			}
+			ztesting.AssertEqual(t, "handler should not be called", 0, count)
+			s.Close()
+		}()
+		err := s.Serve(ln)
+		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+	})
+	t.Run("non-timeout error", func(t *testing.T) {
+		cn := &testConn{Conn: &net.TCPConn{}}
+		ln := &testListener{Listener: dln, conn: cn, acceptErr: timeoutError(false)}
+		served := make(chan struct{})
+		count := 0
+		s := &Server{
+			Handler:     HandlerFunc(func(_ context.Context, _ net.Conn) { count++ }),
+			serveNotify: served,
+		}
+		go func() {
+			<-served
+			for ln.accept <= 2 {
+				time.Sleep(10 * time.Millisecond)
+			}
+			ztesting.AssertEqual(t, "handler should not be called", 0, count)
+			s.Close()
+		}()
+		err := s.Serve(ln)
+		ztesting.AssertEqualErr(t, "error not match", timeoutError(false), err)
+	})
+	t.Run("panic error", func(t *testing.T) {
+		cn := &testConn{Conn: &net.TCPConn{}}
+		ln := &testListener{Listener: dln, conn: cn}
+		served := make(chan struct{})
+		s := &Server{
+			Handler: HandlerFunc(func(_ context.Context, _ net.Conn) {
+				panic(net.ErrWriteToConnected) // Panic dummy error.
+			}),
+			serveNotify: served,
+		}
+		go func() {
+			<-served
+			for cn.closed == 0 {
+				time.Sleep(10 * time.Millisecond)
+			}
+			s.Close()
+		}()
+		err := s.Serve(ln)
+		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqual(t, "connection not closed", true, cn.closed > 0)
+	})
+	t.Run("panic with handler", func(t *testing.T) {
+		cn := &testConn{Conn: &net.TCPConn{}}
+		ln := &testListener{Listener: dln, conn: cn}
+		panicked := make(chan struct{})
+		s := &Server{
+			PanicHandler: func(recovered any, remote, local net.Addr) {
+				ztesting.AssertEqualErr(t, "error not match", net.ErrWriteToConnected, recovered.(error))
+				panicked <- struct{}{}
+			},
+		}
+		s.Handler = HandlerFunc(func(_ context.Context, _ net.Conn) {
+			defer s.Close()
+			panic(net.ErrWriteToConnected) // Panic dummy error.
+		})
+		err := s.Serve(ln)
+		<-panicked
+		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqual(t, "connection not closed", 1, cn.closed)
+	})
+}
+
+func TestServer_Close(t *testing.T) {
+	t.Parallel()
+	ln, _ := net.Listen("tcp", ":0")
+	ln.Close()
 	s := &Server{
 		Handler:   HandlerFunc(func(_ context.Context, _ net.Conn) { time.Sleep(time.Second) }),
 		listeners: internal.UniqueStore[*ocListener]{},
 		conns:     internal.UniqueStore[*ocConn]{},
 	}
-	s.listeners.Set(&ocListener{Listener: dln, store: &s.listeners})
+	s.listeners.Set(&ocListener{Listener: ln, store: &s.listeners})
 	s.conns.Set(&ocConn{Conn: &net.TCPConn{}, store: &s.conns})
 
 	ztesting.AssertEqual(t, "listeners length not match", 1, s.listeners.Length())
@@ -338,78 +341,58 @@ func TestServer_Close(t *testing.T) {
 
 func TestServer_Shutdown(t *testing.T) {
 	t.Parallel()
-	// Obtain dummy listener.
-	dln, _ := net.Listen("tcp", ":0")
-	dln.Close()
-
 	t.Run("already shutdown", func(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
 		err := s.Shutdown(context.Background())
 		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
 	})
-	// t.Run("listener closed", func(t *testing.T) {
-	// 	dln, _ := net.Listen("tcp", ":0")
-	// 	dln.Close()
-	// 	s := &Server{
-	// 		Handler:   HandlerFunc(func(_ context.Context, _ net.Conn) { time.Sleep(time.Second) }),
-	// 		listeners: internal.UniqueStore[*ocListener]{},
-	// 		conns:     internal.UniqueStore[*ocConn]{},
-	// 	}
-	// 	s.listeners.Set(&ocListener{Listener: dln, store: &s.listeners})
-	// 	s.conns.Set(&ocConn{Conn: &net.TCPConn{}, store: &s.conns})
-	// 	ztesting.AssertEqual(t, "listeners length not match", 1, s.listeners.Length())
-	// 	ztesting.AssertEqual(t, "conns length not match", 1, s.conns.Length())
-
-	// 	closeErr := errors.New("close error")
-	// 	ln := &testListener{conn: &net.TCPConn{}, addr: &net.TCPAddr{}, closeErr: closeErr}
-	// 	served := make(chan struct{})
-	// 	s := &Server{
-	// 		Handler:     HandlerFunc(func(_ context.Context, _ net.Conn) {}),
-	// 		serveNotify: served,
-	// 	}
-	// 	go func() {
-	// 		<-served
-	// 		err := s.Shutdown(context.Background())
-	// 		ztesting.AssertEqualErr(t, "error not match", closeErr, err)
-	// 	}()
-	// 	err := s.Serve(ln)
-	// 	ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
-	// })
-	// t.Run("wait connection close", func(t *testing.T) {
-	// 	ln := &testListener{conn: &net.TCPConn{}, addr: &net.TCPAddr{}}
-	// 	served := make(chan struct{})
-	// 	s := &Server{
-	// 		Handler: HandlerFunc(func(_ context.Context, _ net.Conn) {
-	// 			time.Sleep(time.Second)
-	// 		}),
-	// 		serveNotify: served,
-	// 	}
-	// 	go func() {
-	// 		<-served
-	// 		err := s.Shutdown(context.Background())
-	// 		ztesting.AssertEqualErr(t, "error not match", nil, err)
-	// 	}()
-	// 	err := s.Serve(ln)
-	// 	ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
-	// })
-	// t.Run("context done", func(t *testing.T) {
-	// 	served := make(chan struct{})
-	// 	ln := &testListener{Listener: dln, conn: &net.TCPConn{}}
-	// 	s := &Server{
-	// 		Handler:     HandlerFunc(func(_ context.Context, _ net.Conn) { time.Sleep(time.Second) }),
-	// 		serveNotify: served,
-	// 	}
-	// 	go func() {
-	// 		<-served
-	// 		ctx, cancel := context.WithCancel(context.Background())
-	// 		cancel()
-	// 		err := s.Shutdown(ctx)
-	// 		ztesting.AssertEqualErr(t, "error not match", context.Canceled, err)
-	// 	}()
-	// 	err := s.Serve(ln)
-	// 	ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
-	// })
+	t.Run("shutdown success", func(t *testing.T) {
+		served := make(chan struct{})
+		s := &Server{
+			Addr:        "tcp://:0",
+			serveNotify: served,
+		}
+		go func() {
+			<-served
+			err := s.Shutdown(context.Background())
+			ztesting.AssertEqual(t, "error not match", nil, err)
+		}()
+		err := s.ListenAndServe()
+		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqual(t, "listeners length not match", 0, s.listeners.Length())
+		ztesting.AssertEqual(t, "conns length not match", 0, s.conns.Length())
+		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
+	})
+	t.Run("shutdown context done", func(t *testing.T) {
+		served := make(chan struct{})
+		handlerInvoked := make(chan struct{})
+		ln, _ := net.Listen("tcp", ":0")
+		s := &Server{
+			Handler: HandlerFunc(func(ctx context.Context, conn net.Conn) {
+				handlerInvoked <- struct{}{}
+				<-ctx.Done()
+			}),
+			serveNotify: served,
+		}
+		shutdown := make(chan struct{})
+		go func() {
+			<-served
+			conn, _ := net.DialTCP("tcp", nil, ln.Addr().(*net.TCPAddr))
+			defer conn.Close()
+			<-handlerInvoked
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			err := s.Shutdown(ctx)
+			ztesting.AssertEqual(t, "error not match", context.DeadlineExceeded, err)
+			shutdown <- struct{}{}
+		}()
+		err := s.Serve(ln)
+		<-shutdown
+		ztesting.AssertEqual(t, "listeners length not match", 0, s.listeners.Length())
+		ztesting.AssertEqual(t, "conns length not match", 1, s.conns.Length()) // Conn is yet alive.
+		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
+	})
 }
 
 func TestNewListener(t *testing.T) {

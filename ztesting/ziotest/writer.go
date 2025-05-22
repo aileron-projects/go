@@ -62,22 +62,3 @@ func (w *errWriter) Write(p []byte) (n int, err error) {
 	}
 	return write, nil
 }
-
-// ErrWriteCloser returns the given error
-// when [io.WriteCloser].Close is called
-// for the returned WriteCloser.
-func ErrWriteCloser(w io.Writer, err error) io.WriteCloser {
-	return &errWriteCloser{
-		Writer: w,
-		err:    err,
-	}
-}
-
-type errWriteCloser struct {
-	io.Writer
-	err error
-}
-
-func (w *errWriteCloser) Close() error {
-	return w.err
-}

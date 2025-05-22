@@ -21,7 +21,7 @@ func TestUniqueStore(t *testing.T) {
 			got = append(got, v)
 		}
 		slices.Sort(got) // Compare sorted slice.
-		ztesting.AssertEqualSlice(t, "values not match", want, got)
+		ztesting.AssertEqual(t, "values not match", want, got)
 		ztesting.AssertEqual(t, "length not match", 3, s.Length())
 	})
 	t.Run("delete while iterate", func(t *testing.T) {
@@ -51,7 +51,7 @@ func TestUniqueStore(t *testing.T) {
 			}
 			got = append(got, v)
 		}
-		ztesting.AssertEqualSlice(t, "values not match", []string{}, got)
+		ztesting.AssertEqual(t, "values not match", []string{}, got)
 		ztesting.AssertEqual(t, "length not match", 3, s.Length())
 	})
 }

@@ -112,7 +112,7 @@ func TestRoundRobin_Get(t *testing.T) {
 				ztesting.AssertEqual(t, "found not match", tc.found, found)
 				ztesting.AssertEqual(t, "found not match", true, found)
 			}
-			ztesting.AssertEqualSlice(t, "history not match", tc.names, history)
+			ztesting.AssertEqual(t, "history not match", tc.names, history)
 		})
 	}
 }
@@ -125,7 +125,7 @@ func TestRoundRobin_Remove(t *testing.T) {
 		t2 := &Target{name: "t2", id: 2, weight: 1, active: true}
 		lb := zlb.NewRoundRobin(t0, t1, t2)
 		lb.Remove(0)
-		ztesting.AssertEqualSlice(t, "targets not match", []*Target{t1, t2}, lb.Targets())
+		ztesting.AssertEqual(t, "targets not match", []*Target{t1, t2}, lb.Targets())
 		history := []string{}
 		want := []string{"t1", "t2", "t1", "t1", "t2"}
 		for range want {
@@ -133,7 +133,7 @@ func TestRoundRobin_Remove(t *testing.T) {
 			history = append(history, tt.name)
 			ztesting.AssertEqual(t, "found not match", true, found)
 		}
-		ztesting.AssertEqualSlice(t, "history not match", want, history)
+		ztesting.AssertEqual(t, "history not match", want, history)
 	})
 	t.Run("remove middle", func(t *testing.T) {
 		t0 := &Target{name: "t0", id: 0, weight: 2, active: true}
@@ -141,7 +141,7 @@ func TestRoundRobin_Remove(t *testing.T) {
 		t2 := &Target{name: "t2", id: 2, weight: 1, active: true}
 		lb := zlb.NewRoundRobin(t0, t1, t2)
 		lb.Remove(1)
-		ztesting.AssertEqualSlice(t, "targets not match", []*Target{t0, t2}, lb.Targets())
+		ztesting.AssertEqual(t, "targets not match", []*Target{t0, t2}, lb.Targets())
 		history := []string{}
 		want := []string{"t0", "t2", "t0", "t0", "t2"}
 		for range want {
@@ -149,7 +149,7 @@ func TestRoundRobin_Remove(t *testing.T) {
 			history = append(history, tt.name)
 			ztesting.AssertEqual(t, "found not match", true, found)
 		}
-		ztesting.AssertEqualSlice(t, "history not match", want, history)
+		ztesting.AssertEqual(t, "history not match", want, history)
 	})
 	t.Run("remove last", func(t *testing.T) {
 		t0 := &Target{name: "t0", id: 0, weight: 1, active: true}
@@ -157,7 +157,7 @@ func TestRoundRobin_Remove(t *testing.T) {
 		t2 := &Target{name: "t2", id: 2, weight: 3, active: true}
 		lb := zlb.NewRoundRobin(t0, t1, t2)
 		lb.Remove(2)
-		ztesting.AssertEqualSlice(t, "targets not match", []*Target{t0, t1}, lb.Targets())
+		ztesting.AssertEqual(t, "targets not match", []*Target{t0, t1}, lb.Targets())
 		history := []string{}
 		want := []string{"t1", "t0", "t1", "t1", "t0"}
 		for range want {
@@ -165,7 +165,7 @@ func TestRoundRobin_Remove(t *testing.T) {
 			history = append(history, tt.name)
 			ztesting.AssertEqual(t, "found not match", true, found)
 		}
-		ztesting.AssertEqualSlice(t, "history not match", want, history)
+		ztesting.AssertEqual(t, "history not match", want, history)
 	})
 	t.Run("remove multiple", func(t *testing.T) {
 		t0 := &Target{name: "t0", id: 0, weight: 1, active: true}
@@ -173,7 +173,7 @@ func TestRoundRobin_Remove(t *testing.T) {
 		t2 := &Target{name: "t2", id: 2, weight: 3, active: true}
 		lb := zlb.NewRoundRobin(t2, t0, t2, t2, t2, t1, t2, t2)
 		lb.Remove(2)
-		ztesting.AssertEqualSlice(t, "targets not match", []*Target{t0, t1}, lb.Targets())
+		ztesting.AssertEqual(t, "targets not match", []*Target{t0, t1}, lb.Targets())
 		history := []string{}
 		want := []string{"t1", "t0", "t1", "t1", "t0"}
 		for range want {
@@ -181,6 +181,6 @@ func TestRoundRobin_Remove(t *testing.T) {
 			history = append(history, tt.name)
 			ztesting.AssertEqual(t, "found not match", true, found)
 		}
-		ztesting.AssertEqualSlice(t, "history not match", want, history)
+		ztesting.AssertEqual(t, "history not match", want, history)
 	})
 }

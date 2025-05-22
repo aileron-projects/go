@@ -1,12 +1,66 @@
 package zerrors_test
 
 import (
+	"fmt"
 	"io"
 	"testing"
 
 	"github.com/aileron-projects/go/zerrors"
 	"github.com/aileron-projects/go/ztesting"
 )
+
+func TestAttrs(t *testing.T) {
+	t.Parallel()
+	t.Run("nil", func(t *testing.T) {
+		m := zerrors.Attrs(nil)
+		ztesting.AssertEqual(t, "returned map mismatch", nil, m)
+	})
+	t.Run("primitive error", func(t *testing.T) {
+		m := zerrors.Attrs(io.EOF)
+		want := map[string]any{"msg": "EOF"}
+		ztesting.AssertEqual(t, "returned map mismatch", want, m)
+	})
+	t.Run("wrapped error", func(t *testing.T) {
+		err := fmt.Errorf("outer error [%w]", io.EOF)
+		m := zerrors.Attrs(err)
+		want := map[string]any{
+			"msg": "outer error [EOF]",
+			"wraps": map[string]any{
+				"msg": "EOF",
+			},
+		}
+		ztesting.AssertEqual(t, "msg mismatch", want, m)
+		// ztesting.AssertEqual(t, "wraps mismatch", want["msg"], m["msg"])
+	})
+	// t.Run("zero value", func(t *testing.T) {
+	// 	err := &zerrors.Error{Inner: io.EOF, Code: "c", Pkg: "p", Msg: "m"}
+	// 	m := zerrors.Attrs(err)
+	// 	ztesting.AssertEqual(t, "code mismatch.", map[string]any{}, m)
+	// })
+	// t.Run("inner error without stack", func(t *testing.T) {
+	// 	e := zerrors.Definition{"c", "p", "m", "d", "e"}.NewStack(io.EOF)
+	// 	w := zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "e"}
+	// 	ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
+	// 	ztesting.AssertEqual(t, "pkg mismatch.", w.Pkg, e.Pkg)
+	// 	ztesting.AssertEqual(t, "msg mismatch.", w.Msg, e.Msg)
+	// 	ztesting.AssertEqual(t, "ext mismatch.", w.Ext, e.Ext)
+	// 	ztesting.AssertEqual(t, "detail mismatch.", w.Detail, e.Detail)
+	// 	ztesting.AssertEqual(t, "unexpected frame length.", true, len(e.Frames) > 0)
+	// 	ztesting.AssertEqual(t, "inner error mismatch.", io.EOF, e.Inner)
+	// })
+	// t.Run("inner error with stack", func(t *testing.T) {
+	// 	inner := &zerrors.Error{Frames: []zerrors.Frame{{}, {}}}
+	// 	e := zerrors.Definition{"c", "p", "m", "d", "e"}.NewStack(inner)
+	// 	w := zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "e"}
+	// 	ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
+	// 	ztesting.AssertEqual(t, "pkg mismatch.", w.Pkg, e.Pkg)
+	// 	ztesting.AssertEqual(t, "msg mismatch.", w.Msg, e.Msg)
+	// 	ztesting.AssertEqual(t, "ext mismatch.", w.Ext, e.Ext)
+	// 	ztesting.AssertEqual(t, "detail mismatch.", w.Detail, e.Detail)
+	// 	ztesting.AssertEqual(t, "unexpected frame length.", 0, len(e.Frames))
+	// 	ztesting.AssertEqual(t, "inner error mismatch.", error(inner), e.Inner)
+	// })
+}
 
 func TestError_Unwrap(t *testing.T) {
 	t.Parallel()

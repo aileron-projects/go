@@ -42,5 +42,6 @@ jobs:
           submodules: true
       - uses: aileron-projects/_scripts/.github/actions/go-test-qemu@main
         with:
+          go-version: "stable"
           go-arch: ${{ matrix.arch }}
           go-arm: ${{ matrix.arm }}
