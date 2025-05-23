@@ -34,16 +34,16 @@ go mod tidy
 
 ## Key Features
 
-- Logging [zlog](./zlog/).
-- Debugging [zruntime/zdebug](./zruntime/zdebug/).
-- Environmental Variables [zos](./zos/).
-- HTTP Middleware Chains [znet/zhttp](./znet/zhttp/).
-- HTTP Reverse Proxy [znet/zhttp](./znet/zhttp/).
-- TCP Proxy [znet/ztcp](./znet/ztcp/).
-- UDP Proxy [znet/zudp](./znet/zudp/).
-- Crontab, Cron Job [ztime/zcron](./ztime/zcron/).
-- Rate Limiting [ztime/zrate](./ztime/zrate/).
-- Load Balancer [zx/zlb](./zx/zlb/).
+- Logging [zlog](https://pkg.go.dev/github.com/aileron-projects/go/zlog).
+- Debugging [zruntime/zdebug](https://pkg.go.dev/github.com/aileron-projects/go/zruntime/zdebug).
+- Environmental Variables [zos](https://pkg.go.dev/github.com/aileron-projects/go/zos).
+- HTTP Middleware Chains [znet/zhttp](https://pkg.go.dev/github.com/aileron-projects/go/znet/zhttp).
+- HTTP Reverse Proxy [znet/zhttp](https://pkg.go.dev/github.com/aileron-projects/go/znet/zhttp).
+- TCP Proxy [znet/ztcp](https://pkg.go.dev/github.com/aileron-projects/go/znet/ztcp).
+- UDP Proxy [znet/zudp](https://pkg.go.dev/github.com/aileron-projects/go/znet/zudp).
+- Crontab, Cron Job [ztime/zcron](https://pkg.go.dev/github.com/aileron-projects/go/ztime/zcron).
+- Rate Limiting [ztime/zrate](https://pkg.go.dev/github.com/aileron-projects/go/ztime/zrate).
+- Load Balancer [zx/zlb](https://pkg.go.dev/github.com/aileron-projects/go/zx/zlb).
 
 ## Package Dependency Policy
 
