@@ -14,11 +14,12 @@
 [![OpenSourceInsight](https://badgen.net/badge/open%2Fsource%2F/insight/cyan)](https://deps.dev/go/github.com%2Faileron-projects%2Fgo)
 [![OSS Insight](https://badgen.net/badge/OSS/Insight/orange)](https://ossinsight.io/analyze/aileron-projects/go)
 
-![Label](https://img.shields.io/badge/AI%20Assisted%20Docs%20▶-white.svg)
-[![DeepWiki](https://img.shields.io/badge/AI%20Docs-DeepWiki-blue.svg)](https://deepwiki.com/aileron-projects/go)
-[![GitDiagram](https://img.shields.io/badge/Git-Diagram-purple.svg)](https://gitdiagram.com/aileron-projects/go)
-
 </div>
+
+AI generated docs are available at:
+
+- [DeepWiki](https://deepwiki.com/aileron-projects/go)
+- [GitDiagram](https://gitdiagram.com/aileron-projects/go)
 
 ## Usage
 
