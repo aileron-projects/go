@@ -49,7 +49,7 @@ func main() {
 	}
 
 	sigCtx, cancel := signal.NotifyContext(context.Background(),
-		syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
+		os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
 	log.Println("starting http server at " + *addr)

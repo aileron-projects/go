@@ -1,6 +1,7 @@
 package ztcp
 
 import (
+	"cmp"
 	"context"
 	"crypto/tls"
 	"errors"
@@ -84,8 +85,8 @@ type Server struct {
 	PanicHandler func(recovered any, remote, local net.Addr)
 
 	shutdown  atomic.Bool
-	listeners internal.UniqueStore[*ocListener]
-	conns     internal.UniqueStore[*ocConn]
+	listeners internal.CloserStore[*ocListener]
+	conns     internal.CloserStore[*ocConn]
 
 	// serveNotify notifies the inner listener is working
 	// and the Server.Serve is called.
@@ -178,12 +179,12 @@ func (s *Server) Serve(l net.Listener) error {
 		ctx = bc(l)
 	}
 
-	ln := &ocListener{
-		Listener: l,
-		store:    &s.listeners,
-	}
-	s.listeners.Set(ln)
-	defer ln.Close()
+	ocl := &ocListener{Listener: l}
+	s.listeners.Store(ocl)
+	defer func() {
+		_ = ocl.Close()
+		s.listeners.Delete(ocl) // Delete after close.
+	}()
 
 	if s.serveNotify != nil {
 		s.serveNotify <- struct{}{}
@@ -191,7 +192,7 @@ func (s *Server) Serve(l net.Listener) error {
 
 	wait := int64(1)
 	for {
-		conn, err := l.Accept()
+		conn, err := ocl.Accept()
 		if err != nil {
 			if err == ErrSkipHandler {
 				_ = conn.Close()
@@ -214,14 +215,11 @@ func (s *Server) Serve(l net.Listener) error {
 }
 
 func (s *Server) serve(ctx context.Context, conn net.Conn) {
-	c := &ocConn{
-		Conn:  conn,
-		store: &s.conns,
-	}
-	s.conns.Set(c)
-	defer c.Close()
 	defer func() {
 		err := recover()
+		if err == nil {
+			return
+		}
 		if ph := s.PanicHandler; ph != nil {
 			ph(err, conn.RemoteAddr(), conn.LocalAddr())
 			return
@@ -232,7 +230,14 @@ func (s *Server) serve(ctx context.Context, conn net.Conn) {
 			log.Printf("znet/ztcp: panic serving %v: %v\n%s", conn.RemoteAddr(), err, buf)
 		}
 	}()
-	s.Handler.ServeTCP(ctx, conn)
+
+	occ := &ocConn{Conn: conn}
+	s.conns.Store(occ)
+	defer func() {
+		_ = occ.Close()
+		s.conns.Delete(occ) // Delete after close.
+	}()
+	s.Handler.ServeTCP(ctx, occ)
 }
 
 // Close immediately closes all active net.Listeners and any connections.
@@ -245,14 +250,9 @@ func (s *Server) serve(ctx context.Context, conn net.Conn) {
 // future calls to methods such as [Server.Serve] will return [net.ErrClosed].
 func (s *Server) Close() error {
 	s.shutdown.Store(true)
-	var errs []error
-	for ocl := range s.listeners.Values() {
-		errs = appendNonNil(errs, ocl.Close())
-	}
-	for occ := range s.conns.Values() {
-		errs = appendNonNil(errs, occ.Close())
-	}
-	return errors.Join(errs...)
+	err1 := s.listeners.CloseAll()
+	err2 := s.conns.CloseAll()
+	return cmp.Or(err1, err2)
 }
 
 // Shutdown gracefully shuts down the server without interrupting any active connections.
@@ -273,10 +273,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	if s.shutdown.Swap(true) {
 		return net.ErrClosed
 	}
-	var errs []error
-	for ocl := range s.listeners.Values() {
-		errs = appendNonNil(errs, ocl.Close())
-	}
+	err := s.listeners.CloseAll()
 	for s.conns.Length() > 0 {
 		select {
 		case <-time.After(100 * time.Millisecond):
@@ -284,14 +281,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 			return ctx.Err()
 		}
 	}
-	return errors.Join(errs...)
-}
-
-func appendNonNil(errs []error, err error) []error {
-	if err == nil {
-		return errs
-	}
-	return append(errs, err)
+	return err
 }
 
 func newListener(addr string) (ln net.Listener, err error) {
@@ -314,18 +304,16 @@ func newListener(addr string) (ln net.Listener, err error) {
 	}
 }
 
-// ocListener is once close Listener that wraps [net.Listener],
-// protecting it from multiple Close calls.
+// ocListener is once close Listener that wraps
+// a [net.Listener], protecting it from multiple Close calls.
 type ocListener struct {
 	net.Listener
 	once     sync.Once
-	store    *internal.UniqueStore[*ocListener]
 	closeErr error
 }
 
 func (oc *ocListener) Close() error {
 	oc.once.Do(func() {
-		defer oc.store.Delete(oc)
 		oc.closeErr = oc.Listener.Close()
 		addr := oc.Addr()
 		if _, ok := addr.(*net.UnixAddr); !ok {
@@ -335,10 +323,7 @@ func (oc *ocListener) Close() error {
 		if len(address) > 0 && address[0] == '@' {
 			return // Abstract socket.
 		}
-		info, err := os.Stat(address)
-		if err == nil && !info.IsDir() {
-			_ = os.Remove(address) // Remove socket file.
-		}
+		_ = os.Remove(address) // Remove socket file.
 	})
 	return oc.closeErr
 }
@@ -348,13 +333,11 @@ func (oc *ocListener) Close() error {
 type ocConn struct {
 	net.Conn
 	once     sync.Once
-	store    *internal.UniqueStore[*ocConn]
 	closeErr error
 }
 
 func (oc *ocConn) Close() error {
 	oc.once.Do(func() {
-		defer oc.store.Delete(oc)
 		oc.closeErr = oc.Conn.Close()
 	})
 	return oc.closeErr

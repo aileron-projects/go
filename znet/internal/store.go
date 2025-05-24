@@ -1,49 +1,59 @@
 package internal
 
 import (
-	"iter"
+	"errors"
 	"sync"
 )
 
-// UniqueStore stores a comparable values.
-// All implemented methods are safe for concurrent call.
-type UniqueStore[T comparable] struct {
-	mu     sync.Mutex
-	values map[T]struct{}
+type ComparableCloser interface {
+	comparable
+	Close() error
 }
 
-// Value returns an iterator for values.
-func (m *UniqueStore[T]) Values() iter.Seq[T] {
-	return func(yield func(T) bool) {
-		for v := range m.values {
-			if !yield(v) {
-				return
-			}
+// CloserStore stores [ComparableCloser].
+// All implemented methods are safe for concurrent call.
+type CloserStore[T ComparableCloser] struct {
+	mu      sync.Mutex
+	closers map[T]struct{}
+}
+
+// CloseAll call Close() method of all stored closers
+// and delete from the store after closed.
+func (m *CloserStore[T]) CloseAll() error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	var errs []error
+	for closer := range m.closers {
+		delete(m.closers, closer)
+		if err := closer.Close(); err != nil {
+			errs = append(errs, err)
 		}
 	}
+	return errors.Join(errs...)
 }
 
-// Set sets the given value to the store.
-// The value overwrites the existing value if exists.
-func (m *UniqueStore[T]) Set(value T) {
+// Store stores the given closer to the store.
+// It replaces the existing closer if the same
+// closer is already exist.
+func (m *CloserStore[T]) Store(closer T) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if m.values == nil {
-		m.values = map[T]struct{}{}
+	if m.closers == nil {
+		m.closers = map[T]struct{}{}
 	}
-	m.values[value] = struct{}{}
+	m.closers[closer] = struct{}{}
 }
 
-// Delete deletes the value from the store.
-func (m *UniqueStore[T]) Delete(value T) {
+// Delete deletes the closer from the store.
+func (m *CloserStore[T]) Delete(closer T) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	delete(m.values, value)
+	delete(m.closers, closer)
 }
 
-// Length returns the number of values.
-func (m *UniqueStore[T]) Length() int {
+// Length returns the number of closers.
+func (m *CloserStore[T]) Length() int {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	return len(m.values)
+	return len(m.closers)
 }

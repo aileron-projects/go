@@ -19,7 +19,7 @@ import (
 //	}
 //
 //	sigCtx, cancel := signal.NotifyContext(context.Background(),
-//		syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
+//		os.Interrupt, syscall.SIGTERM)
 //	defer cancel()
 //
 //	if err := r.Run(sigCtx); err != nil {

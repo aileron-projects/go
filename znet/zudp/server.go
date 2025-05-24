@@ -1,6 +1,7 @@
 package zudp
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"log"
@@ -78,8 +79,8 @@ type Server struct {
 	PanicHandler func(recovered any, local, remote net.Addr)
 
 	shutdown    atomic.Bool
-	packetConns internal.UniqueStore[*ocPacketConn]
-	conns       internal.UniqueStore[*ocConn]
+	packetConns internal.CloserStore[*ocPacketConn]
+	conns       internal.CloserStore[*ocConn]
 
 	// serveNotify notifies the inner listener is working
 	// and the Server.Serve is called.
@@ -114,12 +115,12 @@ func (s *Server) Serve(p net.PacketConn) error {
 		ctx = bc(p)
 	}
 
-	pc := &ocPacketConn{
-		PacketConn: p,
-		store:      &s.packetConns,
-	}
-	s.packetConns.Set(pc)
-	defer pc.Close()
+	ocp := &ocPacketConn{PacketConn: p}
+	s.packetConns.Store(ocp)
+	defer func() {
+		_ = ocp.Close()
+		s.packetConns.Delete(ocp) // Delete after close.
+	}()
 
 	if s.serveNotify != nil {
 		s.serveNotify <- struct{}{}
@@ -129,7 +130,7 @@ func (s *Server) Serve(p net.PacketConn) error {
 	wait := int64(1)
 	buf := make([]byte, mtu)
 	for {
-		n, addr, err := p.ReadFrom(buf)
+		n, addr, err := ocp.ReadFrom(buf)
 		if err != nil {
 			if err == ErrSkipHandler {
 				continue
@@ -141,8 +142,8 @@ func (s *Server) Serve(p net.PacketConn) error {
 		if n > 0 {
 			c, isNew := getChannel(&channels, addr.String())
 			if isNew {
-				conn := &conn{pc: pc, raddr: addr, packets: c, channels: &channels}
-				go s.serve(ctx, pc.LocalAddr(), addr, conn)
+				conn := &conn{pc: p, raddr: addr, packets: c, channels: &channels}
+				go s.serve(ctx, p.LocalAddr(), addr, conn)
 			}
 			packet := make([]byte, n)
 			copy(packet, buf[:n])
@@ -166,14 +167,11 @@ func (s *Server) Serve(p net.PacketConn) error {
 }
 
 func (s *Server) serve(ctx context.Context, laddr, raddr net.Addr, conn *conn) {
-	c := &ocConn{
-		Conn:  conn,
-		store: &s.conns,
-	}
-	s.conns.Set(c)
-	defer c.Close()
 	defer func() {
 		err := recover()
+		if err == nil {
+			return
+		}
 		if ph := s.PanicHandler; ph != nil {
 			ph(err, laddr, raddr)
 			return
@@ -184,7 +182,14 @@ func (s *Server) serve(ctx context.Context, laddr, raddr net.Addr, conn *conn) {
 			log.Printf("znet/zudp: panic serving %v: %v\n%s", raddr, err, buf)
 		}
 	}()
-	s.Handler.ServeUDP(ctx, c)
+
+	occ := &ocConn{Conn: conn}
+	s.conns.Store(occ)
+	defer func() {
+		_ = occ.Close()
+		s.conns.Delete(occ) // Delete after close.
+	}()
+	s.Handler.ServeUDP(ctx, occ)
 }
 
 // Close immediately closes all active [net.PacketConn] and any connections.
@@ -197,14 +202,9 @@ func (s *Server) serve(ctx context.Context, laddr, raddr net.Addr, conn *conn) {
 // future calls to methods such as [Server.Serve] will return [net.ErrClosed].
 func (s *Server) Close() error {
 	s.shutdown.Store(true)
-	var errs []error
-	for ocl := range s.packetConns.Values() {
-		errs = appendNonNil(errs, ocl.Close())
-	}
-	for occ := range s.conns.Values() {
-		errs = appendNonNil(errs, occ.Close())
-	}
-	return errors.Join(errs...)
+	err1 := s.packetConns.CloseAll()
+	err2 := s.conns.CloseAll()
+	return cmp.Or(err1, err2)
 }
 
 // Shutdown gracefully shuts down the server without interrupting any active connections.
@@ -225,10 +225,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	if s.shutdown.Swap(true) {
 		return net.ErrClosed
 	}
-	var errs []error
-	for ocl := range s.packetConns.Values() {
-		errs = appendNonNil(errs, ocl.Close())
-	}
+	err := s.packetConns.CloseAll()
 	for s.conns.Length() > 0 {
 		select {
 		case <-time.After(100 * time.Millisecond):
@@ -236,14 +233,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 			return ctx.Err()
 		}
 	}
-	return errors.Join(errs...)
-}
-
-func appendNonNil(errs []error, err error) []error {
-	if err == nil {
-		return errs
-	}
-	return append(errs, err)
+	return err
 }
 
 func newPacketConn(addr string) (pc net.PacketConn, err error) {
@@ -271,13 +261,11 @@ func newPacketConn(addr string) (pc net.PacketConn, err error) {
 type ocPacketConn struct {
 	net.PacketConn
 	once     sync.Once
-	store    *internal.UniqueStore[*ocPacketConn]
 	closeErr error
 }
 
 func (oc *ocPacketConn) Close() error {
 	oc.once.Do(func() {
-		defer oc.store.Delete(oc)
 		oc.closeErr = oc.PacketConn.Close()
 		addr := oc.LocalAddr()
 		if _, ok := addr.(*net.UnixAddr); !ok {
@@ -287,10 +275,7 @@ func (oc *ocPacketConn) Close() error {
 		if len(address) > 0 && address[0] == '@' {
 			return // Abstract socket.
 		}
-		info, err := os.Stat(address)
-		if err == nil && !info.IsDir() {
-			_ = os.Remove(address) // Remove socket file.
-		}
+		_ = os.Remove(address) // Remove socket file.
 	})
 	return oc.closeErr
 }
@@ -300,13 +285,11 @@ func (oc *ocPacketConn) Close() error {
 type ocConn struct {
 	Conn
 	once     sync.Once
-	store    *internal.UniqueStore[*ocConn]
 	closeErr error
 }
 
 func (oc *ocConn) Close() error {
 	oc.once.Do(func() {
-		defer oc.store.Delete(oc)
 		oc.closeErr = oc.Conn.Close()
 	})
 	return oc.closeErr

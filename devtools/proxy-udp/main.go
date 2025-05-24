@@ -32,7 +32,7 @@ func main() {
 	}
 	log.Println("starting udp server at " + *addr)
 
-	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 	if err := runner.Run(ctx); err != nil {
 		panic(err)

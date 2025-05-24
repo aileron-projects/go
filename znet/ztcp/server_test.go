@@ -3,6 +3,7 @@ package ztcp
 import (
 	"context"
 	"crypto/tls"
+	"io"
 	"io/fs"
 	"net"
 	"os"
@@ -190,7 +191,8 @@ func TestServer_Serve(t *testing.T) {
 			BaseContext: func(l net.Listener) context.Context { return baseCtx },
 			Handler: HandlerFunc(func(ctx context.Context, conn net.Conn) {
 				ztesting.AssertEqual(t, "context not match", baseCtx, ctx)
-				ztesting.AssertEqual(t, "connection not match", net.Conn(cn), conn)
+				got := conn.(*ocConn).Conn
+				ztesting.AssertEqual(t, "connection not match", net.Conn(cn), got)
 				checked <- struct{}{}
 			}),
 		}
@@ -299,11 +301,11 @@ func TestServer_Close(t *testing.T) {
 	ln.Close()
 	s := &Server{
 		Handler:   HandlerFunc(func(_ context.Context, _ net.Conn) { time.Sleep(time.Second) }),
-		listeners: internal.UniqueStore[*ocListener]{},
-		conns:     internal.UniqueStore[*ocConn]{},
+		listeners: internal.CloserStore[*ocListener]{},
+		conns:     internal.CloserStore[*ocConn]{},
 	}
-	s.listeners.Set(&ocListener{Listener: ln, store: &s.listeners})
-	s.conns.Set(&ocConn{Conn: &net.TCPConn{}, store: &s.conns})
+	s.listeners.Store(&ocListener{Listener: ln})
+	s.conns.Store(&ocConn{Conn: &net.TCPConn{}})
 
 	ztesting.AssertEqual(t, "listeners length not match", 1, s.listeners.Length())
 	ztesting.AssertEqual(t, "conns length not match", 1, s.conns.Length())
@@ -413,7 +415,8 @@ func TestNewListener(t *testing.T) {
 type nopCloseListener struct {
 	net.Listener
 	addr  net.Addr // LocalAddr
-	count int
+	err   error    // close error
+	count int      // closed count
 }
 
 func (l *nopCloseListener) Addr() net.Addr {
@@ -422,61 +425,60 @@ func (l *nopCloseListener) Addr() net.Addr {
 
 func (l *nopCloseListener) Close() error {
 	l.count++
-	return nil
+	return l.err
 }
 
 type nopCloseConn struct {
 	net.Conn
-	count int
+	err   error // close error
+	count int   // closed count
 }
 
 func (c *nopCloseConn) Close() error {
 	c.count++
-	return nil
+	return c.err
 }
 
 func TestOCListener(t *testing.T) {
 	t.Parallel()
 	t.Run("close once", func(t *testing.T) {
-		store := internal.UniqueStore[*ocListener]{}
-		l := &nopCloseListener{addr: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 12345}}
-		ln := &ocListener{Listener: l, store: &store}
-		store.Set(ln)
-		ztesting.AssertEqual(t, "listener has not been stored", 1, store.Length())
+		ncl := &nopCloseListener{addr: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 12345}}
+		ln := &ocListener{Listener: ncl}
 		err := ln.Close()
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqual(t, "length not match", 0, store.Length())
+		ztesting.AssertEqualErr(t, "close error not match", nil, err)
+		ztesting.AssertEqual(t, "close count not match", 1, ncl.count)
 	})
 	t.Run("close multiple", func(t *testing.T) {
-		store := internal.UniqueStore[*ocListener]{}
-		l := &nopCloseListener{addr: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 12345}}
-		ln := &ocListener{Listener: l, store: &store}
-		ln.Close()
-		ln.Close()
-		ztesting.AssertEqual(t, "close called more than once", 1, l.count)
+		ncl := &nopCloseListener{addr: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 12345}}
+		ln := &ocListener{Listener: ncl}
+		_ = ln.Close()    // close once
+		err := ln.Close() // close twice
+		ztesting.AssertEqualErr(t, "close error not match", nil, err)
+		ztesting.AssertEqual(t, "close count not match", 1, ncl.count)
+	})
+	t.Run("close error", func(t *testing.T) {
+		ncl := &nopCloseListener{addr: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 12345}, err: io.EOF}
+		ln := &ocListener{Listener: ncl}
+		err := ln.Close()
+		ztesting.AssertEqualErr(t, "close error not match", io.EOF, err)
+		ztesting.AssertEqual(t, "close count not match", 1, ncl.count)
 	})
 	t.Run("close abstract socket", func(t *testing.T) {
-		store := internal.UniqueStore[*ocListener]{}
-		l := &nopCloseListener{addr: &net.UnixAddr{Net: "unix", Name: "@test"}}
-		ln := &ocListener{Listener: l, store: &store}
-		store.Set(ln)
-		ztesting.AssertEqual(t, "listener has not been stored", 1, store.Length())
+		ncl := &nopCloseListener{addr: &net.UnixAddr{Net: "unix", Name: "@test"}}
+		ln := &ocListener{Listener: ncl}
 		err := ln.Close()
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqual(t, "length not match", 0, store.Length())
+		ztesting.AssertEqualErr(t, "close error not match", nil, err)
+		ztesting.AssertEqual(t, "close count not match", 1, ncl.count)
 	})
 	t.Run("close path name socket", func(t *testing.T) {
 		sock := t.TempDir() + "/test.sock"
 		f, _ := os.Create(sock)
 		_ = f.Close()
-		store := internal.UniqueStore[*ocListener]{}
-		l := &nopCloseListener{addr: &net.UnixAddr{Net: "unix", Name: sock}}
-		ln := &ocListener{Listener: l, store: &store}
-		store.Set(ln)
-		ztesting.AssertEqual(t, "listener has not been stored", 1, store.Length())
+		ncl := &nopCloseListener{addr: &net.UnixAddr{Net: "unix", Name: sock}}
+		ln := &ocListener{Listener: ncl}
 		err := ln.Close()
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqual(t, "length not match", 0, store.Length())
+		ztesting.AssertEqualErr(t, "close error not match", nil, err)
+		ztesting.AssertEqual(t, "close count not match", 1, ncl.count)
 		_, err = os.Stat(sock) // Socket must be removed.
 		ztesting.AssertEqual(t, "socket not removed", true, os.IsNotExist(err))
 	})
@@ -485,19 +487,25 @@ func TestOCListener(t *testing.T) {
 func TestOCConn(t *testing.T) {
 	t.Parallel()
 	t.Run("close once", func(t *testing.T) {
-		store := internal.UniqueStore[*ocConn]{}
-		conn := &ocConn{Conn: &nopCloseConn{}, store: &store}
-		store.Set(conn)
-		ztesting.AssertEqual(t, "conn has not been stored", 1, store.Length())
+		nc := &nopCloseConn{}
+		conn := &ocConn{Conn: nc}
 		err := conn.Close()
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqual(t, "length not match", 0, store.Length())
+		ztesting.AssertEqualErr(t, "close error not match", nil, err)
+		ztesting.AssertEqual(t, "close count not match", 1, nc.count)
 	})
 	t.Run("close multiple", func(t *testing.T) {
 		nc := &nopCloseConn{}
-		conn := &ocConn{Conn: nc, store: &internal.UniqueStore[*ocConn]{}}
-		conn.Close()
-		conn.Close()
+		conn := &ocConn{Conn: nc}
+		_ = conn.Close()    // close once
+		err := conn.Close() // close twice
+		ztesting.AssertEqualErr(t, "close error not match", nil, err)
 		ztesting.AssertEqual(t, "close called more than once", 1, nc.count)
+	})
+	t.Run("close error", func(t *testing.T) {
+		nc := &nopCloseConn{err: io.EOF}
+		conn := &ocConn{Conn: nc}
+		err := conn.Close()
+		ztesting.AssertEqualErr(t, "close error not match", io.EOF, err)
+		ztesting.AssertEqual(t, "close count not match", 1, nc.count)
 	})
 }
