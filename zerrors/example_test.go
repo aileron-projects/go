@@ -13,7 +13,7 @@ func ExampleAttrs() {
 	e2 := errors.New("example2")
 
 	fmt.Println(zerrors.Attrs(e1))
-	fmt.Println(zerrors.Attrs(zerrors.Wrap(e1, "example3")))
+	fmt.Println(zerrors.Attrs(fmt.Errorf("example3 [%w]", e1)))
 	fmt.Println(zerrors.Attrs(errors.Join(e1, e2)))
 	// Output:
 	// map[msg:example1]
