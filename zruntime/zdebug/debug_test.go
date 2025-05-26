@@ -17,10 +17,6 @@ func TestDumpTo(t *testing.T) {
 		a     []any
 		wants []string
 	}{
-		"nil": {
-			a:     nil,
-			wants: []string{`| Nothing to dump.`},
-		},
 		"int": {
 			a:     []any{int(1), int32(2), int64(3)},
 			wants: []string{`| (int) 1`, `| (int32) 2`, `| (int64) 3`},
@@ -57,7 +53,7 @@ func TestDumpTo(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			var buf bytes.Buffer
-			zdebug.DumpTo(&buf, tc.a...)
+			zdebug.DumpTo(&buf, "", tc.a...)
 			result := buf.String()
 			ztesting.AssertEqual(t, "dump result does not contain date and time.", true, strings.Contains(result, "1970-01-01 00:00:00 [DUMP]"))
 			for _, w := range tc.wants {
@@ -83,13 +79,13 @@ func TestHookDumpFunc(t *testing.T) {
 	t.Run("func returns true", func(t *testing.T) {
 		var buf bytes.Buffer
 		returnBool = true // Set value true.
-		zdebug.DumpTo(&buf, int(0), int(1))
+		zdebug.DumpTo(&buf, "", int(0), int(1))
 		ztesting.AssertEqual(t, "dump continued after HookDumpFunc returned true.", "", buf.String())
 	})
 	t.Run("func returns false", func(t *testing.T) {
 		var buf bytes.Buffer
 		returnBool = false // Set value false.
-		zdebug.DumpTo(&buf, int(0), int(1))
+		zdebug.DumpTo(&buf, "", int(0), int(1))
 		ztesting.AssertEqual(t, "dump should output information.", false, buf.String() == "")
 	})
 }

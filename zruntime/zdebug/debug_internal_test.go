@@ -149,7 +149,7 @@ func TestDump(t *testing.T) {
 	tmp := writer
 	writer = &buf
 	defer func() { writer = tmp }()
-	Dump(int(123))
+	Dump("", int(123))
 	result := buf.String()
 	if dumpEnabled {
 		ztesting.AssertEqual(t, "dump does not contain datetime", true, strings.Contains(result, "1970-01-01 00:00:00 [DUMP]"))
@@ -163,7 +163,7 @@ func TestDumpAlways(t *testing.T) {
 	tmp := writer
 	writer = &buf
 	defer func() { writer = tmp }()
-	DumpAlways(int(123))
+	DumpAlways("", int(123))
 	result := buf.String()
 	ztesting.AssertEqual(t, "dump does not contain datetime", true, strings.Contains(result, "1970-01-01 00:00:00 [DUMP]"))
 

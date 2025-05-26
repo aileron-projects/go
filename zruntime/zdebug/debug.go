@@ -68,28 +68,24 @@ type prefixWriter struct {
 }
 
 func (pw *prefixWriter) Write(p []byte) (n int, err error) {
-	// Replace NBSP to normal space.
-	// go-cmp randomly uses NBSP.
-	p = bytes.ReplaceAll(p, []byte("\u00A0"), []byte(" "))
-	pp := p
-	for len(pp) > 0 {
-		if i := bytes.IndexByte(pp, '\n'); i >= 0 {
+	for len(p) > 0 {
+		if i := bytes.IndexByte(p, '\n'); i >= 0 {
 			if pw.newline {
 				nn, _ := pw.w.Write(pw.prefix)
 				n += nn
 			}
-			nn, _ := pw.w.Write(pp[:i+1])
+			nn, _ := pw.w.Write(p[:i+1])
 			n += nn
-			pp = pp[i+1:]
+			p = p[i+1:]
 			pw.newline = true
 		} else {
 			if pw.newline {
 				nn, _ := pw.w.Write(pw.prefix)
 				n += nn
 			}
-			nn, _ := pw.w.Write(pp)
+			nn, _ := pw.w.Write(p)
 			n += nn
-			pp = nil
+			p = nil
 			pw.newline = false
 		}
 	}
@@ -112,7 +108,7 @@ var (
 // DumpTo writes dump results into the given writer.
 // The writer will be reset after DumpTo returned.
 // Unlike the [Dump], DumpTo does not requires build tag.
-func DumpTo(w io.Writer, a ...any) {
+func DumpTo(w io.Writer, msg string, a ...any) {
 	w = cmp.Or(w, writer, io.Writer(os.Stderr))
 	f := zruntime.ConvertFrame(zruntime.CallerFrame(2))
 	if HookDumpFunc != nil {
@@ -121,18 +117,14 @@ func DumpTo(w io.Writer, a ...any) {
 		}
 	}
 
-	loc := " Pkg:" + f.Pkg + " File:" + f.File + " Func:" + f.Func + " Line:" + strconv.Itoa(f.Line)
-	_, _ = w.Write([]byte(timeNow().Format(time.DateTime) + " [DUMP]" + loc + "\n"))
+	caller := "Pkg=" + f.Pkg + " File=" + f.File + " Func=" + f.Func + " Line=" + strconv.Itoa(f.Line)
+	_, _ = w.Write([]byte(timeNow().Format(time.DateTime) + " [DUMP]" + msg + "\n"))
+	_, _ = w.Write([]byte("  | Caller: " + caller + "\n"))
 
 	pw := &prefixWriter{
 		w:       w,
 		newline: true,
 		prefix:  []byte("  | "),
-	}
-
-	if len(a) == 0 {
-		_, _ = pw.Write([]byte("Nothing to dump.\n"))
-		return
 	}
 	dc := &DumpConfig
 	for i := range a {
@@ -143,8 +135,8 @@ func DumpTo(w io.Writer, a ...any) {
 
 // DumpAlways prints object dump of the given values.
 // Unlike [Dump], it does not requires build tags.
-func DumpAlways(a ...any) {
-	DumpTo(writer, a...)
+func DumpAlways(msg string, a ...any) {
+	DumpTo(writer, msg, a...)
 }
 
 // Dump prints object dump of the given values.
@@ -152,8 +144,8 @@ func DumpAlways(a ...any) {
 // Stdout is used as default output destination.
 // If callers who wants to debug temporarily without build tags,
 // use [DumpAlways] or [DumpTo] instead.
-func Dump(a ...any) {
+func Dump(msg string, a ...any) {
 	if dumpEnabled {
-		DumpTo(writer, a...)
+		DumpTo(writer, msg, a...)
 	}
 }

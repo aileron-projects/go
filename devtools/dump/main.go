@@ -24,5 +24,5 @@ func main() {
 		favorites:  []string{"apple", "strawberry"},
 		experience: map[string]int{"Go": 3, "C": 6, "Java": 1, "Rust": 2},
 	}
-	zdebug.Dump(p1, p2)
+	zdebug.Dump("", p1, p2)
 }

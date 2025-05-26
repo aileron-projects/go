@@ -3,6 +3,7 @@ package zdebug_test
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/aileron-projects/go/zruntime/zdebug"
 )
@@ -15,12 +16,12 @@ func ExampleDumpTo() {
 		foo: 123,
 		bar: "bar",
 	}
-
 	var buf bytes.Buffer
-	zdebug.DumpTo(&buf, val)
+	zdebug.DumpTo(&buf, "", val)
 
-	// Discard the first line which contains call location to avoid test failure.
-	_, output, _ := bytes.Cut(buf.Bytes(), []byte("\n"))
+	output := buf.String()
+	_, output, _ = strings.Cut(output, "\n") // Discard first line.
+	_, output, _ = strings.Cut(output, "\n") // Discard second line.
 	fmt.Println(string(output))
 	// Output:
 	//   | ┌── args[0]

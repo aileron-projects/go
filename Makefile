@@ -7,7 +7,7 @@ endif
 
 # Override settings.
 PRETTIER_TARGET := "**/*.{md,yaml,yml,toml,js,jsx,ts,html,css}"
-GO_TEST_TAGS := zerrorstrace,zdebugdump
+GO_TEST_TAGS := zerrorstrace,zdebugdump,zlogbuildlog
 
 include _scripts/makefiles/go-build.mk
 include _scripts/makefiles/go-licenses.mk

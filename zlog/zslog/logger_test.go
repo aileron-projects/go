@@ -5,18 +5,17 @@ import (
 	"context"
 	"io"
 	"log/slog"
+	"math"
 	"os"
 	"strings"
 	"testing"
 
-	"github.com/aileron-projects/go/zlog"
 	"github.com/aileron-projects/go/zlog/zslog"
 	"github.com/aileron-projects/go/ztesting"
 )
 
 func TestNewJSON(t *testing.T) {
 	t.Parallel()
-
 	t.Run("nil writer", func(t *testing.T) {
 		t.Run("nil option", func(t *testing.T) {
 			lg := zslog.NewJSON(nil, nil)
@@ -29,14 +28,12 @@ func TestNewJSON(t *testing.T) {
 			ztesting.AssertEqual(t, "log level is not enabled.", true, lg.Handler().Enabled(nil, slog.LevelDebug))
 		})
 	})
-
 	t.Run("non-nil writer", func(t *testing.T) {
 		t.Run("nil option", func(t *testing.T) {
 			lg := zslog.NewJSON(os.Stderr, nil)
 			ztesting.AssertEqual(t, "logger uses wrong io writer.", io.Writer(os.Stderr), lg.Writer())
 			ztesting.AssertEqual(t, "log level is not enabled.", false, lg.Handler().Enabled(nil, slog.LevelDebug))
 		})
-
 		t.Run("non-nil option", func(t *testing.T) {
 			lg := zslog.NewJSON(os.Stderr, &slog.HandlerOptions{Level: slog.LevelDebug})
 			ztesting.AssertEqual(t, "logger uses wrong io writer.", io.Writer(os.Stderr), lg.Writer())
@@ -47,7 +44,6 @@ func TestNewJSON(t *testing.T) {
 
 func TestNewText(t *testing.T) {
 	t.Parallel()
-
 	t.Run("nil writer", func(t *testing.T) {
 		t.Run("nil option", func(t *testing.T) {
 			lg := zslog.NewText(nil, nil)
@@ -60,14 +56,12 @@ func TestNewText(t *testing.T) {
 			ztesting.AssertEqual(t, "log level is not enabled.", true, lg.Handler().Enabled(nil, slog.LevelDebug))
 		})
 	})
-
 	t.Run("non-nil writer", func(t *testing.T) {
 		t.Run("nil option", func(t *testing.T) {
 			lg := zslog.NewText(os.Stderr, nil)
 			ztesting.AssertEqual(t, "logger uses wrong io writer.", io.Writer(os.Stderr), lg.Writer())
 			ztesting.AssertEqual(t, "log level is not enabled.", true, lg.Handler().Enabled(nil, slog.LevelInfo))
 		})
-
 		t.Run("non-nil option", func(t *testing.T) {
 			lg := zslog.NewText(os.Stderr, &slog.HandlerOptions{Level: slog.LevelDebug})
 			ztesting.AssertEqual(t, "logger uses wrong io writer.", io.Writer(os.Stderr), lg.Writer())
@@ -77,71 +71,68 @@ func TestNewText(t *testing.T) {
 }
 
 var testLevels = map[string]struct {
-	setLv    zlog.Level
-	setCtxLv zlog.Level
+	setLv slog.Level
+	ctxLv slog.Level
 }{
-	"trace":           {zlog.LvTrace, zlog.LvUndef},
-	"debug":           {zlog.LvDebug, zlog.LvUndef},
-	"info":            {zlog.LvInfo, zlog.LvUndef},
-	"warn":            {zlog.LvWarn, zlog.LvUndef},
-	"error":           {zlog.LvError, zlog.LvUndef},
-	"fatal":           {zlog.LvFatal, zlog.LvUndef},
-	"trace ctx=trace": {zlog.LvTrace, zlog.LvTrace},
-	"trace ctx=debug": {zlog.LvTrace, zlog.LvDebug},
-	"trace ctx=info":  {zlog.LvTrace, zlog.LvInfo},
-	"trace ctx=warn":  {zlog.LvTrace, zlog.LvWarn},
-	"trace ctx=error": {zlog.LvTrace, zlog.LvError},
-	"trace ctx=fatal": {zlog.LvTrace, zlog.LvFatal},
-	"debug ctx=trace": {zlog.LvDebug, zlog.LvTrace},
-	"debug ctx=debug": {zlog.LvDebug, zlog.LvDebug},
-	"debug ctx=info":  {zlog.LvDebug, zlog.LvInfo},
-	"debug ctx=warn":  {zlog.LvDebug, zlog.LvWarn},
-	"debug ctx=error": {zlog.LvDebug, zlog.LvError},
-	"debug ctx=fatal": {zlog.LvDebug, zlog.LvFatal},
-	"info ctx=trace":  {zlog.LvInfo, zlog.LvTrace},
-	"info ctx=debug":  {zlog.LvInfo, zlog.LvDebug},
-	"info ctx=info":   {zlog.LvInfo, zlog.LvInfo},
-	"info ctx=warn":   {zlog.LvInfo, zlog.LvWarn},
-	"info ctx=error":  {zlog.LvInfo, zlog.LvError},
-	"info ctx=fatal":  {zlog.LvInfo, zlog.LvFatal},
-	"warn ctx=trace":  {zlog.LvWarn, zlog.LvTrace},
-	"warn ctx=debug":  {zlog.LvWarn, zlog.LvDebug},
-	"warn ctx=info":   {zlog.LvWarn, zlog.LvInfo},
-	"warn ctx=warn":   {zlog.LvWarn, zlog.LvWarn},
-	"warn ctx=error":  {zlog.LvWarn, zlog.LvError},
-	"warn ctx=fatal":  {zlog.LvWarn, zlog.LvFatal},
-	"error ctx=trace": {zlog.LvError, zlog.LvTrace},
-	"error ctx=debug": {zlog.LvError, zlog.LvDebug},
-	"error ctx=info":  {zlog.LvError, zlog.LvInfo},
-	"error ctx=warn":  {zlog.LvError, zlog.LvWarn},
-	"error ctx=error": {zlog.LvError, zlog.LvError},
-	"error ctx=fatal": {zlog.LvError, zlog.LvFatal},
-	"fatal ctx=trace": {zlog.LvFatal, zlog.LvTrace},
-	"fatal ctx=debug": {zlog.LvFatal, zlog.LvDebug},
-	"fatal ctx=info":  {zlog.LvFatal, zlog.LvInfo},
-	"fatal ctx=warn":  {zlog.LvFatal, zlog.LvWarn},
-	"fatal ctx=error": {zlog.LvFatal, zlog.LvError},
-	"fatal ctx=fatal": {zlog.LvFatal, zlog.LvFatal},
+	"debug-1":             {slog.LevelDebug - 1, slog.Level(math.MinInt)},
+	"debug":               {slog.LevelDebug, slog.Level(math.MinInt)},
+	"info":                {slog.LevelInfo, slog.Level(math.MinInt)},
+	"warn":                {slog.LevelWarn, slog.Level(math.MinInt)},
+	"error":               {slog.LevelError, slog.Level(math.MinInt)},
+	"error+1":             {slog.LevelError + 1, slog.Level(math.MinInt)},
+	"debug-1 ctx=debug-1": {slog.LevelDebug - 1, slog.LevelDebug - 1},
+	"debug-1 ctx=debug":   {slog.LevelDebug - 1, slog.LevelDebug},
+	"debug-1 ctx=info":    {slog.LevelDebug - 1, slog.LevelInfo},
+	"debug-1 ctx=warn":    {slog.LevelDebug - 1, slog.LevelWarn},
+	"debug-1 ctx=error":   {slog.LevelDebug - 1, slog.LevelError},
+	"debug-1 ctx=error+1": {slog.LevelDebug - 1, slog.LevelError + 1},
+	"debug ctx=debug-1":   {slog.LevelDebug, slog.LevelDebug - 1},
+	"debug ctx=debug":     {slog.LevelDebug, slog.LevelDebug},
+	"debug ctx=info":      {slog.LevelDebug, slog.LevelInfo},
+	"debug ctx=warn":      {slog.LevelDebug, slog.LevelWarn},
+	"debug ctx=error":     {slog.LevelDebug, slog.LevelError},
+	"debug ctx=error+1":   {slog.LevelDebug, slog.LevelError + 1},
+	"info ctx=debug-1":    {slog.LevelInfo, slog.LevelDebug - 1},
+	"info ctx=debug":      {slog.LevelInfo, slog.LevelDebug},
+	"info ctx=info":       {slog.LevelInfo, slog.LevelInfo},
+	"info ctx=warn":       {slog.LevelInfo, slog.LevelWarn},
+	"info ctx=error":      {slog.LevelInfo, slog.LevelError},
+	"info ctx=error+1":    {slog.LevelInfo, slog.LevelError + 1},
+	"warn ctx=debug-1":    {slog.LevelWarn, slog.LevelDebug - 1},
+	"warn ctx=debug":      {slog.LevelWarn, slog.LevelDebug},
+	"warn ctx=info":       {slog.LevelWarn, slog.LevelInfo},
+	"warn ctx=warn":       {slog.LevelWarn, slog.LevelWarn},
+	"warn ctx=error":      {slog.LevelWarn, slog.LevelError},
+	"warn ctx=error+1":    {slog.LevelWarn, slog.LevelError + 1},
+	"error ctx=debug-1":   {slog.LevelError, slog.LevelDebug - 1},
+	"error ctx=debug":     {slog.LevelError, slog.LevelDebug},
+	"error ctx=info":      {slog.LevelError, slog.LevelInfo},
+	"error ctx=warn":      {slog.LevelError, slog.LevelWarn},
+	"error ctx=error":     {slog.LevelError, slog.LevelError},
+	"error ctx=error+1":   {slog.LevelError, slog.LevelError + 1},
+	"error+1 ctx=debug-1": {slog.LevelError + 1, slog.LevelDebug - 1},
+	"error+1 ctx=debug":   {slog.LevelError + 1, slog.LevelDebug},
+	"error+1 ctx=info":    {slog.LevelError + 1, slog.LevelInfo},
+	"error+1 ctx=warn":    {slog.LevelError + 1, slog.LevelWarn},
+	"error+1 ctx=error":   {slog.LevelError + 1, slog.LevelError},
+	"error+1 ctx=error+1": {slog.LevelError + 1, slog.LevelError + 1},
 }
 
 func TestZSLogger_Enabled(t *testing.T) {
 	t.Parallel()
-
 	for name, tc := range testLevels {
 		t.Run(name, func(t *testing.T) {
 			threshold := tc.setLv
 			ctx := context.Background()
-			if tc.setCtxLv != zlog.LvUndef {
-				threshold = tc.setCtxLv
-				ctx = zlog.ContextWithLevel(ctx, tc.setCtxLv)
+			if tc.ctxLv != slog.Level(math.MinInt) {
+				threshold = tc.ctxLv
+				ctx = zslog.ContextWithLevel(ctx, tc.ctxLv)
 			}
-
-			lg := zslog.NewJSON(nil, &slog.HandlerOptions{Level: slog.Level(tc.setLv - 9)}) // Convert zlog.Level to slog.Level
-			for i := -1; i < int(threshold); i++ {
-				ztesting.AssertEqual(t, "log level is not enabled.", false, lg.Enabled(ctx, zlog.Level(i)))
-			}
-			for i := int(threshold); i < 25; i++ {
-				ztesting.AssertEqual(t, "log level is enabled.", true, lg.Enabled(ctx, zlog.Level(i)))
+			lg := zslog.NewJSON(nil, &slog.HandlerOptions{Level: tc.setLv})
+			for i := -10; i < 10; i++ {
+				want := i >= int(threshold)
+				got := lg.Enabled(ctx, slog.Level(i))
+				ztesting.AssertEqual(t, "enabled not match.", want, got)
 			}
 		})
 	}
@@ -149,204 +140,183 @@ func TestZSLogger_Enabled(t *testing.T) {
 
 func TestZSLogger_Debug(t *testing.T) {
 	t.Parallel()
-
 	for name, tc := range testLevels {
 		t.Run(name, func(t *testing.T) {
 			threshold := tc.setLv
 			ctx := context.Background()
-			if tc.setCtxLv != zlog.LvUndef {
-				threshold = tc.setCtxLv
-				ctx = zlog.ContextWithLevel(ctx, tc.setCtxLv)
+			if tc.ctxLv != slog.Level(math.MinInt) {
+				threshold = tc.ctxLv
+				ctx = zslog.ContextWithLevel(ctx, tc.ctxLv)
 			}
-
 			var buf bytes.Buffer
-			lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(tc.setLv - 9)})
-			lg.Debug(ctx, "test message", "arg1", "arg2")
+			lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: tc.setLv})
+			lg.DebugContext(ctx, "test message", "arg1", "arg2")
 			result := buf.String()
-			if threshold > zlog.LvDebug {
+			if threshold > slog.LevelDebug {
 				ztesting.AssertEqual(t, "log line is written.", "", buf.String())
 			} else {
 				ztesting.AssertEqual(t, "log line is not written.", true, strings.Contains(result, "test message"))
 			}
 		})
 	}
-
 	t.Run("add caller", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelDebug})
-		lg.AddCaller = zlog.Debug
-		lg.Debug(nil, "test message")
+		lg.AddCaller = zslog.LvDebug
+		lg.DebugContext(nil, "test message")
 		ztesting.AssertEqual(t, "log line does not contain caller.", true, strings.Contains(buf.String(), `"caller"`))
 	})
-
 	t.Run("add frames", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelDebug})
-		lg.AddFrames = zlog.Debug
-		lg.Debug(nil, "test message")
+		lg.AddFrames = zslog.LvDebug
+		lg.DebugContext(nil, "test message")
 		ztesting.AssertEqual(t, "log line does not contain frames.", true, strings.Contains(buf.String(), `"frames"`))
 	})
 }
 
 func TestZSLogger_Info(t *testing.T) {
 	t.Parallel()
-
 	for name, tc := range testLevels {
 		t.Run(name, func(t *testing.T) {
 			threshold := tc.setLv
 			ctx := context.Background()
-			if tc.setCtxLv != zlog.LvUndef {
-				threshold = tc.setCtxLv
-				ctx = zlog.ContextWithLevel(ctx, tc.setCtxLv)
+			if tc.ctxLv != slog.Level(math.MinInt) {
+				threshold = tc.ctxLv
+				ctx = zslog.ContextWithLevel(ctx, tc.ctxLv)
 			}
-
 			var buf bytes.Buffer
-			lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(tc.setLv - 9)})
-			lg.Info(ctx, "test message", "arg1", "arg2")
+			lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: tc.setLv})
+			lg.InfoContext(ctx, "test message", "arg1", "arg2")
 			result := buf.String()
-			if threshold > zlog.LvInfo {
+			if threshold > slog.LevelInfo {
 				ztesting.AssertEqual(t, "log line is written.", "", buf.String())
 			} else {
 				ztesting.AssertEqual(t, "log line is not written.", true, strings.Contains(result, "test message"))
 			}
 		})
 	}
-
 	t.Run("add caller", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelInfo})
-		lg.AddCaller = zlog.Info
-		lg.Info(nil, "test message")
+		lg.AddCaller = zslog.LvInfo
+		lg.InfoContext(nil, "test message")
 		ztesting.AssertEqual(t, "log line does not contain caller.", true, strings.Contains(buf.String(), `"caller"`))
 	})
-
 	t.Run("add frames", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelInfo})
-		lg.AddFrames = zlog.Info
-		lg.Info(nil, "test message")
+		lg.AddFrames = zslog.LvInfo
+		lg.InfoContext(nil, "test message")
 		ztesting.AssertEqual(t, "log line does not contain frames.", true, strings.Contains(buf.String(), `"frames"`))
 	})
 }
 
 func TestZSLogger_Warn(t *testing.T) {
 	t.Parallel()
-
 	for name, tc := range testLevels {
 		t.Run(name, func(t *testing.T) {
 			threshold := tc.setLv
 			ctx := context.Background()
-			if tc.setCtxLv != zlog.LvUndef {
-				threshold = tc.setCtxLv
-				ctx = zlog.ContextWithLevel(ctx, tc.setCtxLv)
+			if tc.ctxLv != slog.Level(math.MinInt) {
+				threshold = tc.ctxLv
+				ctx = zslog.ContextWithLevel(ctx, tc.ctxLv)
 			}
-
 			var buf bytes.Buffer
-			lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(tc.setLv - 9)})
-			lg.Warn(ctx, "test message", "arg1", "arg2")
+			lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: tc.setLv})
+			lg.WarnContext(ctx, "test message", "arg1", "arg2")
 			result := buf.String()
-			if threshold > zlog.LvWarn {
+			if threshold > slog.LevelWarn {
 				ztesting.AssertEqual(t, "log line is written.", "", buf.String())
 			} else {
 				ztesting.AssertEqual(t, "log line is not written.", true, strings.Contains(result, "test message"))
 			}
 		})
 	}
-
 	t.Run("add caller", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelWarn})
-		lg.AddCaller = zlog.Warn
-		lg.Warn(nil, "test message")
+		lg.AddCaller = zslog.LvWarn
+		lg.WarnContext(nil, "test message")
 		ztesting.AssertEqual(t, "log line does not contain caller.", true, strings.Contains(buf.String(), `"caller"`))
 	})
-
 	t.Run("add frames", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelWarn})
-		lg.AddFrames = zlog.Warn
-		lg.Warn(nil, "test message")
+		lg.AddFrames = zslog.LvWarn
+		lg.WarnContext(nil, "test message")
 		ztesting.AssertEqual(t, "log line does not contain frames.", true, strings.Contains(buf.String(), `"frames"`))
 	})
 }
 
 func TestZSLogger_Error(t *testing.T) {
 	t.Parallel()
-
 	for name, tc := range testLevels {
 		t.Run(name, func(t *testing.T) {
 			threshold := tc.setLv
 			ctx := context.Background()
-			if tc.setCtxLv != zlog.LvUndef {
-				threshold = tc.setCtxLv
-				ctx = zlog.ContextWithLevel(ctx, tc.setCtxLv)
+			if tc.ctxLv != slog.Level(math.MinInt) {
+				threshold = tc.ctxLv
+				ctx = zslog.ContextWithLevel(ctx, tc.ctxLv)
 			}
-
 			var buf bytes.Buffer
-			lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(tc.setLv - 9)})
-			lg.Error(ctx, "test message", "arg1", "arg2")
+			lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: tc.setLv})
+			lg.ErrorContext(ctx, "test message", "arg1", "arg2")
 			result := buf.String()
-			if threshold > zlog.LvError {
+			if threshold > slog.LevelError {
 				ztesting.AssertEqual(t, "log line is written.", "", buf.String())
 			} else {
 				ztesting.AssertEqual(t, "log line is not written.", true, strings.Contains(result, "test message"))
 			}
 		})
 	}
-
 	t.Run("add caller", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelError})
-		lg.AddCaller = zlog.Error
-		lg.Error(nil, "test message")
+		lg.AddCaller = zslog.LvError
+		lg.ErrorContext(nil, "test message")
 		ztesting.AssertEqual(t, "log line does not contain caller.", true, strings.Contains(buf.String(), `"caller"`))
 	})
-
 	t.Run("add frames", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelError})
-		lg.AddFrames = zlog.Error
-		lg.Error(nil, "test message")
+		lg.AddFrames = zslog.LvError
+		lg.ErrorContext(nil, "test message")
 		ztesting.AssertEqual(t, "log line does not contain frames.", true, strings.Contains(buf.String(), `"frames"`))
 	})
 }
 
 func TestZSLogger_nilContext(t *testing.T) {
 	t.Parallel()
-
 	t.Run("enabled", func(t *testing.T) {
 		var buf bytes.Buffer
-		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(zlog.LvInfo - 9)})
-		ztesting.AssertEqual(t, "log level is unexpectedly enabled.", false, lg.Enabled(nil, zlog.LvDebug))
-		ztesting.AssertEqual(t, "log level is unexpectedly disabled.", true, lg.Enabled(nil, zlog.LvInfo))
-		ztesting.AssertEqual(t, "log level is unexpectedly disabled.", true, lg.Enabled(nil, zlog.LvWarn))
+		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelInfo})
+		ztesting.AssertEqual(t, "log level is unexpectedly enabled.", false, lg.Enabled(nil, slog.LevelDebug))
+		ztesting.AssertEqual(t, "log level is unexpectedly disabled.", true, lg.Enabled(nil, slog.LevelInfo))
+		ztesting.AssertEqual(t, "log level is unexpectedly disabled.", true, lg.Enabled(nil, slog.LevelWarn))
 	})
-
 	t.Run("debug", func(t *testing.T) {
 		var buf bytes.Buffer
-		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(zlog.LvTrace - 9)})
-		lg.Debug(nil, "test message")
+		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelDebug})
+		lg.DebugContext(nil, "test message")
 		ztesting.AssertEqual(t, "log line should be written", false, buf.String() == "")
 	})
-
 	t.Run("info", func(t *testing.T) {
 		var buf bytes.Buffer
-		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(zlog.LvTrace - 9)})
-		lg.Info(nil, "test message")
+		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelDebug})
+		lg.InfoContext(nil, "test message")
 		ztesting.AssertEqual(t, "log line should be written", false, buf.String() == "")
 	})
-
 	t.Run("warn", func(t *testing.T) {
 		var buf bytes.Buffer
-		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(zlog.LvTrace - 9)})
-		lg.Warn(nil, "test message")
+		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelDebug})
+		lg.WarnContext(nil, "test message")
 		ztesting.AssertEqual(t, "log line should be written", false, buf.String() == "")
 	})
-
 	t.Run("error", func(t *testing.T) {
 		var buf bytes.Buffer
-		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.Level(zlog.LvTrace - 9)})
-		lg.Error(nil, "test message")
+		lg := zslog.NewJSON(&buf, &slog.HandlerOptions{Level: slog.LevelDebug})
+		lg.ErrorContext(nil, "test message")
 		ztesting.AssertEqual(t, "log line should be written", false, buf.String() == "")
 	})
 }
