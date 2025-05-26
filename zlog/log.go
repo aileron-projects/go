@@ -2,13 +2,14 @@ package zlog
 
 import (
 	"context"
-	"log/slog"
-	"os"
 )
 
-// Logger logs given message and values.
+// Logger is the basic logger interface.
 type Logger interface {
-	Enabled(ctx context.Context, lv slog.Level) bool
+	DebugEnabled(ctx context.Context)
+	InfoEnabled(ctx context.Context)
+	WarnEnabled(ctx context.Context)
+	ErrorEnabled(ctx context.Context)
 	DebugContext(ctx context.Context, msg string, args ...any)
 	InfoContext(ctx context.Context, msg string, args ...any)
 	WarnContext(ctx context.Context, msg string, args ...any)
@@ -47,21 +48,4 @@ func AttrsFromContext(ctx context.Context) []any {
 		return v.([]any)
 	}
 	return nil
-}
-
-var (
-	// BuildLogFunc is the log output function used by [BuildLog].
-	// [BuildLog] is only enabled when the build tag -tag="zlogbuildlog" is specified.
-	// By default, a new instance of [slog.Logger] created with a [slog.TextHandler] is used.
-	// Note that nil func suppresses emitting all log records.
-	BuildLogFunc = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{})).InfoContext
-)
-
-func BuildLog(ctx context.Context, msg string, args ...any) {
-	if buildlogEnabled {
-		buildLog := BuildLogFunc
-		if buildLog != nil {
-			buildLog(ctx, msg, args...)
-		}
-	}
 }

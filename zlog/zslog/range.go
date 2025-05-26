@@ -8,19 +8,19 @@ import (
 
 // Range is the log range type.
 // Defined ranges are:
-//   - [LvUndef]
-//   - [LvDebug]
-//   - [LvInfo]
-//   - [LvWarn]
-//   - [LvError]
-type Level uint
+//   - [RangeUndef]
+//   - [RangeDebug]
+//   - [RangeInfo]
+//   - [RangeWarn]
+//   - [RangeError]
+type Range uint
 
 const (
-	LvUndef Level = 1 << iota
-	LvDebug
-	LvInfo
-	LvWarn
-	LvError
+	RangeUndef Range = 1 << iota
+	RangeDebug
+	RangeInfo
+	RangeWarn
+	RangeError
 )
 
 // ctxKey is the context key type.

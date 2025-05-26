@@ -1,9 +1,7 @@
 package zlog_test
 
 import (
-	"bytes"
 	"context"
-	"log/slog"
 	"testing"
 
 	"github.com/aileron-projects/go/zlog"
@@ -51,16 +49,4 @@ func TestAttrsFromContext(t *testing.T) {
 		ztesting.AssertEqual(t, "invalid number of attributes.", 2, len(attrs))
 		ztesting.AssertEqual(t, "invalid content of attributes.", []any{"foo", "bar"}, attrs)
 	})
-}
-
-func TestBuildLog(t *testing.T) {
-	t.Cleanup(func() {
-		zlog.BuildLogFunc = slog.Default().InfoContext
-	})
-	var w bytes.Buffer
-	h := slog.NewTextHandler(&w, &slog.HandlerOptions{})
-	zlog.BuildLogFunc = slog.New(h).InfoContext
-	zlog.BuildLog(context.Background(), "test")
-	out := w.String()
-	ztesting.AssertEqual(t, "output not match", zlog.ExportedBuildlogEnabled, out != "")
 }

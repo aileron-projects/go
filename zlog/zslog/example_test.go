@@ -3,16 +3,17 @@ package zslog_test
 import (
 	"context"
 	"log/slog"
+	"os"
 
 	"github.com/aileron-projects/go/zlog/zslog"
 )
 
-func ExampleNewJSON() {
+func ExampleNew_jsonHandler() {
 	opts := &slog.HandlerOptions{
 		Level:       slog.LevelInfo,
-		ReplaceAttr: zslog.RemoveTime, // Remove time to avoid test failure.
+		ReplaceAttr: RemoveTime, // Remove time to avoid test failure.
 	}
-	lg := zslog.NewJSON(nil, opts)
+	lg := zslog.New(slog.NewJSONHandler(os.Stdout, opts))
 
 	ctx := context.Background()
 	lg.InfoContext(ctx, "this is info")                // Will be output.
@@ -25,12 +26,12 @@ func ExampleNewJSON() {
 	// {"level":"DEBUG","msg":"this is debug again"}
 }
 
-func ExampleNewText() {
+func ExampleNew_textHandler() {
 	opts := &slog.HandlerOptions{
 		Level:       slog.LevelInfo,
-		ReplaceAttr: zslog.RemoveTime, // Remove time to avoid test failure.
+		ReplaceAttr: RemoveTime, // Remove time to avoid test failure.
 	}
-	lg := zslog.NewText(nil, opts)
+	lg := zslog.New(slog.NewTextHandler(os.Stdout, opts))
 
 	ctx := context.Background()
 	lg.InfoContext(ctx, "this is info")                // Will be output.
@@ -41,4 +42,11 @@ func ExampleNewText() {
 	// Output:
 	// level=INFO msg="this is info"
 	// level=DEBUG msg="this is debug again"
+}
+
+func RemoveTime(groups []string, a slog.Attr) slog.Attr {
+	if a.Key == slog.TimeKey && len(groups) == 0 {
+		return slog.Attr{}
+	}
+	return a
 }

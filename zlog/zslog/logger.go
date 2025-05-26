@@ -1,12 +1,11 @@
 package zslog
 
 import (
-	"cmp"
 	"context"
-	"io"
 	"log/slog"
 	"math"
 	"os"
+	"sync/atomic"
 	"time"
 
 	"github.com/aileron-projects/go/zlog"
@@ -14,133 +13,132 @@ import (
 )
 
 func init() {
-	h := &ctxHandler{slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{})}
+	h := &ctxHandler{slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{})}
 	slog.SetDefault(slog.New(h))
-	hh := &ctxHandler{slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{})}
-	zlog.BuildLogFunc = buildLogFunc(hh)
+	SetDefault(New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{})))
 }
 
-// buildLogFunc returns a log function that should be used for [zlog.BuildLogFunc].
-func buildLogFunc(h slog.Handler) func(ctx context.Context, msg string, args ...any) {
-	return func(ctx context.Context, msg string, args ...any) {
-		r := slog.NewRecord(time.Now(), slog.LevelInfo, msg, 0)
-		r.Add(append(args, CallerAttr(1), FramesAttr(1))...)
-		e := h.Handle(ctx, r)
-		zruntime.ReportErr(e, "") // Report runtime error if any.
+// defaultLogger keeps default [Logger] instance.
+var defaultLogger atomic.Pointer[Logger]
+
+// SetDefault sets the default [Logger] instance.
+// It replaces existing logger.
+// Use [Default] to obtain the default logger.
+func SetDefault(lg *Logger) {
+	defaultLogger.Store(lg)
+}
+
+// Default returns the default [Logger] instance.
+// Use [SetDefault] to replace the default logger.
+func Default() *Logger {
+	return defaultLogger.Load()
+}
+
+// New returns a new [Logger] instance that uses given handler.
+// Create with a handler generated
+//
+//	slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{})
+//	slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{})
+func New(h slog.Handler) *Logger {
+	return &Logger{
+		Handler: &ctxHandler{Handler: h},
 	}
 }
 
-// NewContextHandler wraps the given handler with context aware handler.
-// Once the handler wrapped, [ContextWithLevel] and [zlog.ContextWithAttrs]
-// will works.
-func NewContextHandler(h slog.Handler) slog.Handler {
-	return &ctxHandler{Handler: h}
+// Logger is the logger type that uses [slog.Handler].
+// A Logger created with [New] is compatible with the
+// [ContextWithLevel] and the [zlog.ContextWithAttrs].
+type Logger struct {
+	slog.Handler
+	// AddCaller specifies the log level ranges that
+	// caller attributes should be appended.
+	// For example, set zslog.RangeWarn | zslog.RangeError
+	// to add caller only for warn and error levels.
+	AddCaller Range
+	// AddFrames specifies the log level ranges that
+	// stack frame attributes should be appended.
+	// For example, set zslog.RangeWarn | zslog.RangeError
+	// to add frames only for warn and error levels.
+	AddFrames Range
 }
 
-// NewJSON returns a new ZSLogger instance with given handler options.
-// NewJSON uses [os.Stdout] if the given w is nil.
-// NewJSON uses [slog.Logger] created with [slog.NewJSONHandler] internally.
-func NewJSON(w io.Writer, opts *slog.HandlerOptions) *ZSLogger {
-	w = cmp.Or(w, io.Writer(os.Stdout))
-	h := slog.NewJSONHandler(w, opts)
-	return &ZSLogger{
-		h: NewContextHandler(h),
-		w: w,
-	}
+func (l *Logger) DebugEnabled(ctx context.Context) bool {
+	return l.Enabled(ctx, slog.LevelDebug)
 }
 
-// NewText returns a new ZSLogger instance with given handler options.
-// NewText uses [os.Stdout] if the given w is nil.
-// NewText uses [slog.Logger] created with [slog.NewTextHandler] internally.
-func NewText(w io.Writer, opts *slog.HandlerOptions) *ZSLogger {
-	w = cmp.Or(w, io.Writer(os.Stdout))
-	h := slog.NewTextHandler(w, opts)
-	return &ZSLogger{
-		h: NewContextHandler(h),
-		w: w,
-	}
+func (l *Logger) InfoEnabled(ctx context.Context) bool {
+	return l.Enabled(ctx, slog.LevelInfo)
 }
 
-type ZSLogger struct {
-	h         slog.Handler
-	w         io.Writer
-	AddCaller Level
-	AddFrames Level
+func (l *Logger) WarnEnabled(ctx context.Context) bool {
+	return l.Enabled(ctx, slog.LevelWarn)
 }
 
-func (l *ZSLogger) Handler() slog.Handler {
-	return l.h
+func (l *Logger) ErrorEnabled(ctx context.Context) bool {
+	return l.Enabled(ctx, slog.LevelError)
 }
 
-func (l *ZSLogger) Writer() io.Writer {
-	return l.w
-}
-
-func (l *ZSLogger) Enabled(ctx context.Context, level slog.Level) bool {
-	return l.h.Enabled(ctx, level)
-}
-
-func (l *ZSLogger) DebugContext(ctx context.Context, msg string, args ...any) {
-	if !l.h.Enabled(ctx, slog.LevelDebug) {
+func (l *Logger) DebugContext(ctx context.Context, msg string, args ...any) {
+	if !l.Enabled(ctx, slog.LevelDebug) {
 		return
 	}
-	if l.AddCaller&LvDebug > 0 {
+	if l.AddCaller&RangeDebug > 0 {
 		args = append(args, CallerAttr(1))
 	}
-	if l.AddFrames&LvDebug > 0 {
+	if l.AddFrames&RangeDebug > 0 {
 		args = append(args, FramesAttr(1))
 	}
 	r := slog.NewRecord(time.Now(), slog.LevelDebug, msg, 0)
 	r.Add(args...)
-	e := l.h.Handle(ctx, r)
+	e := l.Handle(ctx, r)
 	zruntime.ReportErr(e, "") // Report runtime error if any.
 }
 
-func (l *ZSLogger) InfoContext(ctx context.Context, msg string, args ...any) {
-	if !l.h.Enabled(ctx, slog.LevelInfo) {
+func (l *Logger) InfoContext(ctx context.Context, msg string, args ...any) {
+	if !l.Enabled(ctx, slog.LevelInfo) {
 		return
 	}
-	if l.AddCaller&LvInfo > 0 {
+	if l.AddCaller&RangeInfo > 0 {
 		args = append(args, CallerAttr(1))
 	}
-	if l.AddFrames&LvInfo > 0 {
+	if l.AddFrames&RangeInfo > 0 {
 		args = append(args, FramesAttr(1))
 	}
 	r := slog.NewRecord(time.Now(), slog.LevelInfo, msg, 0)
 	r.Add(args...)
-	e := l.h.Handle(ctx, r)
+	e := l.Handle(ctx, r)
 	zruntime.ReportErr(e, "") // Report runtime error if any.
 }
 
-func (l *ZSLogger) WarnContext(ctx context.Context, msg string, args ...any) {
-	if !l.h.Enabled(ctx, slog.LevelWarn) {
+func (l *Logger) WarnContext(ctx context.Context, msg string, args ...any) {
+	if !l.Enabled(ctx, slog.LevelWarn) {
 		return
 	}
-	if l.AddCaller&LvWarn > 0 {
+	if l.AddCaller&RangeWarn > 0 {
 		args = append(args, CallerAttr(1))
 	}
-	if l.AddFrames&LvWarn > 0 {
+	if l.AddFrames&RangeWarn > 0 {
 		args = append(args, FramesAttr(1))
 	}
 	r := slog.NewRecord(time.Now(), slog.LevelWarn, msg, 0)
 	r.Add(args...)
-	e := l.h.Handle(ctx, r)
+	e := l.Handle(ctx, r)
 	zruntime.ReportErr(e, "") // Report runtime error if any.
 }
 
-func (l *ZSLogger) ErrorContext(ctx context.Context, msg string, args ...any) {
-	if !l.h.Enabled(ctx, slog.LevelError) {
+func (l *Logger) ErrorContext(ctx context.Context, msg string, args ...any) {
+	if !l.Enabled(ctx, slog.LevelError) {
 		return
 	}
-	if l.AddCaller&LvError > 0 {
+	if l.AddCaller&RangeError > 0 {
 		args = append(args, CallerAttr(1))
 	}
-	if l.AddFrames&LvError > 0 {
+	if l.AddFrames&RangeError > 0 {
 		args = append(args, FramesAttr(1))
 	}
 	r := slog.NewRecord(time.Now(), slog.LevelError, msg, 0)
 	r.Add(args...)
-	e := l.h.Handle(ctx, r)
+	e := l.Handle(ctx, r)
 	zruntime.ReportErr(e, "") // Report runtime error if any.
 }
 
