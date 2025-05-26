@@ -18,8 +18,12 @@ func init() {
 	SetDefault(New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{})))
 }
 
-// defaultLogger keeps default [Logger] instance.
-var defaultLogger atomic.Pointer[Logger]
+var (
+	// [Logger] implements [zlog.Logger] interface.
+	_ zlog.Logger = &Logger{}
+	// defaultLogger keeps default [Logger] instance.
+	defaultLogger atomic.Pointer[Logger]
+)
 
 // SetDefault sets the default [Logger] instance.
 // It replaces existing logger.
