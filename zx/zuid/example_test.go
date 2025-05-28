@@ -18,8 +18,8 @@ func ExampleContextWithID() {
 	// example-unique-id
 }
 
-func ExampleNewTimeBase() {
-	id := zuid.NewTimeBase()
+func ExampleNewTime() {
+	id := zuid.NewTime()
 	fmt.Println("Len :", len(id))
 	fmt.Println("hex        :", hex.EncodeToString(id))
 	fmt.Println("base32.Std :", base32.StdEncoding.EncodeToString(id))
@@ -28,8 +28,8 @@ func ExampleNewTimeBase() {
 	fmt.Println("base64.URL :", base64.URLEncoding.EncodeToString(id))
 }
 
-func ExampleNewHostBase() {
-	id := zuid.NewHostBase()
+func ExampleNewHost() {
+	id := zuid.NewHost()
 	fmt.Println("Len :", len(id))
 	fmt.Println("hex        :", hex.EncodeToString(id))
 	fmt.Println("base32.Std :", base32.StdEncoding.EncodeToString(id))
@@ -38,8 +38,8 @@ func ExampleNewHostBase() {
 	fmt.Println("base64.URL :", base64.URLEncoding.EncodeToString(id))
 }
 
-func ExampleNewCountBase() {
-	id := zuid.NewCountBase()
+func ExampleNewCount() {
+	id := zuid.NewCount()
 	fmt.Println("Len :", len(id))
 	fmt.Println("hex        :", hex.EncodeToString(id))
 	fmt.Println("base32.Std :", base32.StdEncoding.EncodeToString(id))

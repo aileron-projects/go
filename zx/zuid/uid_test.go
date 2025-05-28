@@ -29,7 +29,7 @@ func TestMustFNV1a64Hash(t *testing.T) {
 	})
 }
 
-func TestNewTimeBase(t *testing.T) {
+func TestNewTime(t *testing.T) {
 	timeNow = func() time.Time {
 		return time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC) // Unix 946684800 second.
 	}
@@ -38,12 +38,12 @@ func TestNewTimeBase(t *testing.T) {
 	rr := strings.NewReader("123456789012345678901234567890")
 	done := ztesting.ReplaceRandReader(rr)
 	defer done()
-	id := NewTimeBase()
+	id := NewTime()
 	ztesting.AssertEqual(t, "id length not match", 30, len(id))
 	ztesting.AssertEqual(t, "time not match", 946684800_000_000, binary.BigEndian.Uint64(id[0:8]))
 }
 
-func TestNewHostBase(t *testing.T) {
+func TestNewHost(t *testing.T) {
 	timeNow = func() time.Time {
 		return time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC) // Unix 946684800 second.
 	}
@@ -53,13 +53,13 @@ func TestNewHostBase(t *testing.T) {
 	rr := strings.NewReader("123456789012345678901234567890")
 	done := ztesting.ReplaceRandReader(rr)
 	defer done()
-	id := NewHostBase()
+	id := NewHost()
 	ztesting.AssertEqual(t, "id length not match", 30, len(id))
 	ztesting.AssertEqual(t, "time not match", 946684800_000_000, binary.BigEndian.Uint64(id[0:8]))
 	ztesting.AssertEqual(t, "hostname not match", "host1234", string(id[8:16]))
 }
 
-func TestNewCountBase(t *testing.T) {
+func TestNewCount(t *testing.T) {
 	timeNow = func() time.Time {
 		return time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC) // Unix 946684800 second.
 	}
@@ -70,7 +70,7 @@ func TestNewCountBase(t *testing.T) {
 	defer done()
 	counter = atomic.Uint64{}
 	counter.Store(math.MaxUint64 - 1)
-	id := NewCountBase()
+	id := NewCount()
 	ztesting.AssertEqual(t, "id length not match", 30, len(id))
 	ztesting.AssertEqual(t, "time not match", 946684800_000_000, binary.BigEndian.Uint64(id[0:8]))
 	ztesting.AssertEqual(t, "counter not match", uint64(math.MaxUint64), binary.BigEndian.Uint64(id[22:]))

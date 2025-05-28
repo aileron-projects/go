@@ -24,7 +24,7 @@ func mustFNV1a64Hash(s string, err error) []byte {
 	return h.Sum(nil)
 }
 
-// NewTimeBase returns a new 30 bytes timestamp based ID.
+// NewTime returns a new 30 bytes timestamp based ID.
 // The returned ID is sortable by time, higher entropy than UUIDv4
 // and is hard to guess because of the random value.
 // IDs are hard to duplicate but the possibility is not zero.
@@ -75,7 +75,7 @@ func mustFNV1a64Hash(s string, err error) []byte {
 //   - Base64Raw        : ^[0-9a-zA-Z+/]{40}$
 //   - Base64URL        : ^[0-9a-zA-Z-_]{40}$
 //   - Base64RawURL     : ^[0-9a-zA-Z-_]{40}$
-func NewTimeBase() []byte {
+func NewTime() []byte {
 	// x is a 30 bytes unique ID.
 	id := [30]byte{}
 	binary.BigEndian.PutUint64(id[0:], uint64(timeNow().UnixMicro())) // Initial 8 bytes timestamp.
@@ -84,7 +84,7 @@ func NewTimeBase() []byte {
 	return id[:]
 }
 
-// NewHostBase returns a new 30 bytes hostname based ID.
+// NewHost returns a new 30 bytes hostname based ID.
 // The returned ID is sortable by time, nearly has the same entropy as UUIDv4
 // and is hard to guess because of the random value.
 // IDs are hard to duplicate but the possibility is not zero.
@@ -136,7 +136,7 @@ func NewTimeBase() []byte {
 //   - Base64Raw        : ^[0-9a-zA-Z+/]{40}$
 //   - Base64URL        : ^[0-9a-zA-Z-_]{40}$
 //   - Base64RawURL     : ^[0-9a-zA-Z-_]{40}$
-func NewHostBase() []byte {
+func NewHost() []byte {
 	id := [30]byte{}
 	binary.BigEndian.PutUint64(id[0:], uint64(timeNow().UnixMicro())) // Initial 8 bytes timestamp.
 	copy(id[8:], hostnameFNV1a64)                                     // Next 8 bytes hostname hash.
@@ -145,7 +145,7 @@ func NewHostBase() []byte {
 	return id[:]
 }
 
-// NewCountBase returns a new 30 bytes counter based ID.
+// NewCount returns a new 30 bytes counter based ID.
 // The returned ID is sortable by time, nearly has the same entropy as UUIDv4
 // and is hard to guess because of the random value.
 // IDs are hard to duplicate but the possibility is not zero.
@@ -187,7 +187,7 @@ func NewHostBase() []byte {
 //   - [encoding/base32.HexEncoding]: 001LQ09R6VG00C9I6CQ3ADHN70SJ0C9I6CQ0000000000001
 //   - [encoding/base64.StdEncoding]: AANdATs34AAxMjM0NTY3ODkwMTIzNAAAAAAAAAAB
 //   - [encoding/base64.URLEncoding]: AANdATs34AAxMjM0NTY3ODkwMTIzNAAAAAAAAAAB
-func NewCountBase() []byte {
+func NewCount() []byte {
 	id := [30]byte{}
 	binary.BigEndian.PutUint64(id[0:], uint64(timeNow().UnixMicro())) // Initial 8 bytes timestamp.
 	_, err := rand.Read(id[8:22])                                     // Next 14 bytes random.

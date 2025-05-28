@@ -6,23 +6,23 @@ import (
 	"github.com/aileron-projects/go/zx/zuid"
 )
 
-func BenchmarkNewTimeBase(b *testing.B) {
+func BenchmarkNewTime(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {
-		zuid.NewTimeBase()
+		zuid.NewTime()
 	}
 }
 
-func BenchmarkNewHostBase(b *testing.B) {
+func BenchmarkNewHost(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {
-		zuid.NewHostBase()
+		zuid.NewHost()
 	}
 }
 
-func BenchmarkNewCountBase(b *testing.B) {
+func BenchmarkNewCount(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {
-		zuid.NewCountBase()
+		zuid.NewCount()
 	}
 }
