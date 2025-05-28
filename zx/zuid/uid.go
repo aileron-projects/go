@@ -65,6 +65,16 @@ func mustFNV1a64Hash(s string, err error) []byte {
 //   - [encoding/base32.HexEncoding]: 001LQ09R6VG00C9I6CQ3ADHN70SJ0C9I6CQ3ADHN70SJ0C9I
 //   - [encoding/base64.StdEncoding]: AANdATs34AAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEy
 //   - [encoding/base64.URLEncoding]: AANdATs34AAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEy
+//
+// Encoding the returned ID will results in the following pattern:
+//
+//   - Base16           : ^[0-9a-fA-F]{60}$
+//   - Base32           : ^[2-7A-Z]{48}$
+//   - Base32Hex        : ^[0-9A-V]{48}$
+//   - Base64           : ^[0-9a-zA-Z+/]{40}$
+//   - Base64Raw        : ^[0-9a-zA-Z+/]{40}$
+//   - Base64URL        : ^[0-9a-zA-Z-_]{40}$
+//   - Base64RawURL     : ^[0-9a-zA-Z-_]{40}$
 func NewTimeBase() []byte {
 	// x is a 30 bytes unique ID.
 	id := [30]byte{}
@@ -116,6 +126,16 @@ func NewTimeBase() []byte {
 //   - [encoding/base32.HexEncoding]: 001LQ09R6VG00Q3FEDQ32CHJ6GOJ4CPK6KR3EE1P60OJ4CPK
 //   - [encoding/base64.StdEncoding]: AANdATs34ABob3N0MTIzNDEyMzQ1Njc4OTAxMjM0
 //   - [encoding/base64.URLEncoding]: AANdATs34ABob3N0MTIzNDEyMzQ1Njc4OTAxMjM0
+//
+// Encoding the returned ID will results in the following pattern:
+//
+//   - Base16           : ^[0-9a-fA-F]{60}$
+//   - Base32           : ^[2-7A-Z]{48}$
+//   - Base32Hex        : ^[0-9A-V]{48}$
+//   - Base64           : ^[0-9a-zA-Z+/]{40}$
+//   - Base64Raw        : ^[0-9a-zA-Z+/]{40}$
+//   - Base64URL        : ^[0-9a-zA-Z-_]{40}$
+//   - Base64RawURL     : ^[0-9a-zA-Z-_]{40}$
 func NewHostBase() []byte {
 	id := [30]byte{}
 	binary.BigEndian.PutUint64(id[0:], uint64(timeNow().UnixMicro())) // Initial 8 bytes timestamp.
