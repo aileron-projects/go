@@ -10,14 +10,14 @@ var benchData = []byte("Hello Go!")
 
 func BenchmarkSumISO(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zcrc64.SumISO(benchData)
 	}
 }
 
 func BenchmarkSumECMA(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zcrc64.SumECMA(benchData)
 	}
 }

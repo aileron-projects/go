@@ -10,42 +10,42 @@ var benchData = []byte("Hello Go!")
 
 func BenchmarkSum32(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zfnv.Sum32(benchData)
 	}
 }
 
 func BenchmarkSum32a(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zfnv.Sum32a(benchData)
 	}
 }
 
 func BenchmarkSum64(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zfnv.Sum64(benchData)
 	}
 }
 
 func BenchmarkSum64a(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zfnv.Sum64a(benchData)
 	}
 }
 
 func BenchmarkSum128(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zfnv.Sum128(benchData)
 	}
 }
 
 func BenchmarkSum128a(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zfnv.Sum128a(benchData)
 	}
 }

@@ -3,13 +3,13 @@ package zhmac_test
 import (
 	"crypto"
 	_ "crypto/sha256"
-	_ "crypto/sha3"
 	"encoding/hex"
 	"fmt"
 
 	"github.com/aileron-projects/go/zcrypto/zhmac"
 	_ "golang.org/x/crypto/blake2b"
 	_ "golang.org/x/crypto/blake2s"
+	_ "golang.org/x/crypto/sha3"
 )
 
 func ExampleSum_sha256() {

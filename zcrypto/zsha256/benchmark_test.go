@@ -13,28 +13,28 @@ var (
 
 func BenchmarkSum224(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha256.Sum224(msg)
 	}
 }
 
 func BenchmarkSum256(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha256.Sum256(msg)
 	}
 }
 
 func BenchmarkHMACSum224(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha256.HMACSum224(msg, key)
 	}
 }
 
 func BenchmarkHMACSum256(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha256.HMACSum256(msg, key)
 	}
 }

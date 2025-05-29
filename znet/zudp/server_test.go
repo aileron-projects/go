@@ -256,11 +256,12 @@ func TestServer_Shutdown(t *testing.T) {
 	})
 	t.Run("shutdown context done", func(t *testing.T) {
 		handlerInvoked := make(chan struct{})
+		testDone := make(chan struct{})
 		pc, _ := net.ListenPacket("udp", ":0")
 		s := &Server{
 			Handler: HandlerFunc(func(ctx context.Context, conn Conn) {
 				handlerInvoked <- struct{}{}
-				<-t.Context().Done()
+				<-testDone
 			}),
 		}
 		shutdown := make(chan struct{})
@@ -281,6 +282,7 @@ func TestServer_Shutdown(t *testing.T) {
 		ztesting.AssertEqual(t, "listeners length not match", 0, s.packetConns.Length())
 		ztesting.AssertEqual(t, "conns length not match", 1, s.conns.Length()) // Conn is yet alive.
 		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
+		testDone <- struct{}{}
 	})
 }
 

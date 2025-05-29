@@ -13,56 +13,56 @@ var (
 
 func BenchmarkSum224(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha512.Sum224(msg)
 	}
 }
 
 func BenchmarkSum256(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha512.Sum256(msg)
 	}
 }
 
 func BenchmarkSum384(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha512.Sum384(msg)
 	}
 }
 
 func BenchmarkSum512(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha512.Sum512(msg)
 	}
 }
 
 func BenchmarkHMACSum224(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha512.HMACSum224(msg, key)
 	}
 }
 
 func BenchmarkHMACSum256(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha512.HMACSum256(msg, key)
 	}
 }
 
 func BenchmarkHMACSum384(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha512.HMACSum384(msg, key)
 	}
 }
 
 func BenchmarkHMACSum512(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha512.HMACSum512(msg, key)
 	}
 }

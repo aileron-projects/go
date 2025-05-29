@@ -49,7 +49,7 @@ struct = {{ struct }}
 	tpl := ztext.NewTemplate(template, "{{", "}}")
 
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		tpl.Execute(val)
 	}
 }

@@ -13,14 +13,14 @@ var (
 
 func BenchmarkSum(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha1.Sum(msg)
 	}
 }
 
 func BenchmarkHMACSum(b *testing.B) {
 	b.ResetTimer()
-	for b.Loop() {
+	for range b.N {
 		zsha1.HMACSum(msg, key)
 	}
 }

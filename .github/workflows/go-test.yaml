@@ -63,22 +63,22 @@ jobs:
           go-os: ${{ matrix.os }}
           go-version: "oldstable"
 
-  # test-minimum:
-  #   name: ${{ matrix.runner }}-minimum
-  #   runs-on: ${{ matrix.runner }}-latest
-  #   timeout-minutes: 15
-  #   strategy:
-  #     matrix:
-  #       include:
-  #         - { runner: "ubuntu", os: "linux" }
-  #         - { runner: "windows", os: "windows" }
-  #         - { runner: "macos", os: "darwin" }
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-  #         submodules: true
-  #     - uses: aileron-projects/_scripts/.github/actions/go-test@main
-  #       with:
-  #         go-os: ${{ matrix.os }}
-  #         go-version: "1.24.0"
+  test-minimum:
+    name: ${{ matrix.runner }}-minimum
+    runs-on: ${{ matrix.runner }}-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        include:
+          - { runner: "ubuntu", os: "linux" }
+          - { runner: "windows", os: "windows" }
+          - { runner: "macos", os: "darwin" }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true
+      - uses: aileron-projects/_scripts/.github/actions/go-test@main
+        with:
+          go-os: ${{ matrix.os }}
+          go-version: "1.23.0"
