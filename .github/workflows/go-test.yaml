@@ -81,4 +81,4 @@ jobs:
       - uses: aileron-projects/_scripts/.github/actions/go-test@main
         with:
           go-os: ${{ matrix.os }}
-          go-version: "1.23.0"
+          go-version-file: go.mod
