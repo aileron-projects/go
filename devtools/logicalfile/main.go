@@ -16,7 +16,7 @@ func main() {
 			MaxTotalBytes: 1000,
 			Pattern:       "app.%u.log",
 			SrcDir:        "./src",
-			DstDir:        "./dst",
+			DstDir:        "./tmp",
 		},
 		RotateBytes: 500,
 		FileName:    "app.log",

@@ -1,32 +1,17 @@
-# IDE
-.vscode/
-.idea/
-
-# Project
-_output/**
-*.env.mk
+# Ignore files.
+*.mk
 *.env
 *.test
-*.out
-*.a
-*.o
-*.so
-*.dll
-*.exe
-*.exe~
-*.gz
+*.tmp
+*.temp
 
-# For convenience
+# Ignore directory.
+_output/**
 bin/
 tmp/
 temp/
 work/
 study/
 local/
-*.tmp
-*.temp
-
-# Just in case.
-!**/testdata/**
-!*.gitkeep
-!*.gitignore
+.vscode/
+.idea/
