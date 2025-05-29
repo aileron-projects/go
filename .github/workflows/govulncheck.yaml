@@ -1,4 +1,4 @@
-name: Check Suite Scheduled
+name: Govulncheck
 
 on:
   workflow_dispatch: {}
