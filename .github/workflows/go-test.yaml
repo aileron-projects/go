@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-stable:
+  stable:
     name: ${{ matrix.runner }}-stable
     runs-on: ${{ matrix.runner }}-latest
     timeout-minutes: 15
@@ -44,7 +44,7 @@ jobs:
           env_vars: ${{ matrix.os }}
           name: ${{ matrix.os }}
 
-  test-oldstable:
+  oldstable:
     name: ${{ matrix.runner }}-oldstable
     runs-on: ${{ matrix.runner }}-latest
     timeout-minutes: 15
@@ -63,7 +63,7 @@ jobs:
           go-os: ${{ matrix.os }}
           go-version: "oldstable"
 
-  test-minimum:
+  minimum:
     name: ${{ matrix.runner }}-minimum
     runs-on: ${{ matrix.runner }}-latest
     timeout-minutes: 15
