@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](./LICENSE)
 
 [![Codecov](https://codecov.io/gh/aileron-projects/go/branch/main/graph/badge.svg?token=L62XLZNFLE)](https://codecov.io/gh/aileron-projects/go)
-[![Test Suite](https://github.com/aileron-projects/go/actions/workflows/go-test.yaml/badge.svg?branch=main)](https://github.com/aileron-projects/go/actions/workflows/go-test.yaml?query=branch%3Amain)
+[![Test Suite](https://github.com/aileron-projects/go/actions/workflows/test-suite.yaml/badge.svg?branch=main)](https://github.com/aileron-projects/go/actions/workflows/test-suite.yaml?query=branch%3Amain)
 [![Check Suite](https://github.com/aileron-projects/go/actions/workflows/check-suite.yaml/badge.svg?branch=main)](https://github.com/aileron-projects/go/actions/workflows/check-suite.yaml?query=branch%3Amain)
 [![OpenSourceInsight](https://badgen.net/badge/open%2Fsource%2F/insight/cyan)](https://deps.dev/go/github.com%2Faileron-projects%2Fgo)
 [![OSS Insight](https://badgen.net/badge/OSS/Insight/orange)](https://ossinsight.io/analyze/aileron-projects/go)
@@ -81,17 +81,16 @@ Rules for [`internal packages`](https://go.dev/doc/go1.4#internalpackages) follo
 
 Operating System:
 
-- `Linux` ([ubuntu-latest](https://github.com/actions/runner-images))
-- `Windows` ([windows-latest](https://github.com/actions/runner-images))
-- `macOS` ([macos-latest](https://github.com/actions/runner-images))
+- `Linux`: [ubuntu-latest](https://github.com/actions/runner-images)
+- `Windows`: [windows-latest](https://github.com/actions/runner-images)
+- `macOS`: [macos-latest](https://github.com/actions/runner-images)
 
 Go:
 
-- Current Stable (Latest patch version of `go 1.(N).x`)
-- Previous Stable (Latest patch version of `go 1.(N-1).x`)
-- Minimum Requirement (`go 1.(N-2).0`)
+- Current Stable: `go 1.(N).x`
+- Previous Stable: `go 1.(N-1).x`
+- Minimum Requirement: `go 1.(N-2).0`
   - Declared in the [go.mod](go.mod)
-  - go.mod is manually updated
 
 Where `N` is the current latest minor version.
 See the Go official release page [Stable versions](https://go.dev/dl/).
