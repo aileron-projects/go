@@ -1,5 +1,6 @@
 ignore:
   - "_scripts/"
+  - "docs/"
   - "devtools/"
 coverage:
   range: 95..100

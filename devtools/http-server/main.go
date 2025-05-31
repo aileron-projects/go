@@ -17,7 +17,6 @@ import (
 )
 
 var (
-	addr     = flag.String("addr", ":8080", "listen address")
 	timeout  = flag.Int("timeout", 10, "graceful shutdown timeout second")
 	certFile = flag.String("certFile", "", "tls cert file path")
 	keyFile  = flag.String("keyFile", "", "tls key file path")
@@ -26,7 +25,7 @@ var (
 func main() {
 	flag.Parse()
 	svr := &http.Server{
-		Addr: *addr,
+		Addr: ":8080",
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// time.Sleep(30 * time.Second)
 			fmt.Fprintln(w, "Hello Go!!")
@@ -52,7 +51,7 @@ func main() {
 		os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
-	log.Println("starting http server at " + *addr)
+	log.Println("starting http server at", svr.Addr)
 	if err := r.Run(sigCtx); err != nil {
 		panic(err)
 	}

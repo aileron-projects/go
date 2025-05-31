@@ -1,4 +1,3 @@
-listen: ":8080"
 reportIntervalSec: 1
 useLimiter: leakyBucketLimiter
 

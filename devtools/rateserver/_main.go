@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"math/rand/v2"
 	"net/http"
 	"os"
@@ -70,17 +71,17 @@ func main() {
 		panic("limiter not defined.")
 	}
 
-	fmt.Println("\nserver listens on:", config.Listen)
-
 	h := &testHandler{
 		limiter:  limiter,
 		waitMode: waitMode,
 	}
 	go startReporting(h, time.Duration(config.ReportIntervalSec)*time.Second)
 	svr := http.Server{
-		Addr:    config.Listen,
+		Addr:    ":8080",
 		Handler: h,
 	}
+
+	log.Println("server listens on", svr.Addr)
 	if err := svr.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		panic(err)
 	}
@@ -140,7 +141,6 @@ func (h *testHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type config struct {
-	Listen            string                `yaml:"listen"`
 	ReportIntervalSec int                   `yaml:"reportIntervalSec"`
 	UseLimiter        string                `yaml:"useLimiter"`
 	CLimiter          *ConcurrentLimiter    `yaml:"concurrentLimiter"`

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"log"
 	"os"
 	"os/signal"
@@ -12,15 +11,11 @@ import (
 	"github.com/aileron-projects/go/znet/zudp"
 )
 
-var (
-	addr = flag.String("addr", ":8080", "listen address")
-)
-
 func main() {
 	// proxy := zudp.NewProxy("localhost:5001", "localhost:5002")
 	proxy := zudp.NewProxy("localhost:5001")
 	svr := &zudp.Server{
-		Addr:    *addr,
+		Addr:    ":8080",
 		Handler: proxy,
 	}
 
@@ -30,10 +25,11 @@ func main() {
 		Close:           svr.Close,
 		ShutdownTimeout: 30 * time.Second,
 	}
-	log.Println("starting udp server at " + *addr)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
+
+	log.Println("starting udp server at " + svr.Addr)
 	if err := runner.Run(ctx); err != nil {
 		panic(err)
 	}

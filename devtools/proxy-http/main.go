@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -13,18 +12,13 @@ import (
 	"github.com/aileron-projects/go/znet/zhttp"
 )
 
-var (
-	addr = flag.String("addr", ":8080", "listen address")
-)
-
 func main() {
-	flag.Parse()
 	// p, _ := zhttp.NewProxy("http://httpbin.org/", "http://echo.free.beeceptor.com/foo?alice=bob")
 	// p, _ := zhttp.NewProxy("http://sse.dev")
 	p, _ := zhttp.NewProxy("http://localhost:9090")
 
 	svr := &http.Server{
-		Addr:        *addr,
+		Addr:        ":8080",
 		Handler:     p,
 		ReadTimeout: 30 * time.Second,
 	}
@@ -34,7 +28,7 @@ func main() {
 		Close:           svr.Close,
 		ShutdownTimeout: 5 * time.Second,
 	}
-	log.Println("starting http server at " + *addr)
+	log.Println("starting http server at " + svr.Addr)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()

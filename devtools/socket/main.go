@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -10,10 +9,6 @@ import (
 	"time"
 
 	"github.com/aileron-projects/go/zsyscall"
-)
-
-var (
-	addr = flag.String("addr", ":8080", "listen address")
 )
 
 // On linux, socket options can be checked with the command:
@@ -38,13 +33,12 @@ var opts = &zsyscall.SockOption{
 }
 
 func main() {
-	flag.Parse()
 	targets := zsyscall.SockOptSO | zsyscall.SockOptIP | zsyscall.SockOptIPV6 | zsyscall.SockOptTCP
 	lc := &net.ListenConfig{
 		Control: opts.ControlFunc(targets),
 	}
 
-	ln, err := lc.Listen(context.Background(), "tcp", *addr)
+	ln, err := lc.Listen(context.Background(), "tcp", ":8080")
 	if err != nil {
 		panic(err)
 	}
