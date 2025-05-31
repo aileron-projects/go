@@ -1,10 +1,6 @@
 # Help is in util.mk
 .DEFAULT_GOAL:=help
 
-ifneq (,$(wildcard .env.mk))
-  include .env.mk
-endif
-
 # Override settings.
 PRETTIER_TARGET := "**/*.{md,yaml,yml,toml,js,jsx,ts,html,css}"
 GO_TEST_TAGS := zerrorstrace,zdebugdump,zslogbuildlog
