@@ -73,7 +73,9 @@ TCPサーバはTLSを利用可能です。
 TLSは利用していません。
 ハンドラは、受信したTCPデータを標準出力に出力しています。
 
-{{< code language="go" source="ex_basic/main.go" >}}
+```go
+{{% code source="ex_basic/main.go" %}}
+```
 
 ### TCPサーバランナー
 
@@ -83,7 +85,9 @@ TCPサーバランナーを利用すると、グレースフルシャットダ�
 TCPサーバランナーの実装例は以下になります。
 `syscall`パッケージの利用が制限されているプラットフォームもある点にご注意ください。
 
-{{< code language="go" source="ex_runner/main.go" >}}
+```go
+{{% code source="ex_runner/main.go" %}}
+```
 
 ### TLS
 
@@ -91,7 +95,9 @@ TLSを利用したTCPサーバの実装例は以下の通りです。
 簡単にはcertファイルとkeyファイルのパスを指定するのみですが、より細かい設定をする場合は`Server.TLSConfig`
 に対して設定をおこいます。
 
-{{< code language="go" source="ex_tls/main.go" >}}
+```go
+{{% code source="ex_tls/main.go" %}}
+```
 
 ### コネクション数制限
 
@@ -99,7 +105,9 @@ TLSを利用したTCPサーバの実装例は以下の通りです。
 同時コネクション数を制限することが可能です。
 実装例は以下となります。なお一部エラー処理は省略しています。
 
-{{< code language="go" source="ex_concurrency/main.go" >}}
+```go
+{{% code source="ex_concurrency/main.go" %}}
+```
 
 ### IPホワイトリスト
 
@@ -113,7 +121,9 @@ TLSを利用したTCPサーバの実装例は以下の通りです。
 実装例は以下となります。なお一部エラー処理は省略しています。
 この例では、ローカルホストである`127.0.0.1`のIPアドレスのみ許可しています。
 
-{{< code language="go" source="ex_whitelist/main.go" >}}
+```go
+{{% code lsource="ex_whitelist/main.go" %}}
+```
 
 ### IPブラックリスト
 
@@ -127,4 +137,6 @@ TLSを利用したTCPサーバの実装例は以下の通りです。
 実装例は以下となります。なお一部エラー処理は省略しています。
 この例では、ローカルホストである`192.168.0.0/16`の範囲にあるIPアドレスを拒否しています。
 
-{{< code language="go" source="ex_blacklist/main.go" >}}
+```go
+{{% code source="ex_blacklist/main.go" %}}
+```
