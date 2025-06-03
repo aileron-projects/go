@@ -1,8 +1,8 @@
 ---
-title: "TCP Server"
-linkTitle: "TCP Server"
+title: "UDP Server"
+linkTitle: "UDP Server"
 type: docs
-weight: 50
+weight: 100
 categories: []
 tags: []
 description: ""

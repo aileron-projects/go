@@ -7,7 +7,6 @@ import (
 	"log"
 	"net"
 
-	"github.com/aileron-projects/go/znet"
 	"github.com/aileron-projects/go/znet/ztcp"
 )
 
@@ -28,16 +27,14 @@ func handleConn(ctx context.Context, conn net.Conn) {
 
 // START main
 func main() {
+	// You can use curl to check if it works.
+	// curl --unix-socket '/var/run/example.sock' http://localhost:8080/example
 	svr := &ztcp.Server{
-		Addr:    "", // This is not used when we call [Server.Serve].
+		Addr:    "unix:///var/run/example.sock",
 		Handler: ztcp.HandlerFunc(handleConn),
 	}
-
-	ln, _ := net.Listen("tcp", ":8080")
-	ln, _ = znet.NewBlackListListener(ln, "192.168.0.0/16")
-
-	log.Println("starting tcp server at " + ln.Addr().String())
-	if err := svr.Serve(ln); err != nil && err != ztcp.ErrServerClosed {
+	log.Println("starting tcp server at " + svr.Addr)
+	if err := svr.ListenAndServe(); err != nil && err != ztcp.ErrServerClosed {
 		panic(err)
 	}
 }

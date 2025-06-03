@@ -33,8 +33,8 @@ func main() {
 		Handler: ztcp.HandlerFunc(handleConn),
 	}
 
-	ln, _ := net.Listen("tcp", ":8080")                   // Create a new TCP listener.
-	ln, _ = znet.NewWhiteListListener(ln, "127.0.0.1/32") // Apply whitelist.
+	ln, _ := net.Listen("tcp", ":8080")
+	ln, _ = znet.NewWhiteListListener(ln, "127.0.0.1/32", "::1/128")
 
 	log.Println("starting tcp server at " + ln.Addr().String())
 	if err := svr.Serve(ln); err != nil && err != ztcp.ErrServerClosed {
