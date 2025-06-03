@@ -247,12 +247,12 @@ func TestProxy(t *testing.T) {
 	t.Run("pre roundtrip error", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
 		res := &http.Response{StatusCode: http.StatusOK, Body: http.NoBody}
-		var gotErr *HTTPError
+		var gotErr error
 		proxy := &Proxy{
 			Rewrite:      func(in, out *http.Request) {},
 			Transport:    &testTransport{resp: res},
 			PreRoundTrip: func(in, out *http.Request) error { return errors.New("pre error") },
-			ErrorHandler: func(w http.ResponseWriter, r *http.Request, err *HTTPError) { gotErr = err },
+			ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) { gotErr = err },
 		}
 		resp := httptest.NewRecorder()
 		proxy.ServeHTTP(resp, req)
@@ -261,12 +261,12 @@ func TestProxy(t *testing.T) {
 	t.Run("post roundtrip error", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
 		res := &http.Response{StatusCode: http.StatusOK, Body: http.NoBody}
-		var gotErr *HTTPError
+		var gotErr error
 		proxy := &Proxy{
 			Rewrite:       func(in, out *http.Request) {},
 			Transport:     &testTransport{resp: res},
 			PostRoundTrip: func(in *http.Request, out *http.Response) error { return errors.New("pre error") },
-			ErrorHandler:  func(w http.ResponseWriter, r *http.Request, err *HTTPError) { gotErr = err },
+			ErrorHandler:  func(w http.ResponseWriter, r *http.Request, err error) { gotErr = err },
 		}
 		resp := httptest.NewRecorder()
 		proxy.ServeHTTP(resp, req)
@@ -275,11 +275,11 @@ func TestProxy(t *testing.T) {
 	t.Run("upgrade error", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
 		res := &http.Response{StatusCode: http.StatusSwitchingProtocols, Body: http.NoBody}
-		var gotErr *HTTPError
+		var gotErr error
 		proxy := &Proxy{
 			Rewrite:      func(in, out *http.Request) {},
 			Transport:    &testTransport{resp: res},
-			ErrorHandler: func(w http.ResponseWriter, r *http.Request, err *HTTPError) { gotErr = err },
+			ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) { gotErr = err },
 		}
 		resp := httptest.NewRecorder()
 		proxy.ServeHTTP(resp, req)
@@ -289,11 +289,11 @@ func TestProxy(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
 		body := io.NopCloser(ziotest.ErrReader(strings.NewReader("test response"), 4))
 		res := &http.Response{StatusCode: http.StatusOK, Body: body}
-		var gotErr *HTTPError
+		var gotErr error
 		proxy := &Proxy{
 			Rewrite:      func(in, out *http.Request) {},
 			Transport:    &testTransport{resp: res},
-			ErrorHandler: func(w http.ResponseWriter, r *http.Request, err *HTTPError) { gotErr = err },
+			ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) { gotErr = err },
 		}
 		resp := httptest.NewRecorder()
 		proxy.ServeHTTP(resp, req)
@@ -303,11 +303,11 @@ func TestProxy(t *testing.T) {
 	t.Run("copy trailer error", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
 		res := &http.Response{StatusCode: http.StatusOK, Body: http.NoBody, Trailer: http.Header{"Test": {"foo"}}}
-		var gotErr *HTTPError
+		var gotErr error
 		proxy := &Proxy{
 			Rewrite:      func(in, out *http.Request) {},
 			Transport:    &testTransport{resp: res},
-			ErrorHandler: func(w http.ResponseWriter, r *http.Request, err *HTTPError) { gotErr = err },
+			ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) { gotErr = err },
 		}
 		resp := struct{ http.ResponseWriter }{httptest.NewRecorder()} // Resp does not implement flusher.
 		proxy.ServeHTTP(resp, req)

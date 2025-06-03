@@ -120,7 +120,7 @@ type Proxy struct {
 	// If non-nil, any errors occurred while proxying is given.
 	// If nil, a default error handler is used.
 	// Given w and r is the same as tha value passed to [Proxy.ServeHTTP].
-	ErrorHandler ErrorHandler[*HTTPError]
+	ErrorHandler ErrorHandler
 }
 
 func (p *Proxy) handleError(w http.ResponseWriter, r *http.Request, err *HTTPError) {

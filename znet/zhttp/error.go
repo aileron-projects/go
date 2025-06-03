@@ -10,7 +10,7 @@ import (
 // It is intended to be used in middleware and handlers.
 // For server-side middleware and handlers, w, r and err should not be nil.
 // For client-side middleware w can be nil and r and err should not be nil.
-type ErrorHandler[T error] func(w http.ResponseWriter, r *http.Request, err T)
+type ErrorHandler func(w http.ResponseWriter, r *http.Request, err error)
 
 // HTTPError is the HTTP error type.
 type HTTPError struct {
