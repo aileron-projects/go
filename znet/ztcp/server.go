@@ -18,6 +18,11 @@ import (
 )
 
 var (
+	// ErrServerClosed is a sentinel error that is returned by the
+	// [Server.ListenAndServe], [Server.ListenAndServeTLS], [Server.Serve]
+	// and [Server.ServeTLS] when one of the [Server.Close] or [Server.Shutdown]
+	// was called.
+	ErrServerClosed = errors.New("znet/ztcp: Server closed")
 	// ErrAbortHandler is a sentinel panic value to abort a handler.
 	// While any panic from ServeTCP aborts the response to the client,
 	// panicking with ErrAbortHandler also suppresses logging the error and stacktraces.
@@ -98,10 +103,10 @@ type Server struct {
 // [Server.Serve] with handler to handle incoming connections.
 //
 // ListenAndServeTLS always returns a non-nil error.
-// After [Server.Shutdown] or [Server.Close], the returned error is [net.ErrClosed].
+// After [Server.Shutdown] or [Server.Close], the returned error is [ErrServerClosed].
 func (s *Server) ListenAndServe() error {
 	if s.shutdown.Load() {
-		return net.ErrClosed
+		return ErrServerClosed
 	}
 	ln, err := newListener(s.Addr)
 	if err != nil {
@@ -119,10 +124,10 @@ func (s *Server) ListenAndServe() error {
 // should be the concatenation of the server's certificate, any intermediates, and the CA's certificate.
 //
 // ListenAndServeTLS always returns a non-nil error.
-// After [Server.Shutdown] or [Server.Close], the returned error is [net.ErrClosed].
+// After [Server.Shutdown] or [Server.Close], the returned error is [ErrServerClosed].
 func (s *Server) ListenAndServeTLS(certFile, keyFile string) error {
 	if s.shutdown.Load() {
-		return net.ErrClosed
+		return ErrServerClosed
 	}
 	ln, err := newListener(s.Addr)
 	if err != nil {
@@ -141,10 +146,10 @@ func (s *Server) ListenAndServeTLS(certFile, keyFile string) error {
 // should be the concatenation of the server's certificate, any intermediates, and the CA's certificate.
 //
 // ServeTLS always returns a non-nil error.
-// After [Server.Shutdown] or [Server.Close], the returned error is [net.ErrClosed].
+// After [Server.Shutdown] or [Server.Close], the returned error is [ErrServerClosed].
 func (s *Server) ServeTLS(l net.Listener, certFile, keyFile string) error {
 	if s.shutdown.Load() {
-		return net.ErrClosed
+		return ErrServerClosed
 	}
 	var config *tls.Config
 	if s.TLSConfig != nil {
@@ -168,10 +173,10 @@ func (s *Server) ServeTLS(l net.Listener, certFile, keyFile string) error {
 // calling s.Handler to reply to them.
 //
 // Serve always returns a non-nil error.
-// After [Server.Shutdown] or [Server.Close], the returned error is [net.ErrClosed].
+// After [Server.Shutdown] or [Server.Close], the returned error is [ErrServerClosed].
 func (s *Server) Serve(l net.Listener) error {
 	if s.shutdown.Load() {
-		return net.ErrClosed
+		return ErrServerClosed
 	}
 
 	ctx := context.Background()
@@ -199,7 +204,7 @@ func (s *Server) Serve(l net.Listener) error {
 				continue
 			}
 			if s.shutdown.Load() { // Error is caused by shutdown.
-				return net.ErrClosed
+				return ErrServerClosed
 			}
 			// Check if this is caused by timeout or not. [net.Error] implements the interface.
 			if to, ok := err.(interface{ Timeout() bool }); ok && to.Timeout() {
@@ -244,10 +249,10 @@ func (s *Server) serve(ctx context.Context, conn net.Conn) {
 // For a graceful shutdown, use [Server.Shutdown].
 //
 // When Close is called, [Server.Serve], [Server.ServeTLS], [Server.ListenAndServe]
-// and [Server.ListenAndServeTLS] immediately return [net.ErrClosed].
+// and [Server.ListenAndServeTLS] immediately return [ErrServerClosed].
 //
 // Once Close has been called on a server, it may not be reused;
-// future calls to methods such as [Server.Serve] will return [net.ErrClosed].
+// future calls to methods such as [Server.Serve] will return [ErrServerClosed].
 func (s *Server) Close() error {
 	s.shutdown.Store(true)
 	err1 := s.listeners.CloseAll()
@@ -264,14 +269,14 @@ func (s *Server) Close() error {
 // are returned after joined with [errors.Join].
 //
 // When Shutdown is called, [Server.Serve], [Server.ServeTLS], [Server.ListenAndServe]
-// and [Server.ListenAndServeTLS] immediately return [net.ErrClosed].
+// and [Server.ListenAndServeTLS] immediately return [ErrServerClosed].
 // Make sure the program doesn't exit and waits instead for Shutdown to return.
 //
 // Once Shutdown has been called on a server, it may not be reused;
-// future calls to methods such as [Server.Serve] will return [net.ErrClosed].
+// future calls to methods such as [Server.Serve] will return [ErrServerClosed].
 func (s *Server) Shutdown(ctx context.Context) error {
 	if s.shutdown.Swap(true) {
-		return net.ErrClosed
+		return ErrServerClosed
 	}
 	err := s.listeners.CloseAll()
 	for s.conns.Length() > 0 {

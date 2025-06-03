@@ -26,7 +26,7 @@ func main() {
 		Serve:           svr.ListenAndServe,
 		Shutdown:        svr.Shutdown,
 		Close:           svr.Close,
-		ShutdownTimeout: 60 * time.Second,
+		ShutdownTimeout: 30 * time.Second,
 	}
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

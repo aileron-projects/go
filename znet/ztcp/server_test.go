@@ -21,7 +21,7 @@ func TestServer_ListenAndServe(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
 		err := s.ListenAndServe()
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
 	})
 	t.Run("create listener error", func(t *testing.T) {
 		s := &Server{Addr: "tcp4://1234567890"}
@@ -42,7 +42,7 @@ func TestServer_ListenAndServe(t *testing.T) {
 			shutdown <- s.Shutdown(context.Background())
 		}()
 		err := s.ListenAndServe()
-		ztesting.AssertEqualErr(t, "serve error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "serve error not match", ErrServerClosed, err)
 		err = <-shutdown
 		ztesting.AssertEqualErr(t, "shutdown error not match", nil, err)
 	})
@@ -54,7 +54,7 @@ func TestServer_ListenAndServeTLS(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
 		err := s.ListenAndServeTLS("", "")
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
 	})
 	t.Run("create listener error", func(t *testing.T) {
 		s := &Server{Addr: "tcp4://1234567890"}
@@ -80,7 +80,7 @@ func TestServer_ListenAndServeTLS(t *testing.T) {
 			s.Close()
 		}()
 		err := s.ListenAndServeTLS("./testdata/cert.pem", "./testdata/key.pem")
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
 	})
 }
 
@@ -90,7 +90,7 @@ func TestServer_ServeTLS(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
 		err := s.ServeTLS(nil, "", "")
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
 	})
 	t.Run("read cert error", func(t *testing.T) {
 		s := &Server{}
@@ -114,7 +114,7 @@ func TestServer_ServeTLS(t *testing.T) {
 			s.Close()
 		}()
 		err := s.ServeTLS(ln, "./testdata/cert.pem", "./testdata/key.pem")
-		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqual(t, "error not match", ErrServerClosed, err)
 	})
 }
 
@@ -153,7 +153,7 @@ type testListener struct {
 func (l *testListener) Accept() (net.Conn, error) {
 	l.accept++
 	if l.closed > 0 {
-		return nil, net.ErrClosed
+		return nil, ErrServerClosed
 	}
 	if l.accept > 1 {
 		time.Sleep(10 * time.Millisecond)
@@ -174,7 +174,7 @@ func TestServer_Serve(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
 		err := s.Serve(nil)
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
 	})
 	t.Run("create listener error", func(t *testing.T) {
 		s := &Server{Addr: "tcp4://1234567890"}
@@ -201,7 +201,7 @@ func TestServer_Serve(t *testing.T) {
 			s.Close()
 		}()
 		err := s.Serve(ln)
-		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqual(t, "error not match", ErrServerClosed, err)
 	})
 	t.Run("skip serving", func(t *testing.T) {
 		cn := &testConn{Conn: &net.TCPConn{}}
@@ -218,7 +218,7 @@ func TestServer_Serve(t *testing.T) {
 			s.Close()
 		}()
 		err := s.Serve(ln)
-		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqual(t, "error not match", ErrServerClosed, err)
 	})
 	t.Run("timeout error", func(t *testing.T) {
 		cn := &testConn{Conn: &net.TCPConn{}}
@@ -235,7 +235,7 @@ func TestServer_Serve(t *testing.T) {
 			s.Close()
 		}()
 		err := s.Serve(ln)
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
 	})
 	t.Run("non-timeout error", func(t *testing.T) {
 		cn := &testConn{Conn: &net.TCPConn{}}
@@ -269,7 +269,7 @@ func TestServer_Serve(t *testing.T) {
 			s.Close()
 		}()
 		err := s.Serve(ln)
-		ztesting.AssertEqualErr(t, "serve error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "serve error not match", ErrServerClosed, err)
 		ztesting.AssertEqual(t, "listener not closed", 1, ln.closed)
 	})
 	t.Run("panic with handler", func(t *testing.T) {
@@ -290,7 +290,7 @@ func TestServer_Serve(t *testing.T) {
 			s.Close()
 		}()
 		err := s.Serve(ln)
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
 		ztesting.AssertEqual(t, "listener not closed", 1, ln.closed)
 	})
 }
@@ -320,7 +320,7 @@ func TestServer_Shutdown(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
 		err := s.Shutdown(context.Background())
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
 	})
 	t.Run("shutdown success", func(t *testing.T) {
 		served := make(chan struct{})
@@ -334,10 +334,10 @@ func TestServer_Shutdown(t *testing.T) {
 			ztesting.AssertEqual(t, "error not match", nil, err)
 		}()
 		err := s.ListenAndServe()
-		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqual(t, "error not match", ErrServerClosed, err)
 		ztesting.AssertEqual(t, "listeners length not match", 0, s.listeners.Length())
 		ztesting.AssertEqual(t, "conns length not match", 0, s.conns.Length())
-		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqual(t, "error not match", ErrServerClosed, err)
 	})
 	t.Run("shutdown context done", func(t *testing.T) {
 		served := make(chan struct{})
@@ -366,7 +366,7 @@ func TestServer_Shutdown(t *testing.T) {
 		<-shutdown
 		ztesting.AssertEqual(t, "listeners length not match", 0, s.listeners.Length())
 		ztesting.AssertEqual(t, "conns length not match", 1, s.conns.Length()) // Conn is yet alive.
-		ztesting.AssertEqual(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqual(t, "error not match", ErrServerClosed, err)
 	})
 }
 
