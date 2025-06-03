@@ -28,8 +28,9 @@ func handleConn(ctx context.Context, conn net.Conn) {
 // START main
 func main() {
 	svr := &ztcp.Server{
-		Addr:    ":8080",
-		Handler: ztcp.HandlerFunc(handleConn),
+		Addr:      ":8080",
+		Handler:   ztcp.HandlerFunc(handleConn),
+		TLSConfig: nil,
 	}
 	log.Println("starting tcp server at " + svr.Addr)
 	if err := svr.ListenAndServeTLS("cert.pem", "key.pem"); err != nil && err != ztcp.ErrServerClosed {

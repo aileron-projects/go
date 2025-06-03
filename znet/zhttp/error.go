@@ -4,13 +4,39 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+
+	"github.com/aileron-projects/go/zlog"
+	"github.com/aileron-projects/go/zlog/zslog"
 )
 
 // ErrorHandler handles HTTP errors.
 // It is intended to be used in middleware and handlers.
-// For server-side middleware and handlers, w, r and err should not be nil.
-// For client-side middleware w can be nil and r and err should not be nil.
+// Provided w, r and err should not be nil.
 type ErrorHandler func(w http.ResponseWriter, r *http.Request, err error)
+
+// NewErrorHandler returns a new error handler with the given logger.
+// A default error handler checks if the err is [HTTPError] or not.
+// If the err is type of [HTTPError], it returns an error response
+// with status code specified in the [HTTPError.Code].
+// Other errors results in an Internal Server Error.
+var NewErrorHandler = func(lg zlog.Logger) ErrorHandler {
+	return func(w http.ResponseWriter, r *http.Request, err error) {
+		if herr, ok := err.(*HTTPError); ok {
+			if herr.Code >= 500 {
+				attrs := []any{zslog.ErrorAttr(err), zslog.CallerAttr(1), zslog.FramesAttr(0)}
+				lg.ErrorContext(r.Context(), "server-side error", attrs...)
+			} else if lg.DebugEnabled(r.Context()) {
+				attrs := []any{zslog.ErrorAttr(err), zslog.CallerAttr(1), zslog.FramesAttr(0)}
+				lg.DebugContext(r.Context(), "http error handler received an error", attrs...)
+			}
+			http.Error(w, http.StatusText(herr.Code), herr.Code)
+			return
+		}
+		attrs := []any{zslog.ErrorAttr(err), zslog.CallerAttr(1), zslog.FramesAttr(0)}
+		lg.ErrorContext(r.Context(), "server-side error", attrs...)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+}
 
 // HTTPError is the HTTP error type.
 type HTTPError struct {

@@ -1,14 +1,63 @@
 package zhttp_test
 
 import (
+	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
+	"github.com/aileron-projects/go/zlog/zslog"
 	"github.com/aileron-projects/go/znet/zhttp"
 	"github.com/aileron-projects/go/ztesting"
 )
+
+func TestNewErrorHandler(t *testing.T) {
+	t.Parallel()
+	t.Run("server-side error", func(t *testing.T) {
+		var buf bytes.Buffer
+		lg := zslog.New(slog.NewTextHandler(&buf, &slog.HandlerOptions{Level: slog.LevelInfo}))
+		eh := zhttp.NewErrorHandler(lg)
+		r := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
+		w := httptest.NewRecorder()
+		eh(w, r, &zhttp.HTTPError{Code: http.StatusBadGateway})
+		ztesting.AssertEqual(t, "message not contained", true, strings.Contains(buf.String(), `level=ERROR`))
+		ztesting.AssertEqual(t, "response status not match", http.StatusBadGateway, w.Result().StatusCode)
+	})
+	t.Run("client-side error with info logger", func(t *testing.T) {
+		var buf bytes.Buffer
+		lg := zslog.New(slog.NewTextHandler(&buf, &slog.HandlerOptions{Level: slog.LevelInfo}))
+		eh := zhttp.NewErrorHandler(lg)
+		r := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
+		w := httptest.NewRecorder()
+		eh(w, r, &zhttp.HTTPError{Code: http.StatusBadRequest})
+		ztesting.AssertEqual(t, "message not match", "", buf.String())
+		ztesting.AssertEqual(t, "response status not match", http.StatusBadRequest, w.Result().StatusCode)
+	})
+	t.Run("client-side error with debug logger", func(t *testing.T) {
+		var buf bytes.Buffer
+		lg := zslog.New(slog.NewTextHandler(&buf, &slog.HandlerOptions{Level: slog.LevelDebug}))
+		eh := zhttp.NewErrorHandler(lg)
+		r := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
+		w := httptest.NewRecorder()
+		eh(w, r, &zhttp.HTTPError{Code: http.StatusBadRequest})
+		ztesting.AssertEqual(t, "message not contained", true, strings.Contains(buf.String(), `level=DEBUG`))
+		ztesting.AssertEqual(t, "response status not match", http.StatusBadRequest, w.Result().StatusCode)
+	})
+	t.Run("non http error", func(t *testing.T) {
+		var buf bytes.Buffer
+		lg := zslog.New(slog.NewTextHandler(&buf, &slog.HandlerOptions{Level: slog.LevelInfo}))
+		eh := zhttp.NewErrorHandler(lg)
+		r := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
+		w := httptest.NewRecorder()
+		eh(w, r, io.EOF)
+		ztesting.AssertEqual(t, "message not contained", true, strings.Contains(buf.String(), `level=ERROR`))
+		ztesting.AssertEqual(t, "response status not match", http.StatusInternalServerError, w.Result().StatusCode)
+	})
+}
 
 func TestHTTPError_Error(t *testing.T) {
 	t.Parallel()
