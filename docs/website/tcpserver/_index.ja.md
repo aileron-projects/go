@@ -86,7 +86,7 @@ TCPサーバランナーの実装例は以下の通りです。
 `syscall`パッケージの利用が制限されているプラットフォームもある点に注意してください。
 
 ```go
-{{% code source="ex_runner/main.go" %}}
+{{% snippet source="ex_runner/main.go" id="main" %}}
 ```
 
 ### TLS
@@ -96,7 +96,7 @@ TLSを利用したTCPサーバの実装例は以下の通りです。
 に対して設定をおこいます。
 
 ```go
-{{% code source="ex_tls/main.go" %}}
+{{% snippet source="ex_tls/main.go" id="main" %}}
 ```
 
 ### コネクション数制限
@@ -106,7 +106,7 @@ TLSを利用したTCPサーバの実装例は以下の通りです。
 実装例は以下となります。なお一部エラー処理は省略しています。
 
 ```go
-{{% code source="ex_concurrency/main.go" %}}
+{{% snippet source="ex_concurrency/main.go" id="main" %}}
 ```
 
 ### IPホワイトリスト
@@ -122,7 +122,7 @@ TLSを利用したTCPサーバの実装例は以下の通りです。
 この例では、ローカルホストである`127.0.0.1`のIPアドレスのみ許可しています。
 
 ```go
-{{% code source="ex_whitelist/main.go" %}}
+{{% snippet source="ex_whitelist/main.go" id="main" %}}
 ```
 
 ### IPブラックリスト
@@ -138,5 +138,5 @@ TLSを利用したTCPサーバの実装例は以下の通りです。
 この例では、ローカルホストである`192.168.0.0/16`の範囲にあるIPアドレスを拒否しています。
 
 ```go
-{{% code source="ex_blacklist/main.go" %}}
+{{% snippet source="ex_blacklist/main.go" id="main" %}}
 ```

@@ -25,6 +25,7 @@ func handleConn(ctx context.Context, conn net.Conn) {
 	}
 }
 
+// START main
 func main() {
 	svr := &ztcp.Server{
 		Addr:    ":8080",
@@ -35,3 +36,5 @@ func main() {
 		panic(err)
 	}
 }
+
+// END main
