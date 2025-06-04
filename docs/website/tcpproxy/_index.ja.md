@@ -32,7 +32,7 @@ TCPプロキシ機能は、TCPサーバのハンドラとして機能します�
 graph LR
   Client -- TCP --> P
   P --> Client
-  P["TCP</br>Proxy"] 
+  P["TCP</br>Proxy"]
   P -- TCP --> U1["Upstream"]
   P -- TCP --> U2["Upstream"]
   U1 --> P
@@ -89,7 +89,7 @@ Dial func(ctx context.Context, dc net.Conn) (uc net.Conn, err error)
 graph LR
   Client -- TCP --> P
   P --> Client
-  P["TCP</br>Proxy"] 
+  P["TCP</br>Proxy"]
   P -- TLS --> U["localhost:9090"]
   U --> P
 ```
