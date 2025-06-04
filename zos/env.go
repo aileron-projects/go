@@ -225,7 +225,7 @@ func ResolveEnv(in []byte) ([]byte, error) {
 		err = errSyntax("undefined", nil)
 	}
 	if err != nil {
-		return nil, &EnvError{Err: err, Type: typeSyntax, Info: "resolving `" + string(in) + "`"}
+		return nil, &EnvError{Err: err, Type: typeResolve, Info: "resolving `" + string(in) + "`"}
 	}
 	return []byte(value), nil
 }

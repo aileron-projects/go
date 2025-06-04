@@ -12,6 +12,7 @@ import (
 var (
 	typeInvalidName  = "zos: invalid env name. `[0-9a-zA-Z_]+` is allowed."
 	typeSyntax       = "zos: invalid env syntax."
+	typeResolve      = "zos: resolving env variable failed."
 	typeSubstitution = "zos: env substitution."
 	typeLoad         = "zos: loading env failed."
 )
