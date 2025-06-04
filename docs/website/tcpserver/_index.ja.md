@@ -14,12 +14,6 @@ TCPサーバは、TCP(レイヤー4)のサーバを実装することを目的�
 TCPサーバは、[Goの標準ライブラリ](https://pkg.go.dev/std)では提供されていません。
 本機能では[net/httpパッケージ](https://pkg.go.dev/net/http)の[Server](https://pkg.go.dev/net/http#Server)に似たインターフェースでTCPサーバを利用できることを目指しています。
 
-**用語:**
-
-- TCPサーバ：[TCP(レイヤー４プロトコル)](https://en.wikipedia.org/wiki/Transmission_Control_Protocol)のサーバ
-- ハンドラー：TCPコネクションを処理する部品
-- サーバランナー：TCPサーバを実行するためのヘルパー部品。シャットダウン処理の実装手間を省ける
-
 ## 機能
 
 TCPサーバが保有する機能は以下の通りです。
@@ -30,7 +24,6 @@ TCPサーバとして、クライアントからのTCP接続を受け付け、�
 TCPサーバはTLSに対応しています。
 
 - non-TLS TCPサーバ
-  - TLSパススルー
 - TLS TCPサーバ
 
 サーバの終了処理は以下の２種類があります。
