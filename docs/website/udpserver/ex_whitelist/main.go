@@ -57,7 +57,7 @@ func main() {
 		panic(err)
 	}
 	wl := znet.NewWhiteList()
-	wl.Allow("127.0.0.1/32", "::1/128")
+	_ = wl.Allow("127.0.0.1/32", "::1/128")
 	pc := &WhitelistPacketConn{PacketConn: p, wl: wl}
 
 	log.Println("starting udp server at " + pc.LocalAddr().String())

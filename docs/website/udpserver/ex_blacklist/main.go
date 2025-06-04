@@ -57,7 +57,7 @@ func main() {
 		panic(err)
 	}
 	bl := znet.NewBlackList()
-	bl.Disallow("192.168.0.0/16")
+	_ = bl.Disallow("192.168.0.0/16")
 	pc := &BlacklistPacketConn{PacketConn: p, bl: bl}
 
 	log.Println("starting udp server at " + pc.LocalAddr().String())

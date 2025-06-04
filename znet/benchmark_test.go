@@ -36,6 +36,6 @@ func BenchmarkWhiteList(b *testing.B) {
 	}
 	b.ResetTimer()
 	for range b.N {
-		wl.Allowed("fd00:0:0:0:0:0:0:0") // Always allowed. And the worse case.
+		_ = wl.Allowed("fd00:0:0:0:0:0:0:0") // Always allowed. And the worse case.
 	}
 }
