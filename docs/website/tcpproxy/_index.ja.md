@@ -81,7 +81,9 @@ Dial func(ctx context.Context, dc net.Conn) (uc net.Conn, err error)
 
 以下が実装例になります。
 
+```go
 {{% code source="ex_tls/main.go" %}}
+```
 
 この実装例は、プロキシとプロキシ先サーバ間のみがTLSでありが、クライアント側は非TLS通信になっています。
 
