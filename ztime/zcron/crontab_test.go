@@ -325,6 +325,11 @@ func TestParse(t *testing.T) {
 			&ParseError{What: "scheduling (unschedulable)"},
 			nil,
 		},
+		"empty cron": {
+			"",
+			&ParseError{What: "cron expression"},
+			nil,
+		},
 	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {

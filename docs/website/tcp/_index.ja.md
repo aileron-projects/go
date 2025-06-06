@@ -1,6 +1,6 @@
 ---
-title: "TCPサーバ"
-linkTitle: "TCPサーバ"
+title: "TCPサーバ・プロキシ"
+linkTitle: "TCPサーバ・プロキシ"
 type: docs
 weight: 50
 categories: []
@@ -53,6 +53,33 @@ TCPサーバランナーは、グレースフルシャットダウンを簡単�
 サーバランナーを利用することでシャットダウン処理の実装の手間を省き、安全にサーバをシャットダウンできます。
 
 利用例は[TCPサーバランナー](#tcpサーバランナー)を参照してください。
+
+### 3. TCPプロキシ機能
+
+TCPプロキシ機能は、TCPサーバのハンドラとして機能します。
+クライアントのTCPコネクションから受け取ったパケットを別のTCPサーバへプロキシします。
+
+```mermaid
+graph LR
+  Client -- TCP --> P
+  P --> Client
+  P["TCP</br>Proxy"]
+  P -- TCP --> U1["Upstream"]
+  P -- TCP --> U2["Upstream"]
+  U1 --> P
+  U2 --> P
+```
+
+転送先ダイアルについて、TCPプロキシはそれ自体が転送先サーバを決定する機能を持ちません。
+かわりに、以下のような関数シグネチャのフィールドを公開することで、
+具体的な転送先サーバの決定をユーザに委ねます。
+TCPプロキシは、このDial関数を利用して転送先サーバを決定します。
+
+```go
+Dial func(ctx context.Context, dc net.Conn) (uc net.Conn, err error)
+```
+
+パッケージで用意されているプロキシの利用法は[デフォルトのプロキシ](#デフォルトのプロキシ)を参照ください。
 
 ## セキュリティに関する特記事項
 
@@ -160,6 +187,46 @@ TCPサーバは[Unixドメインソケット](https://en.wikipedia.org/wiki/Unix
 
 ```go
 {{% snippet source="ex_socket_abstract/main.go" id="main" %}}
+```
+
+### デフォルトのプロキシ
+
+[ztcp](https://pkg.go.dev/github.com/aileron-projects/go/znet/ztcp)パッケージは、デフォルトのプロキシ機能を提供します。
+この機能を利用すると、複数の転送先サーバにに対してラウンドロビンによる負荷分散を利用しながらTCPをプロキシできます。
+
+最も基本的なTCPプロキシの利用例は以下の通りです。
+なお、グレースフルシャットダウンが必要な場合は、TCPサーバのサーバランナー機能を利用します。
+
+この例では、TCPサーバをポート番号`8080`で待ち受け、`localhost:9090`のTCPサーバへプロキシしています。
+
+```go
+{{% code source="ex_proxy_basic/main.go" %}}
+```
+
+### TLSによるプロキシ
+
+転送先サーバとの間でTLS通信を利用する場合、ユーザ自身で転送先サーバとのコネクションを確立する必要があります。
+コネクションを確立する処理はDial関数に記述します。
+
+以下が実装例になります。
+
+```go
+{{% code source="ex_proxy_tls/main.go" %}}
+```
+
+この例はプロキシサーバと転送先サーバ間のみがTLSであり、クライアント側は非TLS通信になっています。
+クライアント側もTLSにする場合はTCPサーバに対してTLSの設定を行います。
+
+TLSパススルーを行う際は、通常のTCPプロキシのみで対応可能ですが、
+`SNI (Server Name Indication)`を利用した負荷分散などを行う際は実装が必要です。
+
+```mermaid
+graph LR
+  Client -- TCP --> P
+  P --> Client
+  P["TCP Proxy</br>(localhost:8080)"]
+  P -- TLS --> U["Upstream</br>(localhost:9090)"]
+  U --> P
 ```
 
 ## 参考資料

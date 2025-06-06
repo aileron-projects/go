@@ -1,8 +1,8 @@
 ---
-title: "TCP Proxy"
-linkTitle: "TCP Proxy"
+title: "UDP Server/Proxy"
+linkTitle: "UDP Server/Proxy"
 type: docs
-weight: 1
+weight: 100
 categories: []
 tags: []
 description: ""

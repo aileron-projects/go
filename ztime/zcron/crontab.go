@@ -58,6 +58,7 @@ func (c *Crontab) Next() time.Time {
 }
 
 // NexAfter returns the next cron scheduled time after t.
+// Timezone of the returned time is the same as given t.
 func (c *Crontab) NextAfter(t time.Time) time.Time {
 	now := t
 	loc := now.Location()
@@ -209,8 +210,8 @@ func (e *ParseError) Is(target error) bool {
 //
 //	Duration  | Resolved Cron        | Notes                 |
 //	--------- | -------------------- | --------------------- |
-//	-1s       | ERROR                | Duration must be >=0  |
-//	0s        | ERROR                | Duration must be >=0  |
+//	-1s       | ERROR                | Duration must be >0s  |
+//	0s        | ERROR                | Duration must be >0s  |
 //	1s        | */1 * * * * *        |                       |
 //	1m        | 0 */1 * * * *        |                       |
 //	1h        | 0 0 */1 * * *        |                       |
@@ -228,6 +229,9 @@ func (e *ParseError) Is(target error) bool {
 func Parse(crontab string) (*Crontab, error) {
 	crontab = strings.Trim(crontab, " \n\r\t\f,")
 	fields := strings.Fields(replaceAlias(crontab))
+	if len(fields) == 0 {
+		return nil, &ParseError{What: "cron expression", Value: "`" + crontab + "`"}
+	}
 
 	loc := time.Local // Default location.
 	if strings.HasPrefix(fields[0], "TZ=") {
@@ -249,7 +253,7 @@ func Parse(crontab string) (*Crontab, error) {
 	case 6:
 		// Valid number of fields.
 	default:
-		return nil, &ParseError{What: "number of fields"}
+		return nil, &ParseError{What: "number of fields", Value: "`" + crontab + "`"}
 	}
 	var ok bool
 	if c.second, ok = parseValue(fields[0], 0, 59); !ok {
