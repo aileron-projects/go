@@ -39,9 +39,9 @@ graph LR
   U2 --> P
 ```
 
-### 2. 転送先サーバダイアル機能
+### 2. 転送先ダイアル機能
 
-TCPプロキシはそれ自体が転送先サーバを決定する機能を持りません。
+TCPプロキシはそれ自体が転送先サーバを決定する機能を持ちません。
 かわりに、以下のような関数シグネチャのフィールドを公開することで、
 具体的な転送先サーバの決定をユーザに委ねます。
 TCPプロキシは、このDial関数を利用して転送先サーバを決定します。
@@ -85,13 +85,19 @@ Dial func(ctx context.Context, dc net.Conn) (uc net.Conn, err error)
 {{% code source="ex_tls/main.go" %}}
 ```
 
-この実装例は、プロキシとプロキシ先サーバ間のみがTLSでありが、クライアント側は非TLS通信になっています。
+この例はプロキシサーバと転送先サーバ間のみがTLSであり、クライアント側は非TLS通信になっています。
+クライアント側もTLSにする場合はTCPサーバに対してTLSの設定を行います。
+
+TLSパススルーを行う際は、通常のTCPプロキシのみで対応可能ですが、
+`SNI (Server Name Indication)`を利用した負荷分散などを行う際は実装が必要です。
 
 ```mermaid
 graph LR
   Client -- TCP --> P
   P --> Client
-  P["TCP</br>Proxy"]
-  P -- TLS --> U["localhost:9090"]
+  P["TCP Proxy</br>(localhost:8080)"]
+  P -- TLS --> U["Upstream</br>(localhost:9090)"]
   U --> P
 ```
+
+## 参考資料

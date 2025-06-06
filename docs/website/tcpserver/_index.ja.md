@@ -161,3 +161,5 @@ TCPサーバは[Unixドメインソケット](https://en.wikipedia.org/wiki/Unix
 ```go
 {{% snippet source="ex_socket_abstract/main.go" id="main" %}}
 ```
+
+## 参考資料
