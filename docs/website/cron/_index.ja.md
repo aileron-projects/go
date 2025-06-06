@@ -40,35 +40,35 @@ TZ=UTC * * * * * *
 それぞれのフィールドは表に示した値を利用できます。
 `Day of month`と`Day of week`はAND条件で評価されます。
 
-| フィールド名   | 指定必須 | 値          | 特殊文字 |
-| ------------ | --------- | --------------- | ------------------ |
-| Timezone     | No        | Timezone name   | |
-| Second       | No        | 0-59            | `*` `/` `,` `-` |
-| Minute       | Yes       | 0-59            | `*` `/` `,` `-` |
-| Hours        | Yes       | 0-23            | `*` `/` `,` `-` |
-| Day of month | Yes       | 1-31            | `*` `/` `,` `-` |
-| Month        | Yes       | 1-12 or JAN-DEC | `*` `/` `,` `-` |
-| Day of week  | Yes       | 0-6 or SUN-SAT  | `*` `/` `,` `-` |
+| フィールド名 | 指定必須 | 値              | 特殊文字        |
+| ------------ | -------- | --------------- | --------------- |
+| Timezone     | No       | Timezone name   |                 |
+| Second       | No       | 0-59            | `*` `/` `,` `-` |
+| Minute       | Yes      | 0-59            | `*` `/` `,` `-` |
+| Hours        | Yes      | 0-23            | `*` `/` `,` `-` |
+| Day of month | Yes      | 1-31            | `*` `/` `,` `-` |
+| Month        | Yes      | 1-12 or JAN-DEC | `*` `/` `,` `-` |
+| Day of week  | Yes      | 0-6 or SUN-SAT  | `*` `/` `,` `-` |
 
 **エイリアス:**
 
 Cron式では以下のエイリアスを利用できます。
 `CRON_TZ`を除き、各エイリアスはその他のCron式と組み合わせて利用することはできません。
 
-| エイリアス名 | 値 | 利用例         |
-| ---------- | ----------- | --------------------- |
-| CRON_TZ    | TZ          | `CRON_TZ=UTC 0 0 * * *` |
-| @monthly   | `0 0 1 * *`   | `TZ=UTC @monthly`       |
-| @weekly    | `0 0 * * 0`   | `TZ=UTC @weekly`        |
-| @daily     | `0 0 * * *`   | `TZ=UTC @daily`         |
-| @hourly    | `0 * * * *`   | `TZ=UTC @hourly`        |
-| @sunday    | `0 0 * * 0`   | `TZ=UTC @sunday`        |
-| @monday    | `0 0 * * 1`   | `TZ=UTC @monday`        |
-| @tuesday   | `0 0 * * 2`   | `TZ=UTC @tuesday`       |
-| @wednesday | `0 0 * * 3`   | `TZ=UTC @wednesday`     |
-| @thursday  | `0 0 * * 4`   | `TZ=UTC @thursday`      |
-| @friday    | `0 0 * * 5`   | `TZ=UTC @friday`        |
-| @saturday  | `0 0 * * 6`   | `TZ=UTC @saturday`      |
+| エイリアス名 | 値          | 利用例                  |
+| ------------ | ----------- | ----------------------- |
+| CRON_TZ      | TZ          | `CRON_TZ=UTC 0 0 * * *` |
+| @monthly     | `0 0 1 * *` | `TZ=UTC @monthly`       |
+| @weekly      | `0 0 * * 0` | `TZ=UTC @weekly`        |
+| @daily       | `0 0 * * *` | `TZ=UTC @daily`         |
+| @hourly      | `0 * * * *` | `TZ=UTC @hourly`        |
+| @sunday      | `0 0 * * 0` | `TZ=UTC @sunday`        |
+| @monday      | `0 0 * * 1` | `TZ=UTC @monday`        |
+| @tuesday     | `0 0 * * 2` | `TZ=UTC @tuesday`       |
+| @wednesday   | `0 0 * * 3` | `TZ=UTC @wednesday`     |
+| @thursday    | `0 0 * * 4` | `TZ=UTC @thursday`      |
+| @friday      | `0 0 * * 5` | `TZ=UTC @friday`        |
+| @saturday    | `0 0 * * 6` | `TZ=UTC @saturday`      |
 
 **every表記:**
 
@@ -79,8 +79,8 @@ Cron式では以下のエイリアスを利用できます。
 
 | Duration  | Resolved Cron          | Notes                 |
 | --------- | ---------------------- | --------------------- |
-| -1s       | ERROR                  | Duration must be >0  |
-| 0s        | ERROR                  | Duration must be >0  |
+| -1s       | ERROR                  | Duration must be >0   |
+| 0s        | ERROR                  | Duration must be >0   |
 | 1s        | `*/1 * * * * *`        |                       |
 | 1m        | `0 */1 * * * *`        |                       |
 | 1h        | `0 0 */1 * * *`        |                       |
