@@ -118,7 +118,7 @@ func DumpTo(w io.Writer, msg string, a ...any) {
 	}
 
 	caller := "Pkg=" + f.Pkg + " File=" + f.File + " Func=" + f.Func + " Line=" + strconv.Itoa(f.Line)
-	_, _ = w.Write([]byte(timeNow().Format(time.DateTime) + " [DUMP]" + msg + "\n"))
+	_, _ = w.Write([]byte(timeNow().Format(time.DateTime) + " [DUMP] " + msg + "\n"))
 	_, _ = w.Write([]byte("  | Caller: " + caller + "\n"))
 
 	pw := &prefixWriter{
