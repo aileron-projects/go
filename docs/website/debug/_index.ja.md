@@ -32,10 +32,10 @@ description: ""
 
 ```go
 // Build tag `-tags zdebugdump` is required.
-zdebug.Dump("dump profile", p1)
+zdebug.Dump("dump message", obj1, obj2)
 
 // Tag is not required.
-zdebug.DumpAlways("dump always profile", p2)
+zdebug.DumpAlways("dump message", obj1, obj2)
 ```
 
 ダンプ機能は内部的に[davecgh/go-spew](https://github.com/davecgh/go-spew)を利用しています。
