@@ -131,7 +131,6 @@ func NextAfter(t time.Time) time.Time
 ### Cronの基本的な利用
 
 cronの基本的な利用方法は以下のようになります。
-Cron式を
 
 ```go
 {{% code source="ex_basic/main.go" %}}
