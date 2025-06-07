@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"slices"
 	"strconv"
-	"sync/atomic"
 )
 
 const (
@@ -48,8 +47,8 @@ func NewTemplate(tpl string, start, end string) *Template {
 	fast := &Template{
 		valTypes: slices.Clip(types),
 		values:   slices.Clip(values),
+		bufSize:  len(tpl),
 	}
-	fast.bufSize.Store(int64(len(tpl)))
 	return fast
 }
 
@@ -78,7 +77,7 @@ type Template struct {
 	// to writers after evaluation.
 	values [][]byte
 	// bufSize is the initial buffer size.
-	bufSize atomic.Int64
+	bufSize int
 	// tagFuncs are tag evaluation functions.
 	tagFuncs map[string]func(string) []byte
 }
@@ -104,7 +103,7 @@ func (t *Template) WithTagFunc(tag string, tagFunc func(string) []byte) {
 // Execute executes template and return resulting []byte.
 // See the comment on [Template] for supported data types.
 func (t *Template) Execute(m map[string]any) []byte {
-	buf := bytes.NewBuffer(make([]byte, 0, t.bufSize.Load()))
+	buf := bytes.NewBuffer(make([]byte, 0, t.bufSize))
 	_ = t.ExecuteWriter(buf, m) // Write error may not be occurred.
 	return buf.Bytes()
 }
@@ -112,14 +111,14 @@ func (t *Template) Execute(m map[string]any) []byte {
 // ExecuteString executes template and returns resulting string.
 // See the comment on [Template] for supported data types.
 func (t *Template) ExecuteString(m map[string]any) string {
-	buf := bytes.NewBuffer(make([]byte, 0, t.bufSize.Load()))
+	buf := bytes.NewBuffer(make([]byte, 0, t.bufSize))
 	_ = t.ExecuteWriter(buf, m) // Write error may not be occurred.
 	return buf.String()
 }
 
 // ExecuteFunc executes the template with given tag function.
 func (t *Template) ExecuteFunc(f func(string) []byte) []byte {
-	buf := bytes.NewBuffer(make([]byte, 0, t.bufSize.Load()))
+	buf := bytes.NewBuffer(make([]byte, 0, t.bufSize))
 	_ = t.ExecuteWriterFunc(buf, f) // Write error may not be occurred.
 	return buf.Bytes()
 }
