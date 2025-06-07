@@ -58,18 +58,18 @@ func NewTemplate(tpl string, start, end string) *Template {
 // Template supports formatting primitive types with the listed way.
 // [fmt.Sprint] is used to fallback.
 //
-// - nil : "<nil>"
-// - string : v
-// - []byte : string(v)
-// - bool : strconv.FormatBool(v)
-// - int,int8,int16,int32,int64 : strconv.FormatInt(int64(v), 10)
-// - uint,uint8,uint16,uint32,uint64 : strconv.FormatUint(uint64(v), 10)
-// - float32 : strconv.FormatFloat(float64(v), 'g', -1, 32)
-// - float64 : strconv.FormatFloat(float64(v), 'g', -1, 64)
-// - complex64 : strconv.FormatComplex(complex128(v), 'g', -1, 64)
-// - complex128 : strconv.FormatComplex(complex128(v), 'g', -1, 128)
-// - fmt.Stringer : v.String()
-// - others : fmt.Sprint(v)
+//   - nil : "<nil>"
+//   - string : v
+//   - []byte : string(v)
+//   - bool : strconv.FormatBool(v)
+//   - int,int8,int16,int32,int64 : strconv.FormatInt(int64(v), 10)
+//   - uint,uint8,uint16,uint32,uint64 : strconv.FormatUint(uint64(v), 10)
+//   - float32 : strconv.FormatFloat(float64(v), 'g', -1, 32)
+//   - float64 : strconv.FormatFloat(float64(v), 'g', -1, 64)
+//   - complex64 : strconv.FormatComplex(complex128(v), 'g', -1, 64)
+//   - complex128 : strconv.FormatComplex(complex128(v), 'g', -1, 128)
+//   - fmt.Stringer : v.String()
+//   - others : fmt.Sprint(v)
 type Template struct {
 	// value types represents if template sections are value or tag.
 	valTypes []int
