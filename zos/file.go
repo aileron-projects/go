@@ -97,17 +97,20 @@ func ListFiles(recursive bool, paths ...string) ([]string, error) {
 		if path == "" {
 			continue
 		}
-		err := filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
+		err := filepath.WalkDir(path, func(target string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
 			if d.IsDir() {
+				if path == target {
+					return nil
+				}
 				if !recursive {
 					return fs.SkipDir
 				}
 				return nil
 			}
-			files = append(files, filepath.Clean(path))
+			files = append(files, filepath.Clean(target))
 			return nil
 		})
 		if err != nil && err != fs.SkipDir {

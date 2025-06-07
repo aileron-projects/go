@@ -131,7 +131,7 @@ func TestReadFiles(t *testing.T) {
 				ztesting.AssertEqual(t, "content not match for key="+k, v, contents[k])
 			}
 		}
-		ztesting.AssertEqual(t, "returned data size not match", 1, len(contents))
+		ztesting.AssertEqual(t, "returned data size not match", 2, len(contents))
 		ztesting.AssertEqual(t, "non nil error returned", nil, err)
 	})
 	t.Run("recursive", func(t *testing.T) {
@@ -164,7 +164,7 @@ func TestListFiles(t *testing.T) {
 	})
 	t.Run("not recursive", func(t *testing.T) {
 		paths, err := zos.ListFiles(false, "./testdata/regular-file.txt", "./testdata/files/")
-		want := []string{filepath.Clean("./testdata/regular-file.txt")}
+		want := []string{filepath.Clean("./testdata/regular-file.txt"), filepath.Clean("./testdata/files/level0.txt")}
 		ztesting.AssertEqual(t, "paths not match", want, paths)
 		ztesting.AssertEqual(t, "non nil error returned", nil, err)
 	})
