@@ -1,6 +1,6 @@
 ---
-title: "Log"
-linkTitle: "Log"
+title: "Logging"
+linkTitle: "Logging"
 type: docs
 weight: 1
 categories: []

@@ -13,7 +13,7 @@ description: ""
 Cronはスケジューリングに関する機能で、ジョブの定期実行などで利用できます。
 この機能は、例えばログローテーションなどに活用できます。
 
-Cronに関する機能は[zcron](https://pkg.go.dev/github.com/aileron-projects/go/ztime/zcron)パッケージにより提供されています。
+Cronに関する機能は[ztime/zcron](https://pkg.go.dev/github.com/aileron-projects/go/ztime/zcron)パッケージにより提供されています。
 
 ## 機能
 

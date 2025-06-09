@@ -1,6 +1,6 @@
 ---
-title: "ログ"
-linkTitle: "ログ"
+title: "ロギング"
+linkTitle: "ロギング"
 type: docs
 weight: 1
 categories: []
@@ -10,7 +10,7 @@ description: ""
 
 ## 概要
 
-ログはロギング関連の機能を提供します。
+ログ関連機能を提供します。
 
 ログに関する機能は[zlog](https://pkg.go.dev/github.com/aileron-projects/go/zlog)パッケージにより提供されています。
 
