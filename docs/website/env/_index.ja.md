@@ -29,32 +29,32 @@ wordは`$`を含まない文字列`[^\$]*`です。
 
 ほとんどの場合、本機能は[#2-環境変数置換](#2-環境変数置換)の機能を通して利用されることを想定しています。
 
-1. `${parameter}` : 以下の置換ルール表を参照してください。  
-2. `${parameter:-word}` : 以下の置換ルール表を参照してください。  
-3. `${parameter-word}` : 以下の置換ルール表を参照してください。  
-4. `${parameter:=word}` : 以下の置換ルール表を参照してください。  
-5. `${parameter=word}` : 以下の置換ルール表を参照してください。  
-6. `${parameter:?word}` : 以下の置換ルール表を参照してください。  
-7. `${parameter?word}` : 以下の置換ルール表を参照してください。  
-8. `${parameter:+word}` : 以下の置換ルール表を参照してください。  
-9. `${parameter+word}` : 以下の置換ルール表を参照してください。  
-10. `${parameter:offset}` : `offset`より前の文字を削除します。  
-11. `${parameter:offset:length}` : `offset`より前と、`offset + length`より後の文字を削除します。  
-12. `${!prefix*}` : `prefix`を持つパラメータ名を空白区切りで連結します（`${!prefix*}`と同じ動作）。  
-13. `${!prefix@}` : 現在は #12 と同じ動作です。  
-14. `${#parameter}` : 値の長さを返します。  
-15. `${parameter#word}` : 現在は #16 と同じ動作です。  
-16. `${parameter##word}` : `word` にマッチするプレフィックスを削除します。パターンが指定された場合は最長一致で削除します。  
-17. `${parameter%word}` : 現在は #18 と同じ動作です。  
-18. `${parameter%%word}` : `word` にマッチするサフィックスを削除します。パターンが指定された場合は最長一致で削除します。  
-19. `${parameter/pattern/string}` : 最初に `pattern` にマッチした部分を `string` に置換します。  
-20. `${parameter//pattern/string}` : `pattern` にマッチしたすべての部分を `string` に置換します。  
-21. `${parameter/#pattern/string}` : `pattern` に一致した場合、プレフィックスを `string` に置換します。  
-22. `${parameter/%pattern/string}` : `pattern` に一致した場合、サフィックスを `string` に置換します。  
-23. `${parameter^pattern}` : `pattern` に一致した場合、最初の文字を大文字に変換します。  
-24. `${parameter^^pattern}` : `pattern` に一致したすべての文字を大文字に変換します。  
-25. `${parameter,pattern}` : `pattern` に一致した場合、最初の文字を小文字に変換します。  
-26. `${parameter,,pattern}` : `pattern` に一致したすべての文字を小文字に変換します。  
+1. `${parameter}` : 以下の置換ルール表を参照してください。
+2. `${parameter:-word}` : 以下の置換ルール表を参照してください。
+3. `${parameter-word}` : 以下の置換ルール表を参照してください。
+4. `${parameter:=word}` : 以下の置換ルール表を参照してください。
+5. `${parameter=word}` : 以下の置換ルール表を参照してください。
+6. `${parameter:?word}` : 以下の置換ルール表を参照してください。
+7. `${parameter?word}` : 以下の置換ルール表を参照してください。
+8. `${parameter:+word}` : 以下の置換ルール表を参照してください。
+9. `${parameter+word}` : 以下の置換ルール表を参照してください。
+10. `${parameter:offset}` : `offset`より前の文字を削除します。
+11. `${parameter:offset:length}` : `offset`より前と、`offset + length`より後の文字を削除します。
+12. `${!prefix*}` : `prefix`を持つパラメータ名を空白区切りで連結します（`${!prefix*}`と同じ動作）。
+13. `${!prefix@}` : 現在は #12 と同じ動作です。
+14. `${#parameter}` : 値の長さを返します。
+15. `${parameter#word}` : 現在は #16 と同じ動作です。
+16. `${parameter##word}` : `word` にマッチするプレフィックスを削除します。パターンが指定された場合は最長一致で削除します。
+17. `${parameter%word}` : 現在は #18 と同じ動作です。
+18. `${parameter%%word}` : `word` にマッチするサフィックスを削除します。パターンが指定された場合は最長一致で削除します。
+19. `${parameter/pattern/string}` : 最初に `pattern` にマッチした部分を `string` に置換します。
+20. `${parameter//pattern/string}` : `pattern` にマッチしたすべての部分を `string` に置換します。
+21. `${parameter/#pattern/string}` : `pattern` に一致した場合、プレフィックスを `string` に置換します。
+22. `${parameter/%pattern/string}` : `pattern` に一致した場合、サフィックスを `string` に置換します。
+23. `${parameter^pattern}` : `pattern` に一致した場合、最初の文字を大文字に変換します。
+24. `${parameter^^pattern}` : `pattern` に一致したすべての文字を大文字に変換します。
+25. `${parameter,pattern}` : `pattern` に一致した場合、最初の文字を小文字に変換します。
+26. `${parameter,,pattern}` : `pattern` に一致したすべての文字を小文字に変換します。
 27. `${parameter@operator}` : `operator` を使って値を処理します。
 
 | #   | expression           | parameter Set and Not Null | parameter Set but Null | parameter Unset |
@@ -257,9 +257,3 @@ ${FOO@U} --------- FOO
 ```
 
 ## 参考資料
-
-- [wiki/Cron](https://en.wikipedia.org/wiki/Cron)
-- [crontab(5) - Linux manual page](https://man7.org/linux/man-pages/man5/crontab.5.html)
-- [go-co-op/gocron](https://github.com/go-co-op/gocron)
-- [jasonlvhit/gocron](https://github.com/jasonlvhit/gocron)
-- [crontab guru](https://crontab.guru/)
