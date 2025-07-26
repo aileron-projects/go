@@ -16,11 +16,14 @@ func main() {
 	pool := x509.NewCertPool()
 	pool.AppendCertsFromPEM(pem)
 
+	dialer := &tls.Dialer{
+		Config: &tls.Config{RootCAs: pool},
+	}
 	svr := &ztcp.Server{
 		Addr: ":8080",
 		Handler: &ztcp.Proxy{
 			Dial: func(ctx context.Context, dc net.Conn) (uc net.Conn, err error) {
-				return tls.Dial("tcp", "localhost:9090", &tls.Config{RootCAs: pool})
+				return dialer.DialContext(context.Background(), "tcp", "localhost:9090")
 			},
 		},
 	}

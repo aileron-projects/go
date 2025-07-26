@@ -33,8 +33,9 @@ func main() {
 		Handler: ztcp.HandlerFunc(handleConn),
 	}
 
-	ln, _ := net.Listen("tcp", ":8080") // Create a new TCP listener.
-	ln = znet.NewLimitListener(ln, 10)  // Limit concurrency.
+	var lc net.ListenConfig
+	ln, _ := lc.Listen(context.Background(), "tcp", ":8080") // Create a new TCP listener.
+	ln = znet.NewLimitListener(ln, 10)                       // Limit concurrency.
 
 	log.Println("starting tcp server at " + ln.Addr().String())
 	if err := svr.Serve(ln); err != nil && err != ztcp.ErrServerClosed {

@@ -33,7 +33,8 @@ func main() {
 		Handler: ztcp.HandlerFunc(handleConn),
 	}
 
-	ln, _ := net.Listen("tcp", ":8080")
+	var lc net.ListenConfig
+	ln, _ := lc.Listen(context.Background(), "tcp", ":8080")
 	ln, _ = znet.NewWhiteListListener(ln, "127.0.0.1/32", "::1/128")
 
 	log.Println("starting tcp server at " + ln.Addr().String())
