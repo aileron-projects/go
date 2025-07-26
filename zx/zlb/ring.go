@@ -5,6 +5,9 @@ import (
 	"sort"
 )
 
+// Check interface.
+var _ LoadBalancer[Target] = &RingHash[Target]{}
+
 // NewRingHash returns a new instance of ring hash load balancer.
 // Targets can be added or removed after instantiation.
 // See the comments on [RingHash].

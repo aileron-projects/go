@@ -34,7 +34,7 @@ type LoadBalancer[T Target] interface {
 	// Add adds targets to the load balancer.
 	// It may change the internal state.
 	// It is safe for concurrent call.
-	Add(targets ...T) (err error)
+	Add(targets ...T)
 	// Remove removes targets with the given id.
 	// It may change the internal state.
 	// It is safe for concurrent call.

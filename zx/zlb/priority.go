@@ -1,5 +1,8 @@
 package zlb
 
+// Check interface.
+var _ LoadBalancer[Target] = &Priority[Target]{}
+
 // NewPriority returns a new instance of priority-based load balancer.
 // Targets can be added or removed after instantiation.
 // See the comments on [Priority].

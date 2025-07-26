@@ -5,6 +5,9 @@ import (
 	"sync"
 )
 
+// Check interface.
+var _ LoadBalancer[Target] = &BasicRoundRobin[Target]{}
+
 // BasicRoundRobin returns a new instance of basic round robin load balancer.
 // Targets can be added or removed after instantiation.
 // See the comments on [BasicRoundRobin].

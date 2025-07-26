@@ -1,5 +1,8 @@
 package zlb
 
+// Check interface.
+var _ LoadBalancer[Target] = &JumpHash[Target]{}
+
 // NewJumpHash returns a new instance of jump hash load balancer.
 // Targets can be added or removed after instantiation.
 // See the comments on [JumpHash].

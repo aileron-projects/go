@@ -5,6 +5,10 @@ import (
 	"math/rand/v2"
 )
 
+// Check interface.
+var _ LoadBalancer[Target] = &Random[Target]{}
+var _ LoadBalancer[Target] = &RandomW[Target]{}
+
 // NewRandom returns a new instance of random load balancer.
 // Targets can be added or removed after instantiation.
 // See the comments on [Random].

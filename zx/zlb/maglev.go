@@ -4,6 +4,9 @@ import (
 	"math"
 )
 
+// Check interface.
+var _ LoadBalancer[Target] = &Maglev[Target]{}
+
 // NewMaglev returns a new instance of maglev hash load balancer.
 // Targets can be added or removed after instantiation.
 // See the comments on [Maglev].

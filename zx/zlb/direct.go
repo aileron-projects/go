@@ -2,6 +2,10 @@ package zlb
 
 import "math"
 
+// Check interface.
+var _ LoadBalancer[Target] = &DirectHash[Target]{}
+var _ LoadBalancer[Target] = &DirectHashW[Target]{}
+
 // NewDirectHash returns a new instance of direct hash load balancer.
 // Targets can be added or removed after instantiation.
 // See the comments on [DirectHash].
