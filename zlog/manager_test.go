@@ -40,7 +40,7 @@ func TestNewFileManager(t *testing.T) {
 		c := &FileManagerConfig{SrcDir: dir, DstDir: dir, Pattern: "test.txt"} // ".%i" should be added.
 		_, err := NewFileManager(c)
 		ztesting.AssertEqual(t, "error should be nil", nil, err)
-		ztesting.AssertEqual(t, "pattern not match", "test.txt.%i", c.Pattern)
+		ztesting.AssertEqual(t, "pattern not match", "test.%i.txt", c.Pattern)
 	})
 	t.Run("pattern contains specifier", func(t *testing.T) {
 		dir := t.TempDir()

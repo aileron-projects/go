@@ -86,7 +86,8 @@ func NewFileManager(c *FileManagerConfig) (*FileManager, error) {
 	}
 	_, _, char := scanFormat(c.Pattern)
 	if char == 0x00 || !bytes.ContainsAny([]byte{char}, "YMDhmsui") {
-		c.Pattern += ".%i"
+		ext := filepath.Ext(c.Pattern)
+		c.Pattern = strings.TrimSuffix(c.Pattern, ext) + ".%i" + ext
 	}
 	c.SrcDir = filepath.Clean(c.SrcDir)
 	c.DstDir = filepath.Clean(c.DstDir)
