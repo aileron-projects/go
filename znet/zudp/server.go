@@ -256,7 +256,8 @@ func newPacketConn(addr string) (pc net.PacketConn, err error) {
 		laddr := &net.UnixAddr{Name: address, Net: network}
 		return net.ListenUnixgram(network, laddr)
 	default:
-		return net.ListenPacket("udp", addr) // Fallback. May be invalid addr.
+		var lc net.ListenConfig
+		return lc.ListenPacket(context.Background(), "udp", addr) // Fallback. May be invalid addr.
 	}
 }
 

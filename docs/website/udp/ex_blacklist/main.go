@@ -52,7 +52,8 @@ func main() {
 		Handler: zudp.HandlerFunc(handleConn),
 	}
 
-	p, err := net.ListenPacket("udp", ":8080")
+	var lc net.ListenConfig
+	p, err := lc.ListenPacket(context.Background(), "udp", ":8080")
 	if err != nil {
 		panic(err)
 	}

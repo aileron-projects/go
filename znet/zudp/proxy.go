@@ -166,6 +166,7 @@ func (d *roundRobinDialer) dial(_ context.Context, _ Conn) (net.Conn, error) {
 		raddr := &net.UnixAddr{Name: address, Net: network}
 		return net.DialUnix(network, nil, raddr)
 	default:
-		return net.Dial("udp", addr) // Fallback.
+		var d net.Dialer
+		return d.DialContext(context.Background(), "udp", addr) // Fallback.
 	}
 }

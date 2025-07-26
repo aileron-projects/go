@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -13,7 +14,8 @@ import (
 
 func main() {
 	flag.Parse()
-	ln, err := net.Listen("tcp", ":8080")
+	var lc net.ListenConfig
+	ln, err := lc.Listen(context.Background(), "tcp", ":8080")
 	if err != nil {
 		panic(err)
 	}

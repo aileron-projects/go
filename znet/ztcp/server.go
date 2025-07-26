@@ -305,7 +305,8 @@ func newListener(addr string) (ln net.Listener, err error) {
 		laddr := &net.UnixAddr{Name: address, Net: network}
 		return net.ListenUnix(network, laddr)
 	default:
-		return net.Listen("tcp", addr) // Fallback. May be invalid addr.
+		var lc net.ListenConfig
+		return lc.Listen(context.Background(), "tcp", addr) // Fallback. May be invalid addr.
 	}
 }
 
