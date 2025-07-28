@@ -36,12 +36,14 @@ LeakyBucketのリミッター作成時に指定できるパラメータは以下
 - 一定のインターバルでキューの先頭からリクエストを取り出し処理する。
 
 LeakyBucketは以下の2つのメソッドを持ちます。
-`AllowNow`はキューが空の場合にのみ、有効なトークンを返す。
-従って、LeakyBucketを利用する場合は基本的には`WaitNow`を利用し、リクエストが処理されるのを待機する。
+`AllowNow`はキューが空の場合にのみ、有効なトークンを返します。
+従って、LeakyBucketを利用する場合は基本的には`WaitNow`を利用し、リクエストが処理されるのを待機します。
+`Accept`は`WaitNow`のエイリアスです。
 
 ```go
 func AllowNow() Token
 func WaitNow(ctx context.Context) Token
+func Accept(ctx context.Context) Token
 ```
 
 APIのレートリミットに使用する例は、[LeakyBucketによるAPIレートリミット](#leakybucketによるapiレートリミット)を参照してください。
@@ -63,10 +65,12 @@ Concurrencyのリミッター作成時に指定できるパラメータは以下
 
 Concurrencyリミッターは以下の2つのメソッドを持ちます。
 `AllowNow`はセマフォ変数が全てロックされている場合は直ちに無効なトークンを返却、一方`WaitNow`はセマフォ変数のロックを獲得できるまで待機する。
+`Accept`は`AllowNow`のエイリアスです。
 
 ```go
 func AllowNow() Token
 func WaitNow(ctx context.Context) Token
+func Accept(ctx context.Context) Token
 ```
 
 APIのレートリミットに使用する例は、[ConcurrencyによるAPIレートリミット](#concurrencyによるapiレートリミット)を参照してください。
@@ -93,10 +97,12 @@ TokenBucketのリミッター作成時に指定できるパラメータは以下
 TokenBucketリミッターは以下の2つのメソッドを持ちます。
 `AllowNow`は1つのトークンを消費して処理を開始します。トークンが存在しなければ直ちに無効なトークンが返却されるため、処理は中断されます。
 一方、`WaitNow`は同様にトークンを消費して処理を開始しますが、トークンが存在しなければ補充されるまで待機します。
+`Accept`は`AllowNow`のエイリアスです。
 
 ```go
 func AllowNow() Token
 func WaitNow(ctx context.Context) Token
+func Accept(ctx context.Context) Token
 ```
 
 APIのレートリミットに使用する例は、[TokenBucketによるAPIレートリミット](#tokenbucketによるapiレートリミット)を参照してください。
@@ -120,10 +126,12 @@ FixedWindowのリミッター作成時に指定できるパラメータは以下
 FixedWindowリミッターは以下の2つのメソッドを持ちます。
 `AllowNow`は1つのトークンを消費して処理を開始します。トークンが存在しなければ直ちに無効なトークンが返却されるため、処理は中断されます。
 一方、`WaitNow`は同様にトークンを消費して処理を開始しますが、トークンが存在しなければ補充されるまで待機します。
+`Accept`は`AllowNow`のエイリアスです。
 
 ```go
 func AllowNow() Token
 func WaitNow(ctx context.Context) Token
+func Accept(ctx context.Context) Token
 ```
 
 APIのレートリミットに使用する例は、[FixedWindowによるAPIレートリミット](#fixedwindowによるapiレートリミット)を参照してください。

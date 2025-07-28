@@ -23,8 +23,7 @@ const (
 // Limiter provides rate limiting mechanism.
 // See also [golang.org/x/time/rate].
 type Limiter interface {
-	AllowNow() Token
-	WaitNow(context.Context) Token
+	Accept(context.Context) Token
 }
 
 // Token represents limiter tokens.
@@ -46,14 +45,7 @@ type Token interface {
 // NoopLimiter implements [Limiter] interface
 type NoopLimiter bool
 
-func (lim NoopLimiter) AllowNow() Token {
-	if lim {
-		return TokenOK
-	}
-	return TokenNG
-}
-
-func (lim NoopLimiter) WaitNow(_ context.Context) Token {
+func (lim NoopLimiter) Accept(ctx context.Context) Token {
 	if lim {
 		return TokenOK
 	}

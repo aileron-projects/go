@@ -14,7 +14,7 @@ func main() {
 	interval := time.Millisecond
 	limiter := zrate.NewLeakyBucketLimiter(queueSize, interval)
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := limiter.WaitNow(r.Context())
+		token := limiter.Accept(r.Context())
 		defer token.Release()
 		if token.OK() {
 			time.Sleep(time.Duration(rand.Int64N(100)) * time.Millisecond)

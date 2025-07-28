@@ -50,8 +50,8 @@ func NewSlidingWindowLimiterWidth(limit int, width time.Duration) Limiter {
 //	}
 //
 //	func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-//		token := h.limiter.WaitNow(r.Context()) // Basically, use WaitNow for SlidingWindowLimiter.
-//		defer token.Release()                   // Release is not required for SlidingWindow algorithm.
+//		token := h.limiter.Accept(r.Context())
+//		defer token.Release()
 //		if !token.OK() {
 //			w.WriteHeader(http.StatusTooManyRequests)
 //			return
@@ -99,6 +99,11 @@ func (lim *SlidingWindowLimiter) updateSubWindow() {
 		lim.sum -= lim.subWindow[lim.index]
 		lim.subWindow[lim.index] = 0
 	}
+}
+
+// Accept is the alias of AllowNow for the LeakyBucketLimiter.
+func (lim *SlidingWindowLimiter) Accept(_ context.Context) Token {
+	return lim.AllowNow()
 }
 
 func (lim *SlidingWindowLimiter) AllowNow() Token {

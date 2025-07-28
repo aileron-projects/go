@@ -14,27 +14,27 @@ func TestNewFixedWindowLimiterWidth(t *testing.T) {
 	t.Run("bucketSize=-1", func(t *testing.T) {
 		lim := NewFixedWindowLimiter(-1)
 		for range 5 { // Token always should be false.
-			token := lim.AllowNow()
+			token := lim.Accept(context.Background())
 			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
 		}
 	})
 	t.Run("bucketSize=0", func(t *testing.T) {
 		lim := NewFixedWindowLimiter(0)
 		for range 5 { // Token always should be false.
-			token := lim.AllowNow()
+			token := lim.Accept(context.Background())
 			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
 		}
 	})
 	t.Run("bucketSize=1", func(t *testing.T) {
 		lim := NewFixedWindowLimiter(1)
-		token1, token2 := lim.AllowNow(), lim.AllowNow()
+		token1, token2 := lim.Accept(context.Background()), lim.Accept(context.Background())
 		ztesting.AssertEqual(t, "incorrect token status", true, token1.OK())
 		ztesting.AssertEqual(t, "incorrect token status", false, token2.OK())
 	})
 	t.Run("fillInterval=0", func(t *testing.T) {
 		lim := NewFixedWindowLimiterWidth(1, 0)
 		for range 5 { // Token always should be true.
-			token := lim.AllowNow()
+			token := lim.Accept(context.Background())
 			ztesting.AssertEqual(t, "incorrect token status", true, token.OK())
 		}
 	})
@@ -45,27 +45,27 @@ func TestNewTokenBucketInterval(t *testing.T) {
 	t.Run("bucketSize=-1", func(t *testing.T) {
 		lim := NewTokenBucketLimiter(-1, 1)
 		for range 5 { // Token always should be false.
-			token := lim.AllowNow()
+			token := lim.Accept(context.Background())
 			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
 		}
 	})
 	t.Run("bucketSize=0", func(t *testing.T) {
 		lim := NewTokenBucketLimiter(0, 1)
 		for range 5 { // Token always should be false.
-			token := lim.AllowNow()
+			token := lim.Accept(context.Background())
 			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
 		}
 	})
 	t.Run("bucketSize=1", func(t *testing.T) {
 		lim := NewTokenBucketLimiter(1, 1)
-		token1, token2 := lim.AllowNow(), lim.AllowNow()
+		token1, token2 := lim.Accept(context.Background()), lim.Accept(context.Background())
 		ztesting.AssertEqual(t, "incorrect token status", true, token1.OK())
 		ztesting.AssertEqual(t, "incorrect token status", false, token2.OK())
 	})
 	t.Run("fillInterval=0", func(t *testing.T) {
 		lim := NewTokenBucketInterval(1, 1, 0)
 		for range 5 { // Token always should be true.
-			token := lim.AllowNow()
+			token := lim.Accept(context.Background())
 			ztesting.AssertEqual(t, "incorrect token status", true, token.OK())
 		}
 	})

@@ -14,7 +14,7 @@ func main() {
 	fillRate := 10
 	limiter := zrate.NewTokenBucketLimiter(bucketSize, fillRate)
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := limiter.AllowNow()
+		token := limiter.Accept(r.Context())
 		defer token.Release()
 		if token.OK() {
 			time.Sleep(time.Duration(rand.Int64N(100)) * time.Millisecond)

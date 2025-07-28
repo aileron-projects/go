@@ -13,27 +13,27 @@ func TestNewSlidingWindowLimiterWidth(t *testing.T) {
 	t.Run("limit=-1", func(t *testing.T) {
 		lim := NewSlidingWindowLimiter(-1)
 		for range 5 { // Token always should be false.
-			token := lim.AllowNow()
+			token := lim.Accept(context.Background())
 			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
 		}
 	})
 	t.Run("limit=0", func(t *testing.T) {
 		lim := NewSlidingWindowLimiter(0)
 		for range 5 { // Token always should be false.
-			token := lim.AllowNow()
+			token := lim.Accept(context.Background())
 			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
 		}
 	})
 	t.Run("limit=1", func(t *testing.T) {
 		lim := NewSlidingWindowLimiter(1)
-		token1, token2 := lim.AllowNow(), lim.AllowNow()
+		token1, token2 := lim.Accept(context.Background()), lim.Accept(context.Background())
 		ztesting.AssertEqual(t, "incorrect token status", true, token1.OK())
 		ztesting.AssertEqual(t, "incorrect token status", false, token2.OK())
 	})
 	t.Run("width=0", func(t *testing.T) {
 		lim := NewSlidingWindowLimiterWidth(1, 0)
 		for range 5 { // Token always should be true.
-			token := lim.AllowNow()
+			token := lim.Accept(context.Background())
 			ztesting.AssertEqual(t, "incorrect token status", true, token.OK())
 		}
 	})

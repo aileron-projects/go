@@ -27,8 +27,8 @@ func NewConcurrentLimiter(limit int) Limiter {
 //	}
 //
 //	func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-//		token := h.limiter.AllowNow() // Basically, use AllowNow for ConcurrentLimiter.
-//		defer token.Release()         // Do not forget releasing the token.
+//		token := h.limiter.Accept(r.Context())
+//		defer token.Release()
 //		if !token.OK() {
 //			w.WriteHeader(http.StatusTooManyRequests)
 //			return
@@ -41,6 +41,11 @@ type ConcurrentLimiter struct {
 	// cap(bucket) == limit.
 	// len(bucket) == current number of concurrency.
 	bucket chan struct{}
+}
+
+// Accept is the alias of AllowNow for the ConcurrentLimiter.
+func (lim *ConcurrentLimiter) Accept(_ context.Context) Token {
+	return lim.AllowNow()
 }
 
 func (lim *ConcurrentLimiter) AllowNow() Token {

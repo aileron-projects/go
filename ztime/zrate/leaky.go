@@ -39,8 +39,8 @@ func NewLeakyBucketLimiter(queueSize int, interval time.Duration) Limiter {
 //	}
 //
 //	func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-//		token := h.limiter.WaitNow(r.Context()) // Basically, use WaitNow for LeakyBucketLimiter.
-//		defer token.Release()                   // Release is not required for LeakyBucket algorithm.
+//		token := h.limiter.Accept(r.Context())
+//		defer token.Release().
 //		if !token.OK() {
 //			w.WriteHeader(http.StatusTooManyRequests)
 //			return
@@ -74,6 +74,11 @@ type LeakyBucketLimiter struct {
 	// timeNow returns the current time.
 	// This can be replaced for testing.
 	timeNow func() time.Time
+}
+
+// Accept is the alias of WaitNow for the LeakyBucketLimiter.
+func (lim *LeakyBucketLimiter) Accept(ctx context.Context) Token {
+	return lim.WaitNow(ctx)
 }
 
 func (lim *LeakyBucketLimiter) AllowNow() Token {

@@ -1,6 +1,7 @@
 package zrate_test
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/aileron-projects/go/ztime/zrate"
@@ -9,7 +10,7 @@ import (
 func ExampleConcurrentLimiter() {
 	limiter := zrate.NewConcurrentLimiter(3)
 	for i := range 5 {
-		token := limiter.AllowNow()
+		token := limiter.Accept(context.Background())
 		defer token.Release() // Occupied token must be released.
 		fmt.Println(i, token.OK())
 	}
@@ -24,7 +25,7 @@ func ExampleConcurrentLimiter() {
 func ExampleNewFixedWindowLimiter() {
 	limiter := zrate.NewFixedWindowLimiter(3)
 	for i := range 5 {
-		token := limiter.AllowNow()
+		token := limiter.Accept(context.Background())
 		fmt.Println(i, token.OK())
 	}
 	// Output:
@@ -38,7 +39,7 @@ func ExampleNewFixedWindowLimiter() {
 func ExampleNewSlidingWindowLimiter() {
 	limiter := zrate.NewSlidingWindowLimiter(3)
 	for i := range 5 {
-		token := limiter.AllowNow()
+		token := limiter.Accept(context.Background())
 		fmt.Println(i, token.OK())
 	}
 	// Output:
@@ -52,7 +53,7 @@ func ExampleNewSlidingWindowLimiter() {
 func ExampleNewTokenBucketLimiter() {
 	limiter := zrate.NewTokenBucketLimiter(3, 2)
 	for i := range 5 {
-		token := limiter.AllowNow()
+		token := limiter.Accept(context.Background())
 		fmt.Println(i, token.OK())
 	}
 	// Output:

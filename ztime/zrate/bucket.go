@@ -69,8 +69,8 @@ func NewTokenBucketInterval(bucketSize, fillRate int, fillInterval time.Duration
 //	}
 //
 //	func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-//		token := h.limiter.AllowNow() // Basically, use AllowNow for BucketLimiter.
-//		defer token.Release()         // Release is not required for BucketLimiter.
+//		token := h.limiter.Accept(r.Context())
+//		defer token.Release()
 //		if !token.OK() {
 //			w.WriteHeader(http.StatusTooManyRequests)
 //			return
@@ -80,6 +80,11 @@ func NewTokenBucketInterval(bucketSize, fillRate int, fillInterval time.Duration
 //	}
 type BucketLimiter struct {
 	getToken func() (ok bool, retryAfter time.Duration)
+}
+
+// Accept is the alias of AllowNow for the BucketLimiter.
+func (lim *BucketLimiter) Accept(_ context.Context) Token {
+	return lim.AllowNow()
 }
 
 func (lim *BucketLimiter) AllowNow() Token {

@@ -8,31 +8,42 @@ import (
 	"github.com/aileron-projects/go/ztesting"
 )
 
-func TestConcurrentLimiter_AllowNow(t *testing.T) {
+func TestNewConcurrentLimiter(t *testing.T) {
 	t.Parallel()
 	t.Run("limit=-1", func(t *testing.T) {
 		lim := NewConcurrentLimiter(-1)
-		t1 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process allowed", false, t1.OK())
-		t2 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process allowed", false, t2.OK())
+		for range 5 { // Token should always be false.
+			token := lim.Accept(context.Background())
+			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
+		}
 	})
 	t.Run("limit=0", func(t *testing.T) {
 		lim := NewConcurrentLimiter(0)
-		t1 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process allowed", false, t1.OK())
-		t2 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process allowed", false, t2.OK())
+		for range 5 { // Token should always be false.
+			token := lim.Accept(context.Background())
+			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
+		}
 	})
 	t.Run("limit=1", func(t *testing.T) {
-		lim := NewConcurrentLimiter(1)
+		lim := NewConcurrentLimiter(1).(*ConcurrentLimiter)
+		t1 := lim.Accept(context.Background())
+		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
+		t2 := lim.Accept(context.Background())
+		ztesting.AssertEqual(t, "process allowed", false, t2.OK())
+	})
+}
+
+func TestConcurrentLimiter_AllowNow(t *testing.T) {
+	t.Parallel()
+	t.Run("limit=1", func(t *testing.T) {
+		lim := NewConcurrentLimiter(1).(*ConcurrentLimiter)
 		t1 := lim.AllowNow()
 		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
 		t2 := lim.AllowNow()
 		ztesting.AssertEqual(t, "process allowed", false, t2.OK())
 	})
 	t.Run("limit=2", func(t *testing.T) {
-		lim := NewConcurrentLimiter(2)
+		lim := NewConcurrentLimiter(2).(*ConcurrentLimiter)
 		t1 := lim.AllowNow()
 		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
 		t2 := lim.AllowNow()
@@ -41,7 +52,7 @@ func TestConcurrentLimiter_AllowNow(t *testing.T) {
 		ztesting.AssertEqual(t, "process allowed", false, t3.OK())
 	})
 	t.Run("limit=2 and release", func(t *testing.T) {
-		lim := NewConcurrentLimiter(2)
+		lim := NewConcurrentLimiter(2).(*ConcurrentLimiter)
 		t1 := lim.AllowNow()
 		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
 		t2 := lim.AllowNow()
@@ -56,22 +67,8 @@ func TestConcurrentLimiter_AllowNow(t *testing.T) {
 
 func TestConcurrentLimiter_WaitNow(t *testing.T) {
 	t.Parallel()
-	t.Run("limit=-1", func(t *testing.T) {
-		lim := NewConcurrentLimiter(-1)
-		t1 := lim.WaitNow(context.Background())
-		ztesting.AssertEqual(t, "process allowed", false, t1.OK())
-		t2 := lim.WaitNow(context.Background())
-		ztesting.AssertEqual(t, "process allowed", false, t2.OK())
-	})
-	t.Run("limit=0", func(t *testing.T) {
-		lim := NewConcurrentLimiter(0)
-		t1 := lim.WaitNow(context.Background())
-		ztesting.AssertEqual(t, "process allowed", false, t1.OK())
-		t2 := lim.WaitNow(context.Background())
-		ztesting.AssertEqual(t, "process allowed", false, t2.OK())
-	})
 	t.Run("limit=1", func(t *testing.T) {
-		lim := NewConcurrentLimiter(1)
+		lim := NewConcurrentLimiter(1).(*ConcurrentLimiter)
 		t1 := lim.WaitNow(context.Background())
 		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
 		dc, cancel := context.WithDeadline(context.Background(), time.Now().Add(100*time.Millisecond))
@@ -81,7 +78,7 @@ func TestConcurrentLimiter_WaitNow(t *testing.T) {
 		ztesting.AssertEqualErr(t, "wrong error reason", context.DeadlineExceeded, t2.Err())
 	})
 	t.Run("limit=2", func(t *testing.T) {
-		lim := NewConcurrentLimiter(2)
+		lim := NewConcurrentLimiter(2).(*ConcurrentLimiter)
 		t1 := lim.WaitNow(context.Background())
 		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
 		t2 := lim.WaitNow(context.Background())
@@ -93,7 +90,7 @@ func TestConcurrentLimiter_WaitNow(t *testing.T) {
 		ztesting.AssertEqualErr(t, "wrong error reason", context.DeadlineExceeded, t3.Err())
 	})
 	t.Run("limit=2 and release", func(t *testing.T) {
-		lim := NewConcurrentLimiter(2)
+		lim := NewConcurrentLimiter(2).(*ConcurrentLimiter)
 		t1 := lim.WaitNow(context.Background())
 		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
 		t2 := lim.WaitNow(context.Background())
