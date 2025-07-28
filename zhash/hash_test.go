@@ -16,6 +16,8 @@ func TestRegisterHash(t *testing.T) {
 		h := hash.Hash(fnv.New32())
 		RegisterHash(FNV32, func() hash.Hash { return h })
 		got := FNV32.New()
+		t.Log(h.Sum(nil))
+		t.Log(got.Sum(nil))
 		ztesting.AssertEqual(t, "hash not match", true, slices.Equal(h.Sum(nil), got.Sum(nil)))
 	})
 	t.Run("failed", func(t *testing.T) {
