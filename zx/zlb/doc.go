@@ -2,20 +2,20 @@
 //
 // Provided algorithms:
 //
-//	|                    | Check  | Check  | Hash-base | Consistent | Computation |
-//	| Algorithm          | weight | status | algorithm |    hash    | complexity  |
-//	| ------------------ | ------ | ------ | --------- | ---------- | ----------- |
-//	| Priority           |  Yes   |  Yes   |    No     |     --     |    O(n)     |
-//	| Random             |  No    |  Yes   |    No     |     --     |    O(1)     |
-//	| WeightedRandom     |  Yes   |  Yes   |    No     |     --     |    O(n)     |
-//	| BasicRoundRobin    |  Yes   |  Yes   |    No     |     --     |    O(1)     |
-//	| RoundRobin         |  Yes   |  Yes   |    No     |     --     |    O(n)     |
-//	| RendezvousHash     |  Yes   |  Yes   |    Yes    |    Yes     |    O(n)     |
-//	| JumpHash           |  No    |  Yes   |    Yes    |    Yes     |    O(1)     |
-//	| DirectHash         |  Yes   |  Yes   |    Yes    |    No      |    O(1)     |
-//	| WeightedDirectHash |  Yes   |  Yes   |    Yes    |    No      |    O(n)     |
-//	| RingHash           |  Yes   |  Yes   |    Yes    |    Yes     |  O(log(n))  |
-//	| Maglev             |  Yes   |  Yes   |    Yes    |    Yes     |    O(1)     |
+//	|                    | Consider | Consider | Hash-base | Consistent | Computation |
+//	| Algorithm          |  weight  |  health  | algorithm |    hash    | complexity  |
+//	| ------------------ | -------- | -------- | --------- | ---------- | ----------- |
+//	| Priority           |   Yes    |   Yes    |    No     |     --     |    O(n)     |
+//	| Random             |   No     |   Yes    |    No     |     --     |    O(1)     |
+//	| WeightedRandom     |   Yes    |   Yes    |    No     |     --     |    O(n)     |
+//	| BasicRoundRobin    |   Yes    |   Yes    |    No     |     --     |    O(1)     |
+//	| RoundRobin         |   Yes    |   Yes    |    No     |     --     |    O(n)     |
+//	| RendezvousHash     |   Yes    |   Yes    |    Yes    |    Yes     |    O(n)     |
+//	| JumpHash           |   No     |   Yes    |    Yes    |    Yes     |    O(1)     |
+//	| DirectHash         |   Yes    |   Yes    |    Yes    |    No      |    O(1)     |
+//	| WeightedDirectHash |   Yes    |   Yes    |    Yes    |    No      |    O(n)     |
+//	| RingHash           |   Yes    |   Yes    |    Yes    |    Yes     |  O(log(n))  |
+//	| Maglev             |   Yes    |   Yes    |    Yes    |    Yes     |    O(1)     |
 //
 // See the comments:
 //   - [Priority]: priority based, or weight based load balancer.
