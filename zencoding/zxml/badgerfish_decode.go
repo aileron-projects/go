@@ -22,7 +22,7 @@ func (b *BadgerFish) Decode(decoder *xml.Decoder) (any, error) {
 	var token xml.Token
 	var err error
 	for {
-		if token, err = decoder.Token(); err != nil {
+		if token, err = decoder.RawToken(); err != nil {
 			if err != io.EOF {
 				return nil, &XMLError{Err: err, Cause: CauseXMLDecoder}
 			}
@@ -30,9 +30,9 @@ func (b *BadgerFish) Decode(decoder *xml.Decoder) (any, error) {
 		}
 		switch t := token.(type) {
 		case xml.StartElement:
-			content, err := b.decode(decoder, t, t.End(), nil)
+			content, err := b.decode(decoder, t, t.End())
 			if err != nil {
-				return nil, err
+				return nil, &XMLError{Err: err, Cause: CauseXMLDecoder}
 			}
 			objs = append(objs, content)
 		}
@@ -50,11 +50,9 @@ func (b *BadgerFish) Decode(decoder *xml.Decoder) (any, error) {
 	}
 }
 
-func (b *BadgerFish) decode(decoder *xml.Decoder, start xml.StartElement, end xml.EndElement, ns [][2]string) (map[string]any, error) {
-	// Append namespace of this element.
-	ns = append(ns, parseNamespace(start.Attr, ns)...)
+func (b *BadgerFish) decode(decoder *xml.Decoder, start xml.StartElement, end xml.EndElement) (map[string]any, error) {
 	// Convert attributes into map object.
-	attrs := b.attrsToMap(start.Attr, ns)
+	attrs := b.attrsToMap(start.Attr)
 
 	var text string
 	var keys []string
@@ -62,14 +60,10 @@ func (b *BadgerFish) decode(decoder *xml.Decoder, start xml.StartElement, end xm
 
 Loop:
 	for {
-		token, err := decoder.Token()
+		token, err := decoder.RawToken()
 		if err != nil {
-			if err != io.EOF {
-				err = &XMLError{Err: err, Cause: CauseXMLDecoder}
-			}
 			return nil, err
 		}
-
 		switch t := token.(type) {
 		case xml.CharData:
 			trimmed := bytes.TrimSpace(t)
@@ -82,7 +76,7 @@ Loop:
 				text += string(t)
 			}
 		case xml.StartElement:
-			content, err := b.decode(decoder, t, t.End(), ns)
+			content, err := b.decode(decoder, t, t.End())
 			if err != nil {
 				return nil, err
 			}
@@ -122,12 +116,12 @@ Loop:
 
 	if len(attrs) == 0 {
 		return map[string]any{
-			tokenName(start.Name, b.NamespaceSep, ns): b.emptyVal,
+			tokenName(start.Name, b.NamespaceSep): b.emptyVal,
 		}, nil
 	}
 
 	return map[string]any{
-		tokenName(start.Name, b.NamespaceSep, ns): attrs,
+		tokenName(start.Name, b.NamespaceSep): attrs,
 	}, nil
 }
 
@@ -140,7 +134,7 @@ Loop:
 //		"$": "http://abc.com/",
 //		"ns": "http://xyz.com/"
 //	}
-func (b *BadgerFish) attrsToMap(attrs []xml.Attr, ns [][2]string) map[string]any {
+func (b *BadgerFish) attrsToMap(attrs []xml.Attr) map[string]any {
 	m := make(map[string]any, 0)
 	for _, attr := range attrs {
 		name := attr.Name
@@ -148,14 +142,14 @@ func (b *BadgerFish) attrsToMap(attrs []xml.Attr, ns [][2]string) map[string]any
 		switch name.Space {
 		case "": // Format <elem foo="bar"> or <elem xmlns="http://abc.com/">
 			if name.Local != "xmlns" {
-				m[attrName(attr.Name, b.AttrPrefix, b.NamespaceSep, nil)] = attr.Value
+				m[attrName(attr.Name, b.AttrPrefix, b.NamespaceSep)] = attr.Value
 				continue
 			}
 			key = b.TextKey
 		case "xmlns": // Format <elem xmlns:foo="http://abc.com/">
 			key = name.Local
 		default: // Format <elem foo:bar="baz">
-			m[attrName(attr.Name, b.AttrPrefix, b.NamespaceSep, ns)] = attr.Value
+			m[attrName(attr.Name, b.AttrPrefix, b.NamespaceSep)] = attr.Value
 			continue
 		}
 		if v, ok := m[b.AttrPrefix+"xmlns"]; ok {

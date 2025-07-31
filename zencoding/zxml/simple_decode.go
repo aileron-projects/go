@@ -23,7 +23,7 @@ func (s *Simple) Decode(decoder *xml.Decoder) (any, error) {
 	var token xml.Token
 	var err error
 	for {
-		if token, err = decoder.Token(); err != nil {
+		if token, err = decoder.RawToken(); err != nil {
 			if err != io.EOF {
 				return nil, &XMLError{Err: err, Cause: CauseXMLDecoder}
 			}
@@ -31,9 +31,9 @@ func (s *Simple) Decode(decoder *xml.Decoder) (any, error) {
 		}
 		switch t := token.(type) {
 		case xml.StartElement:
-			content, err := s.parseContent(decoder, t, t.End(), nil)
+			content, err := s.parseContent(decoder, t, t.End())
 			if err != nil {
-				return nil, err
+				return nil, &XMLError{Err: err, Cause: CauseXMLDecoder}
 			}
 			objs = append(objs, content)
 		}
@@ -51,14 +51,11 @@ func (s *Simple) Decode(decoder *xml.Decoder) (any, error) {
 	}
 }
 
-func (s *Simple) parseContent(decoder *xml.Decoder, start xml.StartElement, end xml.EndElement, ns [][2]string) (map[string]any, error) {
-	// Append namespace of this element.
-	ns = append(ns, parseNamespace(start.Attr, ns)...)
-
+func (s *Simple) parseContent(decoder *xml.Decoder, start xml.StartElement, end xml.EndElement) (map[string]any, error) {
 	// Put attributes in the map.
 	attrs := make(map[string]any, len(start.Attr))
 	for _, attr := range start.Attr {
-		attrs[attrName(attr.Name, s.AttrPrefix, s.NamespaceSep, ns)] = attr.Value
+		attrs[attrName(attr.Name, s.AttrPrefix, s.NamespaceSep)] = attr.Value
 	}
 
 	var text string
@@ -67,14 +64,10 @@ func (s *Simple) parseContent(decoder *xml.Decoder, start xml.StartElement, end 
 
 Loop:
 	for {
-		token, err := decoder.Token()
+		token, err := decoder.RawToken()
 		if err != nil {
-			if err != io.EOF {
-				err = &XMLError{Err: err, Cause: CauseXMLDecoder}
-			}
 			return nil, err
 		}
-
 		switch t := token.(type) {
 		case xml.CharData:
 			trimmed := bytes.TrimSpace(t)
@@ -87,7 +80,7 @@ Loop:
 				text += string(t)
 			}
 		case xml.StartElement:
-			content, err := s.parseContent(decoder, t, t.End(), ns)
+			content, err := s.parseContent(decoder, t, t.End())
 			if err != nil {
 				return nil, err
 			}
@@ -127,7 +120,7 @@ Loop:
 		}
 		if s.PreferShort {
 			return map[string]any{
-				tokenName(start.Name, s.NamespaceSep, ns): val,
+				tokenName(start.Name, s.NamespaceSep): val,
 			}, nil
 		}
 	}
@@ -138,7 +131,7 @@ Loop:
 	}
 
 	return map[string]any{
-		tokenName(start.Name, s.NamespaceSep, ns): attrs,
+		tokenName(start.Name, s.NamespaceSep): attrs,
 	}, nil
 }
 

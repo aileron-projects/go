@@ -73,61 +73,21 @@ func TestXMLError_Is(t *testing.T) {
 	})
 }
 
-func TestParseNamespace(t *testing.T) {
-	t.Parallel()
-	testCases := map[string]struct {
-		attrs []xml.Attr
-		ns    [][2]string
-	}{
-		"case01": {
-			attrs: []xml.Attr{{Name: xml.Name{Space: "", Local: "foo"}, Value: "test"}},
-			ns:    nil,
-		},
-		"case02": {
-			attrs: []xml.Attr{{Name: xml.Name{Space: "", Local: "xmlns"}, Value: "test"}},
-			ns:    [][2]string{{"xmlns", "test"}},
-		},
-		"case03": {
-			attrs: []xml.Attr{{Name: xml.Name{Space: "xmlns", Local: ""}, Value: "test"}},
-			ns:    [][2]string{{"", "test"}},
-		},
-		"case04": {
-			attrs: []xml.Attr{{Name: xml.Name{Space: "xmlns", Local: "ns"}, Value: "test"}},
-			ns:    [][2]string{{"ns", "test"}},
-		},
-		"case05": {
-			attrs: []xml.Attr{{Name: xml.Name{Space: "ns", Local: "foo"}, Value: "test"}},
-			ns:    [][2]string{{"foo", "test"}},
-		},
-	}
-	for name, tc := range testCases {
-		t.Run(name, func(t *testing.T) {
-			ns := parseNamespace(tc.attrs, nil)
-			ztesting.AssertEqual(t, "namespace not match", tc.ns, ns)
-		})
-	}
-}
-
 func TestAttrName(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
 		name        xml.Name
 		prefix, sep string
-		ns          [][2]string
 		out         string
 	}{
-		"case01": {xml.Name{Space: "", Local: "foo"}, "@", ":", nil, "@foo"},
-		"case02": {xml.Name{Space: "ns", Local: "foo"}, "@", ":", nil, "@ns:foo"},
-		"case03": {xml.Name{Space: "ns", Local: "foo"}, "@", "_", nil, "@ns_foo"},
-		"case04": {xml.Name{Space: "alias", Local: "foo"}, "@", ":", [][2]string{{"xmlns", "alias"}}, "@xmlns:foo"},
-		"case05": {xml.Name{Space: "alias", Local: "foo"}, "@", ":", [][2]string{{"ns", "alias"}}, "@ns:foo"},
-		"case06": {xml.Name{Space: "alias", Local: "foo"}, "@", ":", [][2]string{{"ns1", "alias"}, {"ns2", "alias"}}, "@ns2:foo"},
-		"case07": {xml.Name{Space: "http://www.w3.org/XML/1998/namespace", Local: "foo"}, "@", ":", nil, "@xml:foo"},
-		"case08": {xml.Name{Space: "http://www.w3.org/XML/1998/namespace", Local: "foo"}, "@", "_", nil, "@xml_foo"},
+		"case01": {xml.Name{Space: "", Local: "foo"}, "@", ":", "@foo"},
+		"case02": {xml.Name{Space: "ns", Local: "foo"}, "@", ":", "@ns:foo"},
+		"case03": {xml.Name{Space: "ns", Local: "foo"}, "@", "_", "@ns_foo"},
+		"case04": {xml.Name{Space: "xmlns", Local: "foo"}, "@", ":", "@xmlns:foo"},
 	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			out := attrName(tc.name, tc.prefix, tc.sep, tc.ns)
+			out := attrName(tc.name, tc.prefix, tc.sep)
 			ztesting.AssertEqual(t, "result not match", tc.out, out)
 		})
 	}
@@ -138,21 +98,16 @@ func TestTokenName(t *testing.T) {
 	testCases := map[string]struct {
 		name xml.Name
 		sep  string
-		ns   [][2]string
 		out  string
 	}{
-		"case01": {xml.Name{Space: "", Local: "foo"}, ":", nil, "foo"},
-		"case02": {xml.Name{Space: "ns", Local: "foo"}, ":", nil, "ns:foo"},
-		"case03": {xml.Name{Space: "ns", Local: "foo"}, "_", nil, "ns_foo"},
-		"case04": {xml.Name{Space: "alias", Local: "foo"}, ":", [][2]string{{"xmlns", "alias"}}, "foo"},
-		"case05": {xml.Name{Space: "alias", Local: "foo"}, ":", [][2]string{{"ns", "alias"}}, "ns:foo"},
-		"case06": {xml.Name{Space: "alias", Local: "foo"}, ":", [][2]string{{"ns1", "alias"}, {"ns2", "alias"}}, "ns2:foo"},
-		"case07": {xml.Name{Space: "http://www.w3.org/XML/1998/namespace", Local: "foo"}, ":", nil, "xml:foo"},
-		"case08": {xml.Name{Space: "http://www.w3.org/XML/1998/namespace", Local: "foo"}, "_", nil, "xml_foo"},
+		"case01": {xml.Name{Space: "", Local: "foo"}, ":", "foo"},
+		"case02": {xml.Name{Space: "ns", Local: "foo"}, ":", "ns:foo"},
+		"case03": {xml.Name{Space: "ns", Local: "foo"}, "_", "ns_foo"},
+		"case04": {xml.Name{Space: "xmlns", Local: "foo"}, ":", "xmlns:foo"},
 	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			out := tokenName(tc.name, tc.sep, tc.ns)
+			out := tokenName(tc.name, tc.sep)
 			ztesting.AssertEqual(t, "result not match", tc.out, out)
 		})
 	}
