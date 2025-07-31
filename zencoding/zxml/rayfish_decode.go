@@ -22,7 +22,7 @@ func (r *RayFish) Decode(decoder *xml.Decoder) (any, error) {
 	var token xml.Token
 	var err error
 	for {
-		if token, err = decoder.Token(); err != nil {
+		if token, err = decoder.RawToken(); err != nil {
 			if err != io.EOF {
 				return nil, &XMLError{Err: err, Cause: CauseXMLDecoder}
 			}
@@ -30,9 +30,9 @@ func (r *RayFish) Decode(decoder *xml.Decoder) (any, error) {
 		}
 		switch t := token.(type) {
 		case xml.StartElement:
-			content, err := r.decode(decoder, t, t.End(), nil)
+			content, err := r.decode(decoder, t, t.End())
 			if err != nil {
-				return nil, err
+				return nil, &XMLError{Err: err, Cause: CauseXMLDecoder}
 			}
 			objs = append(objs, content)
 		}
@@ -50,15 +50,12 @@ func (r *RayFish) Decode(decoder *xml.Decoder) (any, error) {
 	}
 }
 
-func (r *RayFish) decode(decoder *xml.Decoder, start xml.StartElement, end xml.EndElement, ns [][2]string) (map[string]any, error) {
-	// Append namespace of this element.
-	ns = append(ns, parseNamespace(start.Attr, ns)...)
-
+func (r *RayFish) decode(decoder *xml.Decoder, start xml.StartElement, end xml.EndElement) (map[string]any, error) {
 	// Register attributes as children.
 	children := make([]map[string]any, 0, len(start.Attr))
 	for _, attr := range start.Attr {
 		children = append(children, map[string]any{
-			r.NameKey:     attrName(attr.Name, r.AttrPrefix, r.NamespaceSep, ns),
+			r.NameKey:     attrName(attr.Name, r.AttrPrefix, r.NamespaceSep),
 			r.TextKey:     attr.Value,
 			r.ChildrenKey: make([]map[string]any, 0), // Attribute has no child.
 		})
@@ -67,13 +64,13 @@ func (r *RayFish) decode(decoder *xml.Decoder, start xml.StartElement, end xml.E
 	var text string
 Loop:
 	for {
-		token, err := decoder.Token()
+		token, err := decoder.RawToken()
 		if err != nil {
-			return nil, &XMLError{Err: err, Cause: CauseXMLDecoder}
+			return nil, err
 		}
 		switch t := token.(type) {
 		case xml.StartElement:
-			content, err := r.decode(decoder, t, t.End(), ns)
+			content, err := r.decode(decoder, t, t.End())
 			if err != nil {
 				return nil, err
 			}
@@ -110,7 +107,7 @@ Loop:
 	}
 
 	return map[string]any{
-		r.NameKey:     tokenName(start.Name, r.NamespaceSep, ns),
+		r.NameKey:     tokenName(start.Name, r.NamespaceSep),
 		r.TextKey:     val,
 		r.ChildrenKey: children,
 	}, nil

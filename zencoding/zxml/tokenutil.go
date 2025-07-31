@@ -60,32 +60,7 @@ func (e *XMLError) Is(err error) bool {
 	return false
 }
 
-// parseNamespace parses namespace from the given [encoding/xml.Attr].
-// Parsed namespaces are appended to the given ns with namespace aliases.
-// Appended array will becomes like follows.
-//
-//	xmlns="foo" --> {"xmlns", "foo"}
-//	xmlns:ns="foo" --> {"ns", "foo"}
-//	ns:bar="foo" --> {"bar", "foo"}
-//	bar="foo" --> Ignored
-func parseNamespace(attrs []xml.Attr, ns [][2]string) [][2]string {
-	for _, attr := range attrs {
-		name := attr.Name
-		switch name.Space {
-		case "":
-			if name.Local == "xmlns" {
-				ns = append(ns, [2]string{"xmlns", attr.Value})
-			}
-		case "xmlns":
-			ns = append(ns, [2]string{name.Local, attr.Value})
-		default:
-			ns = append(ns, [2]string{name.Local, attr.Value})
-		}
-	}
-	return ns
-}
-
-// attrName convert XML attributes token name to string.
+// attrName converts XML attribute token name to string.
 //
 // Examples (prefix="@", sep=":"):
 //
@@ -93,47 +68,17 @@ func parseNamespace(attrs []xml.Attr, ns [][2]string) [][2]string {
 //	ns:foo="bar" --> @ns:foo
 //	xmlns:foo="bar" --> @xmlns:foo
 //	xmlns="bar" --> @xmlns
-func attrName(name xml.Name, prefix, sep string, ns [][2]string) string {
+func attrName(name xml.Name, prefix, sep string) string {
 	if name.Space == "" {
 		return prefix + name.Local
-	}
-	for i := len(ns) - 1; i >= 0; i-- {
-		if name.Space == ns[i][1] {
-			return prefix + ns[i][0] + sep + name.Local
-		}
-	}
-	if name.Space == "http://www.w3.org/XML/1998/namespace" {
-		return prefix + "xml" + sep + name.Local
 	}
 	return prefix + name.Space + sep + name.Local
 }
 
-// tokenName converts token name given as [encoding/xml.Name] to string
-// with namespace consideration.
-// It returns string with <name> or <namespace><sep><name> format.
-// The <namespace> can be URI or alias name.
-// Namespace URI and corresponding alias name can be given by the
-// second argument ns.
-// For example [2]string{"xsd","http://www.w3.org/2001/XMLSchema"}
-// can be given as the ns.
-//
-// Why the ns should be given? The answer is the standard
-// [encoding/xml.Name.Space] always contains namespace value
-// which mostly URI. It does not have alias name information.
-func tokenName(name xml.Name, sep string, ns [][2]string) string {
+// tokenName returns name with namespace.
+func tokenName(name xml.Name, sep string) string {
 	if name.Space == "" {
 		return name.Local
-	}
-	for i := len(ns) - 1; i >= 0; i-- {
-		if name.Space == ns[i][1] {
-			if ns[i][0] == "xmlns" {
-				return name.Local // Do not add space for default namespace.
-			}
-			return ns[i][0] + sep + name.Local
-		}
-	}
-	if name.Space == "http://www.w3.org/XML/1998/namespace" {
-		return "xml" + sep + name.Local
 	}
 	return name.Space + sep + name.Local
 }
