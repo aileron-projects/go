@@ -1,12 +1,12 @@
 # ロギング
 
-## 概要
+## 概要 {#abstract}
 
 ログ関連機能を提供します。
 
 ログに関する機能は[zlog](https://pkg.go.dev/github.com/aileron-projects/go/zlog)パッケージにより提供されています。
 
-## 機能
+## 機能 {#features}
 
 ### 1. ログ出力機能
 
@@ -130,12 +130,12 @@ lv := zslog.LevelFromContext(ctx)
 
 また、履歴ファイルはGzip圧縮により圧縮することも可能です。
 
-## セキュリティに関する特記事項
+## セキュリティに関する特記事項 {#security}
 
 ログ関連機能ではログマスク機能を持ちません。
 必要に応じてユーザ側で実装してください。
 
-## 性能に関する特記事項
+## 性能に関する特記事項 {#performance}
 
 ログ出力は必ずしも`if`で囲む必要はありません。
 可読性と性能を考慮して使い分けることを推奨します。
@@ -152,7 +152,7 @@ if lg.InfoEnabled(ctx) {
 }
 ```
 
-## 実装例・使い方
+## 実装例・使い方 {#example}
 
 ### MaxAgeによるファイル管理
 
@@ -200,4 +200,4 @@ Goの標準パッケージである[log/slog.Handler](https://pkg.go.dev/log/slo
 --8<-- "logging/ex_logging/main.go"
 ```
 
-## 参考資料
+## 参考資料 {#reference}

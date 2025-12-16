@@ -25,7 +25,6 @@ func handleConn(ctx context.Context, conn zudp.Conn) {
 	}
 }
 
-// START main
 func main() {
 	svr := &zudp.Server{
 		Addr:    "unixgram:///var/run/example.sock",
@@ -36,5 +35,3 @@ func main() {
 		panic(err)
 	}
 }
-
-// END main

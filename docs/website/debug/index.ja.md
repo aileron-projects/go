@@ -1,12 +1,12 @@
 # デバッグ
 
-## 概要
+## 概要 {#abstract}
 
 デバッグはデバッグ関連機能を提供します。
 
 デバッグにに関する機能は[zruntime/zdebug](https://pkg.go.dev/github.com/aileron-projects/go/zruntime/zdebug)パッケージにより提供されています。
 
-## 機能
+## 機能 {#features}
 
 ### 1. ダンプ出力機能
 
@@ -32,15 +32,15 @@ zdebug.DumpAlways("dump message", obj1, obj2)
 
 ダンプ機能は内部的に[davecgh/go-spew](https://github.com/davecgh/go-spew)を利用しています。
 
-## セキュリティに関する特記事項
+## セキュリティに関する特記事項 {#security}
 
 予期せず機密情報を出力しないよう、本番環境においてはデバッグ時を除いてダンプ機能を利用しないでください。
 
-## 性能に関する特記事項
+## 性能に関する特記事項 {#performance}
 
 性能劣化につながるため、本番環境においてはデバッグ時を除いてダンプ機能を利用しないでください。
 
-## 実装例・使い方
+## 実装例・使い方 {#example}
 
 ### ダンプの基本的な使い方
 
@@ -88,4 +88,4 @@ zdebug.DumpAlways("dump message", obj1, obj2)
   | })
 ```
 
-## 参考資料
+## 参考資料 {#reference}

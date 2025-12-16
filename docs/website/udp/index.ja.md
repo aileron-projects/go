@@ -1,6 +1,6 @@
 # UDPサーバ・UDPプロキシ
 
-## 概要
+## 概要 {#abstract}
 
 UDPサーバは、UDP(レイヤー4)のサーバを実装することを目的としています。
 UDPサーバは、[Goの標準ライブラリ](https://pkg.go.dev/std)では提供されていません。
@@ -10,11 +10,11 @@ UDPはTCPと異なりコネクションレスのプロトコルです。
 そのため、ここで実装されるUDPサーバは仮想コネクションを
 仮想コネクション
 
-## 機能
+## 機能 {#features}
 
 UDPサーバが保有する機能は以下の通りです。
 
-### 1. UDPサーバ機能
+### 1. UDPサーバ機能 {#udp-server}
 
 UDPサーバとして、クライアントからパケット（UDPデータグラム）を受け取り、ハンドラーに連携します。
 UDPサーバはTLSに対応していません。
@@ -43,14 +43,14 @@ type Handler interface {
 }
 ```
 
-### 2. UDPサーバランナー
+### 2. UDPサーバランナー {#udp-server-runner}
 
 UDPサーバランナーは、グレースフルシャットダウンを簡単に実装できる機能です。
 サーバランナーを利用することでシャットダウン処理の実装の手間を省き、安全にサーバをシャットダウンできます。
 
-利用例は[UDPサーバランナー](#udpサーバランナー)を参照してください。
+利用例は[UDPサーバランナー](#udp-server-runner)を参照してください。
 
-### 3. UDPプロキシ機能
+### 3. UDPプロキシ機能 {#udp-proxy}
 
 UDPプロキシ機能は、UDPサーバのハンドラとして機能します。
 クライアントのUDPコネクションから受け取ったパケットを別のUDPサーバへプロキシします。
@@ -76,22 +76,22 @@ UDPプロキシは、このDial関数を利用して転送先サーバを決定�
 Dial func(ctx context.Context, dc Conn) (uc net.Conn, err error)
 ```
 
-## セキュリティに関する特記事項
+## セキュリティに関する特記事項 {#security}
 
 [znet](https://pkg.go.dev/github.com/aileron-projects/go/znet)パッケージの機能を用いることで以下のセキュリティ対策が可能です。
 TCPと異なり、UDPはコネクションレスのプロトコルであるため、TCPサーバにあるような同時接続数の上限設定はできません。
 
-- IPホワイトリスト (実装例: [IPホワイトリスト](#ipホワイトリスト))
-- IPブラックリスト (実装例: [IPブラックリスト](#ipブラックリスト))
+- IPホワイトリスト (実装例: [IPホワイトリスト](#ip-whitelist))
+- IPブラックリスト (実装例: [IPブラックリスト](#ip-blacklist))
 
-## 性能に関する特記事項
+## 性能に関する特記事項 {#performance}
 
 UDPサーバは、クライアントの`IP:Port`に対して仮想コネクションを作成します。
 短時間で多数の`IP:Port`からリクエストを受け取る状況では性能が悪化する可能性があります。
 
-## 実装例・使い方
+## 実装例・使い方 {#example}
 
-### UDPサーバ
+### UDPサーバ {#udp-server-example}
 
 最も基本的なUDPサーバの実装は以下の通りです。
 この実装例のハンドラは、受信したUDPのパケットを標準出力に出力するのみです。
@@ -100,7 +100,7 @@ UDPサーバは、クライアントの`IP:Port`に対して仮想コネクシ�
 --8<-- "udp/ex_basic/main.go"
 ```
 
-### UDPサーバランナー
+### UDPサーバランナー {#udp-server-runner-example}
 
 UDPサーバランナーを利用すると、グレースフルシャットダウンを簡単に実現できます。
 
@@ -108,10 +108,10 @@ UDPサーバランナーの実装例は以下の通りです。
 `syscall`パッケージの利用が制限されているプラットフォームもある点に注意してください。
 
 ```go
-{{% snippet source="ex_runner/main.go" id="main" %}}
+--8<-- "udp/ex_runner/main.go:32:53"
 ```
 
-### IPホワイトリスト
+### IPホワイトリスト {#ip-whitelist}
 
 [znet](https://pkg.go.dev/github.com/aileron-projects/go/znet)パッケージの機能を利用して、
 ホワイトリスト形式で接続元IPを制限できます。
@@ -124,10 +124,10 @@ UDPサーバランナーの実装例は以下の通りです。
 この例では、ローカルホストである`127.0.0.1`と`::1`のIPアドレスのみ許可しています。
 
 ```go
-{{% snippet source="ex_whitelist/main.go" id="main" %}}
+--8<-- "udp/ex_whitelist/main.go:29:67"
 ```
 
-### IPブラックリスト
+### IPブラックリスト {#ip-blacklist}
 
 [znet](https://pkg.go.dev/github.com/aileron-projects/go/znet)パッケージの機能を利用して、
 ブラックリスト形式で接続元IPを制限できます。
@@ -140,26 +140,26 @@ UDPサーバランナーの実装例は以下の通りです。
 この例では、ローカルホストである`192.168.0.0/16`の範囲にあるIPアドレスを拒否しています。
 
 ```go
-{{% snippet source="ex_blacklist/main.go" id="main" %}}
+--8<-- "udp/ex_blacklist/main.go:29:67"
 ```
 
-### Unixドメインソケット
+### Unixドメインソケット {#unix-domain-socket}
 
 UDPサーバは[Unixドメインソケット](https://en.wikipedia.org/wiki/Unix_domain_socket)を利用できます。
 
 パス名ソケットを利用する場合は、以下のように指定します。
 
 ```go
-{{% snippet source="ex_socket_path/main.go" id="main" %}}
+--8<-- "udp/ex_socket_path/main.go:28:37"
 ```
 
 抽象ソケットを利用する場合は、以下のように指定します。
 
 ```go
-{{% snippet source="ex_socket_abstract/main.go" id="main" %}}
+--8<-- "udp/ex_socket_abstract/main.go:28:37"
 ```
 
-### デフォルトのプロキシ
+### デフォルトのプロキシ {#default-proxy}
 
 [zudp](https://pkg.go.dev/github.com/aileron-projects/go/znet/zudp)パッケージは、デフォルトのプロキシ機能を提供します。
 この機能を利用すると、複数の転送先サーバにに対してラウンドロビンによる負荷分散を利用しながらUDPをプロキシできます。
@@ -182,4 +182,4 @@ graph LR
 --8<-- "udp/ex_proxy/main.go"
 ```
 
-## 参考資料
+## 参考資料 {#reference}

@@ -26,7 +26,6 @@ func handleConn(ctx context.Context, conn net.Conn) {
 	}
 }
 
-// START main
 func main() {
 	svr := &ztcp.Server{
 		Addr:    "", // This is not used when we call [Server.Serve].
@@ -42,5 +41,3 @@ func main() {
 		panic(err)
 	}
 }
-
-// END main

@@ -1,16 +1,16 @@
 # TCPサーバ・TCPプロキシ
 
-## 概要
+## 概要 {#abstract}
 
 TCPサーバは、TCP(レイヤー4)のサーバを実装することを目的としています。
 TCPサーバは、[Goの標準ライブラリ](https://pkg.go.dev/std)では提供されていません。
 本機能では[net/httpパッケージ](https://pkg.go.dev/net/http)の[Server](https://pkg.go.dev/net/http#Server)に似たインターフェースでTCPサーバを利用できることを目指しています。
 
-## 機能
+## 機能 {#features}
 
 TCPサーバが保有する機能は以下の通りです。
 
-### 1. TCPサーバ機能
+### 1. TCPサーバ機能 {#tcp-server}
 
 TCPサーバとして、クライアントからのTCP接続を受け付け、ハンドラーに処理を委譲します。
 TCPサーバはTLSに対応しています。
@@ -39,14 +39,14 @@ type Handler interface {
 }
 ```
 
-### 2. TCPサーバランナー
+### 2. TCPサーバランナー {#tcp-server-runner}
 
 TCPサーバランナーは、グレースフルシャットダウンを簡単に実装できる機能です。
 サーバランナーを利用することでシャットダウン処理の実装の手間を省き、安全にサーバをシャットダウンできます。
 
-利用例は[TCPサーバランナー](#tcpサーバランナー)を参照してください。
+利用例は[TCPサーバランナー](#tcp-server-runner-example)を参照してください。
 
-### 3. TCPプロキシ機能
+### 3. TCPプロキシ機能 {#tcp-proxy}
 
 TCPプロキシ機能は、TCPサーバのハンドラとして機能します。
 クライアントのTCPコネクションから受け取ったパケットを別のTCPサーバへプロキシします。
@@ -71,9 +71,9 @@ TCPプロキシは、このDial関数を利用して転送先サーバを決定�
 Dial func(ctx context.Context, dc net.Conn) (uc net.Conn, err error)
 ```
 
-パッケージで用意されているプロキシの利用法は[デフォルトのプロキシ](#デフォルトのプロキシ)を参照ください。
+パッケージで用意されているプロキシの利用法は[デフォルトのプロキシ](#default-proxy)を参照ください。
 
-## セキュリティに関する特記事項
+## セキュリティに関する特記事項 {#security}
 
 TCPサーバはTLSを利用可能です。
 TLS機能はGo言語の標準機能をそのまま利用しています。
@@ -82,17 +82,17 @@ TLS機能はGo言語の標準機能をそのまま利用しています。
 
 また、[znet](https://pkg.go.dev/github.com/aileron-projects/go/znet)パッケージの機能を用いることで以下のセキュリティ対策が可能です。
 
-- 同時コネクション数制限 (実装例: [コネクション数制限](#コネクション数制限))
-- IPホワイトリスト (実装例: [IPホワイトリスト](#ipホワイトリスト))
-- IPブラックリスト (実装例: [IPブラックリスト](#ipブラックリスト))
+- 同時コネクション数制限 (実装例: [コネクション数制限](#connection-limiting))
+- IPホワイトリスト (実装例: [IPホワイトリスト](#ip-whitelist))
+- IPブラックリスト (実装例: [IPブラックリスト](#ip-blacklist))
 
-## 性能に関する特記事項
+## 性能に関する特記事項 {#performance}
 
 性能面での特記事項はありません。
 
-## 実装例・使い方
+## 実装例・使い方 {#example}
 
-### TCPサーバ
+### TCPサーバ {#tcp-server-example}
 
 最も基本的なTCPサーバの実装は以下の通りです。
 TLSは利用していません。
@@ -102,7 +102,7 @@ TLSは利用していません。
 --8<-- "tcp/ex_basic/main.go"
 ```
 
-### TCPサーバランナー
+### TCPサーバランナー {#tcp-server-runner-example}
 
 TCPサーバランナーを利用すると、グレースフルシャットダウンを簡単に実現できます。
 シャットダウンタイムアウトが発生した際には、既存のTCPコネクションのクローズ処理も実行してくれます。
@@ -111,29 +111,29 @@ TCPサーバランナーの実装例は以下の通りです。
 `syscall`パッケージの利用が制限されているプラットフォームもある点に注意してください。
 
 ```go
-{{% snippet source="ex_runner/main.go" id="main" %}}
+--8<-- "tcp/ex_runner/main.go:32:53"
 ```
 
-### TLS
+### TLS {#tls-server}
 
 TLSを利用したTCPサーバの実装例は以下の通りです。
 TLSサーバのcertファイルとkeyファイルのパスを指定するのみでも起動可能、より細かいTLSの設定をする場合は`Server.TLSConfig`を利用します。
 
 ```go
-{{% snippet source="ex_tls/main.go" id="main" %}}
+--8<-- "tcp/ex_tls/main.go:28:38"
 ```
 
-### コネクション数制限
+### コネクション数制限 {#connection-limiting}
 
 [znet](https://pkg.go.dev/github.com/aileron-projects/go/znet)パッケージの機能を利用して、
 同時コネクション数を制限することが可能です。
 実装例は以下となります。一部エラー処理は省略しています。
 
 ```go
-{{% snippet source="ex_concurrency/main.go" id="main" %}}
+--8<-- "tcp/ex_concurrency/main.go:29:43"
 ```
 
-### IPホワイトリスト
+### IPホワイトリスト {#ip-whitelist}
 
 [znet](https://pkg.go.dev/github.com/aileron-projects/go/znet)パッケージの機能を利用して、
 ホワイトリスト形式で接続元IPを制限できます。
@@ -146,10 +146,10 @@ TLSサーバのcertファイルとkeyファイルのパスを指定するのみ�
 この例では、ローカルホストである`127.0.0.1`と`::1`のIPアドレスのみ許可しています。
 
 ```go
-{{% snippet source="ex_whitelist/main.go" id="main" %}}
+--8<-- "tcp/ex_whitelist/main.go:29:43"
 ```
 
-### IPブラックリスト
+### IPブラックリスト {#ip-blacklist}
 
 [znet](https://pkg.go.dev/github.com/aileron-projects/go/znet)パッケージの機能を利用して、
 ブラックリスト形式で接続元IPを制限できます。
@@ -162,26 +162,26 @@ TLSサーバのcertファイルとkeyファイルのパスを指定するのみ�
 この例では、ローカルホストである`192.168.0.0/16`の範囲にあるIPアドレスを拒否しています。
 
 ```go
-{{% snippet source="ex_blacklist/main.go" id="main" %}}
+--8<-- "tcp/ex_blacklist/main.go:29:43"
 ```
 
-### Unixドメインソケット
+### Unixドメインソケット {#unix-domain-socket}
 
 TCPサーバは[Unixドメインソケット](https://en.wikipedia.org/wiki/Unix_domain_socket)を利用できます。
 
 パス名ソケットを利用する場合は、以下のように指定します。
 
 ```go
-{{% snippet source="ex_socket_path/main.go" id="main" %}}
+--8<-- "tcp/ex_socket_path/main.go:28:39"
 ```
 
 抽象ソケットを利用する場合は、以下のように指定します。
 
 ```go
-{{% snippet source="ex_socket_abstract/main.go" id="main" %}}
+--8<-- "tcp/ex_socket_abstract/main.go:28:39"
 ```
 
-### デフォルトのプロキシ
+### デフォルトのプロキシ {#default-proxy}
 
 [ztcp](https://pkg.go.dev/github.com/aileron-projects/go/znet/ztcp)パッケージは、デフォルトのプロキシ機能を提供します。
 この機能を利用すると、複数の転送先サーバにに対してラウンドロビンによる負荷分散を利用しながらTCPをプロキシできます。
@@ -195,7 +195,7 @@ TCPサーバは[Unixドメインソケット](https://en.wikipedia.org/wiki/Unix
 --8<-- "tcp/ex_proxy_basic/main.go"
 ```
 
-### TLSによるプロキシ
+### TLSによるプロキシ {#tls-proxy}
 
 転送先サーバとの間でTLS通信を利用する場合、ユーザ自身で転送先サーバとのコネクションを確立する必要があります。
 コネクションを確立する処理はDial関数に記述します。
@@ -221,4 +221,4 @@ graph LR
   U --> P
 ```
 
-## 参考資料
+## 参考資料 {#reference}
