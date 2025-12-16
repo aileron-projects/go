@@ -1,8 +1,8 @@
 site_name: AILERON Projects Go Extensions
 site_url: https://aileron-projects.github.io/go/
-site_description: AILERON Gateway design docs
-site_author: AILERON Gateway Community
-copyright: Copyright &copy; 2025 AILERON Gateway Community.
+site_description: AILERON Projects Go Extensions
+site_author: AILERON Projects Community
+copyright: Copyright &copy; 2025 AILERON Projects Community.
 
 repo_name: aileron-projects/go
 repo_url: https://github.com/aileron-projects/go
