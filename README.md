@@ -4,21 +4,18 @@
 
 <div align="center">
 
-[![GoDoc](https://godoc.org/github.com/aileron-projects/go?status.svg)](http://godoc.org/github.com/aileron-projects/go)
-[![Go Report Card](https://goreportcard.com/badge/github.com/aileron-projects/go)](https://goreportcard.com/report/github.com/aileron-projects/go)
-[![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](./LICENSE)
-
 [![Test Suite](https://github.com/aileron-projects/go/actions/workflows/test-suite.yaml/badge.svg?branch=main)](https://github.com/aileron-projects/go/actions/workflows/test-suite.yaml?query=branch%3Amain)
 [![Check Suite](https://github.com/aileron-projects/go/actions/workflows/check-suite.yaml/badge.svg?branch=main)](https://github.com/aileron-projects/go/actions/workflows/check-suite.yaml?query=branch%3Amain)
+[![Go Report Card](https://goreportcard.com/badge/github.com/aileron-projects/go)](https://goreportcard.com/report/github.com/aileron-projects/go)
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](./LICENSE)
 [![OpenSourceInsight](https://badgen.net/badge/open%2Fsource%2F/insight/cyan)](https://deps.dev/go/github.com%2Faileron-projects%2Fgo)
 [![OSS Insight](https://badgen.net/badge/OSS/Insight/orange)](https://ossinsight.io/analyze/aileron-projects/go)
 
+[![GoDoc](https://godoc.org/github.com/aileron-projects/go?status.svg)](http://godoc.org/github.com/aileron-projects/go)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/aileron-projects/go)
+
 </div>
-
-AI generated docs are available at:
-
-- [DeepWiki](https://deepwiki.com/aileron-projects/go)
-- [GitDiagram](https://gitdiagram.com/aileron-projects/go)
 
 ## Usage
 

@@ -1,14 +1,6 @@
----
-title: "環境変数"
-linkTitle: "環境変数"
-type: docs
-weight: 1
-categories: []
-tags: []
-description: ""
----
+# 環境変数
 
-## 概要
+## 概要 {#abstract}
 
 環境変数のパース機能が提供されています。
 これらの機能は、YMAL や JSON 等の設定ファイルにおける環境変数の埋め込みなどに利用できます。
@@ -17,9 +9,9 @@ description: ""
 
 環境変数名をもとに値を取得する単純なユースケースの場合は、Go 言語標準の[os](https://pkg.go.dev/os)パッケージを利用してください。
 
-## 機能
+## 機能 {#features}
 
-### 1. 環境変数解決機能
+### 1. 環境変数解決機能 {#resolve-env}
 
 環境変数解決機能は環境変数を値に解決します。
 以下のフォーマットの環境変数を解決できます。
@@ -27,7 +19,7 @@ description: ""
 parameterは`[0-9a-zA-Z_]+`の文字列です。
 wordは`$`を含まない文字列`[^\$]*`です。
 
-ほとんどの場合、本機能は[#2-環境変数置換](#2-環境変数置換)の機能を通して利用されることを想定しています。
+ほとんどの場合、本機能は[#2-環境変数置換](#replace-env)の機能を通して利用されることを想定しています。
 
 1. `${parameter}` : 以下の置換ルール表を参照してください。
 2. `${parameter:-word}` : 以下の置換ルール表を参照してください。
@@ -107,7 +99,7 @@ operator:
   l       : convert the first character to lower case using [strings.ToLower]
 ```
 
-### 2. 環境変数置換
+### 2. 環境変数置換 {#replace-env}
 
 テキストデータ（Goにおける`[]byte`データ）内に含まれる環境変数を解決し、値に置換します。
 環境変数の置換に利用できる２つの関数が用意されています。
@@ -122,7 +114,7 @@ func EnvSubst(b []byte) (subst []byte, err error)
 func EnvSubst2(b []byte) (subst []byte, err error)
 ```
 
-### 3. 環境変数ファイルパース機能
+### 3. 環境変数ファイルパース機能 {#env-file-parse}
 
 環境変数ファイルパース機能は環境変数を定義したファイルから環境変数をパースします。
 この機能は`LoadEnv`関数を通して利用します。
@@ -175,22 +167,22 @@ FOO=B\R       >> BR
 FOO="B\nR"    >> B<LF>R
 ```
 
-## セキュリティに関する特記事項
+## セキュリティに関する特記事項 {#security}
 
 セキュリティに関する特記事項はありません。
 
-## 性能に関する特記事項
+## 性能に関する特記事項 {#performance}
 
 性能に関する特記事項はありません。
 
-## 実装例・使い方
+## 実装例・使い方 {#example}
 
-### 環境変数の値解決
+### 環境変数の値解決 {#resolve-env-example}
 
 以下のコードでいくつかの環境変数を解決してみます。
 
 ```go
-{{% code source="ex_envsubst/main.go" %}}
+--8<-- "env/ex_envsubst/main.go"
 ```
 
 上記コードはにより以下の結果が出力されます。
@@ -225,13 +217,13 @@ ${BAR,,[A]} ------ BaR
 ${FOO@U} --------- FOO
 ```
 
-### 環境変数の置換
+### 環境変数の置換 {#replace-env-example}
 
 `LoadEnv`による環境変数のパース例を示します。
 パースされた値は`os.Setenv`により環境変数としてセットされるとともにマップデータとして返却されます。
 
 ```go
-{{% code source="ex_loadenv/main.go" %}}
+--8<-- "env/ex_loadenv/main.go"
 ```
 
 上記を実行すると以下の値が得られます。
@@ -256,4 +248,4 @@ ${FOO@U} --------- FOO
 }
 ```
 
-## 参考資料
+## 参考資料 {#reference}

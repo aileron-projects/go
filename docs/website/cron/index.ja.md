@@ -1,23 +1,15 @@
----
-title: "Cron/Cronジョブ"
-linkTitle: "Cron/Cronジョブ"
-type: docs
-weight: 1
-categories: []
-tags: []
-description: ""
----
+# Cron/Cronジョブ {#cron-cronjob}
 
-## 概要
+## 概要 {#abstract}
 
 Cronはスケジューリングに関する機能で、ジョブの定期実行などで利用できます。
 この機能は、例えばログローテーションなどに活用できます。
 
 Cronに関する機能は[ztime/zcron](https://pkg.go.dev/github.com/aileron-projects/go/ztime/zcron)パッケージにより提供されています。
 
-## 機能
+## 機能 {#features}
 
-### 1. Cron式パース機能
+### 1. Cron式パース機能 {#cron-parse}
 
 本機能は[Cron式](https://en.wikipedia.org/wiki/Cron)をパースする機能です。
 Cron式には一般的な標準仕様が存在しないため、本機能は以下の仕様に従ってパースします。
@@ -91,7 +83,7 @@ Cron式では以下のエイリアスを利用できます。
 | 23h59m59s | `*/59 */59 */23 * * *` |                       |
 | 24h       | ERROR                  | Duration must be <24h |
 
-### 2. スケジュール時刻決定機能
+### 2. スケジュール時刻決定機能 {#cron-scheduling}
 
 スケジュール時刻決定機能は、パースされたCron式によりスケジュールされる時刻を評価する機能です。
 スケジュール時刻を取得する関数として以下の2つが用意されています。
@@ -100,14 +92,14 @@ Cron式では以下のエイリアスを利用できます。
 `NextAfter`は指定されて時刻以降で最初にスケジュールされる時刻を返します。
 なお、`NextAfter`により返却される時刻のタイムゾーンは引数として受け取ったタイムゾーンになります。
 
-基本的な利用方法は[cronの基本的な利用](#cronの基本的な利用)を参照ください。
+基本的な利用方法は[cronの基本的な利用](#basic-usage)を参照ください。
 
 ```go
 func Next() time.Time
 func NextAfter(t time.Time) time.Time
 ```
 
-### 3. ジョブ実行機能
+### 3. ジョブ実行機能 {#job-execution}
 
 ジョブ実行機能はCronによりスケジュールされた時刻にジョブを実行する機能です。
 リスケジューリングなどの高度な機能は実装されていません。
@@ -116,27 +108,27 @@ func NextAfter(t time.Time) time.Time
 - 最大同時実行数: ある時刻で同時に起動しているジョブの最大数
 - 最大リトライ回数: ジョブが失敗した際にリトライする最大回数
 
-基本的な利用方法は[ジョブ実行例](#ジョブ実行例)を参照ください。
+基本的な利用方法は[ジョブ実行例](#job-example)を参照ください。
 
-## セキュリティに関する特記事項
+## セキュリティに関する特記事項 {#security}
 
 セキュリティに関する特記事項はありません。
 
-## 性能に関する特記事項
+## 性能に関する特記事項 {#performance}
 
 性能に関する特記事項はありません。
 
-## 実装例・使い方
+## 実装例・使い方 {#example}
 
-### Cronの基本的な利用
+### Cronの基本的な利用 {#basic-usage}
 
 cronの基本的な利用方法は以下のようになります。
 
 ```go
-{{% code source="ex_basic/main.go" %}}
+--8<-- "cron/ex_basic/main.go"
 ```
 
-### ジョブ実行例
+### ジョブ実行例 {#job-example}
 
 ジョブの実行例は以下の通りです。
 この例では3秒ごとに時刻を表示しています。
@@ -144,10 +136,10 @@ cronの基本的な利用方法は以下のようになります。
 ジョブを非同期で実行したい場合は`go cron.Start()`のように実装します。
 
 ```go
-{{% code source="ex_job/main.go" %}}
+--8<-- "cron/ex_job/main.go"
 ```
 
-## 参考資料
+## 参考資料 {#reference}
 
 - [wiki/Cron](https://en.wikipedia.org/wiki/Cron)
 - [crontab(5) - Linux manual page](https://man7.org/linux/man-pages/man5/crontab.5.html)

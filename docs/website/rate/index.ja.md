@@ -1,24 +1,16 @@
----
-title: "レートリミット"
-linkTitle: "レートリミット"
-type: docs
-weight: 1
-categories: []
-tags: []
-description: ""
----
+# レートリミット
 
-## 概要
+## 概要 {#abstract}
 
 レートリミットは、任意の処理に対して実行回数の制限を適用します。
 レートリミットが利用される典型的な例は、APIのリクエスト数の制御です。
-APIのレートリミットとして最も一般的に用いられるのは[TokenBucketアルゴリズム](#3-tokenbucket)によるレートリミットです。
+APIのレートリミットとして最も一般的に用いられるのは[TokenBucketアルゴリズム](#token-bucket)によるレートリミットです。
 
 レートリミットは[ztime/zrate](https://pkg.go.dev/github.com/aileron-projects/go/ztime/zrate)パッケージにより提供されています。
 
-## 機能
+## 機能 {#features}
 
-### 1. LeakyBucket
+### 1. LeakyBucket {#leaky-bucket}
 
 本機能は[LeakyBucketアルゴリズム](https://en.wikipedia.org/wiki/Leaky_bucket)によるレートリミットを実現します。
 
@@ -46,9 +38,9 @@ func WaitNow(ctx context.Context) Token
 func Accept(ctx context.Context) Token
 ```
 
-APIのレートリミットに使用する例は、[LeakyBucketによるAPIレートリミット](#leakybucketによるapiレートリミット)を参照してください。
+APIのレートリミットに使用する例は、[LeakyBucketによるAPIレートリミット](#leaky-bucket-example)を参照してください。
 
-### 2. MaxConcurrency
+### 2. MaxConcurrency {#max-concurrency}
 
 本機能はMaxConcurrencyアルゴリズムによるレートリミットを実現します。
 
@@ -73,9 +65,9 @@ func WaitNow(ctx context.Context) Token
 func Accept(ctx context.Context) Token
 ```
 
-APIのレートリミットに使用する例は、[ConcurrencyによるAPIレートリミット](#concurrencyによるapiレートリミット)を参照してください。
+APIのレートリミットに使用する例は、[ConcurrencyによるAPIレートリミット](#concurrency-example)を参照してください。
 
-### 3. TokenBucket
+### 3. TokenBucket {#token-bucket}
 
 本機能は[TokenBucketアルゴリズム](https://en.wikipedia.org/wiki/Token_bucket)によるレートリミットを実現します。
 TokenBucketはAPIのレートリミットにおいて広く用いられているアルゴリズムです。
@@ -105,9 +97,9 @@ func WaitNow(ctx context.Context) Token
 func Accept(ctx context.Context) Token
 ```
 
-APIのレートリミットに使用する例は、[TokenBucketによるAPIレートリミット](#tokenbucketによるapiレートリミット)を参照してください。
+APIのレートリミットに使用する例は、[TokenBucketによるAPIレートリミット](#token-bucket-example)を参照してください。
 
-### 4. FixedWindow
+### 4. FixedWindow {#fixed-window}
 
 本機能はFixedWindowアルゴリズムによるレートリミットを実現します。
 FixedWindowは一定区間における処理数を厳密に制限できる一方、異なる区間の境界において制限値の2倍の処理が実行される可能性のあるアルゴリズムです。
@@ -134,19 +126,19 @@ func WaitNow(ctx context.Context) Token
 func Accept(ctx context.Context) Token
 ```
 
-APIのレートリミットに使用する例は、[FixedWindowによるAPIレートリミット](#fixedwindowによるapiレートリミット)を参照してください。
+APIのレートリミットに使用する例は、[FixedWindowによるAPIレートリミット](#fixed-window-example)を参照してください。
 
-## セキュリティに関する特記事項
+## セキュリティに関する特記事項 {#security}
 
 セキュリティに関する特記事項はありません。
 
-## 性能に関する特記事項
+## 性能に関する特記事項 {#performance}
 
 性能に関する特記事項はありません。
 
-## 実装例・使い方
+## 実装例・使い方 {#example}
 
-### LeakyBucketによるAPIレートリミット
+### LeakyBucketによるAPIレートリミット {#leaky-bucket-example}
 
 以下の例は、LeakyBucketアルゴリズムによるAPIレートリミットの簡単な実装例です。
 必要に応じてパス単位などでレートリミットを適用することも可能です。
@@ -155,10 +147,10 @@ APIのレートリミットに使用する例は、[FixedWindowによるAPIレ�
 また、リクエストが受理された場合、0-100ミリ秒間の間でランダムに待機した後200ステータスを返却します。
 
 ```go
-{{% code source="ex_leakybucket/main.go" %}}
+--8<-- "rate/ex_leakybucket/main.go"
 ```
 
-### ConcurrencyによるAPIレートリミット
+### ConcurrencyによるAPIレートリミット {#concurrency-example}
 
 ConcurrencyアルゴリズムによるAPIレートリミットの簡単な実装例です。
 必要に応じてパス単位などでレートリミットを適用することも可能です。
@@ -167,10 +159,10 @@ ConcurrencyアルゴリズムによるAPIレートリミットの簡単な実装
 また、リクエストが受理された場合、0-100ミリ秒間の間でランダムに待機した後200ステータスを返却します。
 
 ```go
-{{% code source="ex_concurrent/main.go" %}}
+--8<-- "rate/ex_concurrent/main.go"
 ```
 
-### TokenBucketによるAPIレートリミット
+### TokenBucketによるAPIレートリミット {#token-bucket-example}
 
 TokenBucketアルゴリズムによるAPIレートリミットの簡単な実装例です。
 必要に応じてパス単位などでレートリミットを適用することも可能です。
@@ -179,10 +171,10 @@ TokenBucketアルゴリズムによるAPIレートリミットの簡単な実装
 また、リクエストが受理された場合、0-100ミリ秒間の間でランダムに待機した後200ステータスを返却します。
 
 ```go
-{{% code source="ex_tokenbucket/main.go" %}}
+--8<-- "rate/ex_tokenbucket/main.go"
 ```
 
-### FixedWindowによるAPIレートリミット
+### FixedWindowによるAPIレートリミット {#fixed-window-example}
 
 FixedWindowアルゴリズムによるAPIレートリミットの簡単な実装例です。
 必要に応じてパス単位などでレートリミットを適用することも可能です。
@@ -191,10 +183,10 @@ FixedWindowアルゴリズムによるAPIレートリミットの簡単な実装
 また、リクエストが受理された場合、0-100ミリ秒間の間でランダムに待機した後200ステータスを返却します。
 
 ```go
-{{% code source="ex_fixedwindow/main.go" %}}
+--8<-- "rate/ex_fixedwindow/main.go"
 ```
 
-### SlidingWindowによるAPIレートリミット
+### SlidingWindowによるAPIレートリミット {#sliding-window-example}
 
 SlidingWindowアルゴリズムによるAPIレートリミットの簡単な実装例です。
 必要に応じてパス単位などでレートリミットを適用することも可能です。
@@ -203,7 +195,7 @@ SlidingWindowアルゴリズムによるAPIレートリミットの簡単な実�
 また、リクエストが受理された場合、0-100ミリ秒間の間でランダムに待機した後200ステータスを返却します。
 
 ```go
-{{% code source="ex_slidingwindow/main.go" %}}
+--8<-- "rate/ex_slidingwindow/main.go"
 ```
 
-## 参考資料
+## 参考資料 {#reference}

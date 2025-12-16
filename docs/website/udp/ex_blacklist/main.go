@@ -26,7 +26,6 @@ func handleConn(ctx context.Context, conn zudp.Conn) {
 	}
 }
 
-// START main
 type BlacklistPacketConn struct {
 	net.PacketConn
 	bl *znet.BlackList
@@ -66,5 +65,3 @@ func main() {
 		panic(err)
 	}
 }
-
-// END main

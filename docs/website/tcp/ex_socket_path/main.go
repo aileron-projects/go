@@ -25,7 +25,6 @@ func handleConn(ctx context.Context, conn net.Conn) {
 	}
 }
 
-// START main
 func main() {
 	// You can use curl to check if it works.
 	// curl --unix-socket '/var/run/example.sock' http://localhost:8080/example
@@ -38,5 +37,3 @@ func main() {
 		panic(err)
 	}
 }
-
-// END main
