@@ -6,7 +6,7 @@
 *.temp
 
 # Ignore directory.
-_output/**
+_output/
 bin/
 tmp/
 temp/

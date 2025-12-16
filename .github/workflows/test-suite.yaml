@@ -2,20 +2,14 @@ name: Test Suite
 
 on:
   workflow_dispatch: {}
-  workflow_call: {}
   push: {}
-  schedule:
-    - cron: "0 20 * * *"
-
-permissions:
-  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  go-test:
-    uses: aileron-projects/_scripts/.github/actions/go-test@main
-  go-test-qemu:
-    uses: aileron-projects/_scripts/.github/actions/go-test-qemu@main
+  unit-test-go:
+    uses: aileron-projects/_scripts/.github/workflows/unit-test-go.yaml@main
+  unit-test-qemu:
+    uses: aileron-projects/_scripts/.github/workflows/unit-test-qemu.yaml@main

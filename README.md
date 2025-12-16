@@ -8,7 +8,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/aileron-projects/go)](https://goreportcard.com/report/github.com/aileron-projects/go)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](./LICENSE)
 
-[![Codecov](https://codecov.io/gh/aileron-projects/go/branch/main/graph/badge.svg?token=L62XLZNFLE)](https://codecov.io/gh/aileron-projects/go)
 [![Test Suite](https://github.com/aileron-projects/go/actions/workflows/test-suite.yaml/badge.svg?branch=main)](https://github.com/aileron-projects/go/actions/workflows/test-suite.yaml?query=branch%3Amain)
 [![Check Suite](https://github.com/aileron-projects/go/actions/workflows/check-suite.yaml/badge.svg?branch=main)](https://github.com/aileron-projects/go/actions/workflows/check-suite.yaml?query=branch%3Amain)
 [![OpenSourceInsight](https://badgen.net/badge/open%2Fsource%2F/insight/cyan)](https://deps.dev/go/github.com%2Faileron-projects%2Fgo)
@@ -87,13 +86,8 @@ Operating System:
 
 Go:
 
-- Current Stable: `go 1.(N).x`
-- Previous Stable: `go 1.(N-1).x`
-- Minimum Requirement: `go 1.(N-2).0`
-  - Declared in the [go.mod](go.mod)
-
-Where `N` is the current latest minor version.
-See the Go official release page [Stable versions](https://go.dev/dl/).
+- See the [go.mod](go.mod) file.
+  - Main branch supports only latest go [release](https://go.dev/dl/).
 
 In addition to the environment above, following platforms are tested on ubuntu
 using [QEMU User space emulator](https://www.qemu.org/docs/master/user/main.html).
@@ -118,11 +112,6 @@ using [QEMU User space emulator](https://www.qemu.org/docs/master/user/main.html
 
 - Releases are made as needed.
 - Versions follow [Semantic Versioning](https://semver.org/).
-  - `vX.Y.Z`
-  - `vX.Y.Z-rc.N`
-  - `vX.Y.Z-beta.N`
   - `vX.Y.Z-alpha.N`
-
-## License
-
-Apache 2.0
+  - `vX.Y.Z-beta.N`
+  - `vX.Y.Z`

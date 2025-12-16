@@ -2,11 +2,7 @@ name: Check Suite
 
 on:
   workflow_dispatch: {}
-  workflow_call: {}
   push: {}
-
-permissions:
-  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
