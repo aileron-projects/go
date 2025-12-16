@@ -44,45 +44,6 @@ jobs:
           env_vars: ${{ matrix.os }}
           name: ${{ matrix.os }}
 
-  oldstable:
-    name: ${{ matrix.runner }}-oldstable
-    runs-on: ${{ matrix.runner }}-latest
-    timeout-minutes: 15
-    strategy:
-      matrix:
-        include:
-          - { runner: "ubuntu", os: "linux" }
-          - { runner: "windows", os: "windows" }
-          - { runner: "macos", os: "darwin" }
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - uses: aileron-projects/_scripts/.github/actions/go-test@main
-        with:
-          go-os: ${{ matrix.os }}
-          go-version: "oldstable"
-
-  minimum:
-    name: ${{ matrix.runner }}-minimum
-    runs-on: ${{ matrix.runner }}-latest
-    timeout-minutes: 15
-    strategy:
-      matrix:
-        include:
-          - { runner: "ubuntu", os: "linux" }
-          - { runner: "windows", os: "windows" }
-          - { runner: "macos", os: "darwin" }
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: true
-      - uses: aileron-projects/_scripts/.github/actions/go-test@main
-        with:
-          go-os: ${{ matrix.os }}
-          go-version-file: go.mod
-
   qemu:
     name: ${{ matrix.arch }}${{ matrix.arm }}
     runs-on: ubuntu-latest
@@ -112,6 +73,5 @@ jobs:
           submodules: true
       - uses: aileron-projects/_scripts/.github/actions/go-test-qemu@main
         with:
-          go-version: "stable"
           go-arch: ${{ matrix.arch }}
           go-arm: ${{ matrix.arm }}
