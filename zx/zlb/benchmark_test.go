@@ -41,7 +41,7 @@ var testTargets = func() []*target {
 func BenchmarkPriority(b *testing.B) {
 	lb := zlb.NewPriority(testTargets...)
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		lb.Get(0)
 	}
 }
@@ -50,7 +50,7 @@ func BenchmarkRandom(b *testing.B) {
 	lb := zlb.NewRandom(testTargets...)
 	lb.MaxRetry = 2
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		lb.Get(0)
 	}
 }
@@ -58,7 +58,7 @@ func BenchmarkRandom(b *testing.B) {
 func BenchmarkRandomW(b *testing.B) {
 	lb := zlb.NewRandomW(testTargets...)
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		lb.Get(0)
 	}
 }
@@ -66,7 +66,7 @@ func BenchmarkRandomW(b *testing.B) {
 func BenchmarkBasicRoundRobin(b *testing.B) {
 	lb := zlb.NewBasicRoundRobin(testTargets...)
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		lb.Get(0)
 	}
 }
@@ -74,7 +74,7 @@ func BenchmarkBasicRoundRobin(b *testing.B) {
 func BenchmarkRoundRobin(b *testing.B) {
 	lb := zlb.NewRoundRobin(testTargets...)
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		lb.Get(0)
 	}
 }
@@ -124,7 +124,7 @@ func BenchmarkRingHash(b *testing.B) {
 func BenchmarkRingHash_Update(b *testing.B) {
 	lb := zlb.NewRingHash(testTargets...)
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		lb.Update()
 	}
 }
@@ -142,7 +142,7 @@ func BenchmarkMaglev_Update(b *testing.B) {
 	lb := zlb.NewMaglev(testTargets...)
 	lb.MaxRetry = 0
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		lb.Update()
 	}
 }

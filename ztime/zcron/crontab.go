@@ -24,7 +24,7 @@ func (c *Crontab) valid() bool {
 	now := c.timeNow()
 	var day, week int
 	var month time.Month
-	for i := 0; i < 10*366; i++ { // Check 10 years.
+	for range 10 * 366 { // Check 10 years.
 		now = now.Add(24 * time.Hour)
 		month = now.Month()
 		day = now.Day()
@@ -234,8 +234,8 @@ func Parse(crontab string) (*Crontab, error) {
 	}
 
 	loc := time.Local // Default location.
-	if strings.HasPrefix(fields[0], "TZ=") {
-		parsedLoc, err := time.LoadLocation(strings.TrimPrefix(fields[0], "TZ="))
+	if location, found := strings.CutPrefix(fields[0], "TZ="); found {
+		parsedLoc, err := time.LoadLocation(location)
 		if err != nil {
 			return nil, &ParseError{Err: err, What: "timezone"}
 		}
@@ -406,7 +406,7 @@ func parseValue(exp string, min, max int) (cron uint64, ok bool) {
 	}
 
 	result := uint64(0)
-	for _, e := range strings.Split(exp, ",") {
+	for e := range strings.SplitSeq(exp, ",") {
 		fields := strings.Split(e, "/")
 		switch len(fields) {
 		case 1: // Format 'wildcard', 'number' or 'range'.

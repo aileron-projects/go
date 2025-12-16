@@ -320,12 +320,11 @@ func ParseHeader(s string) (values []string, params []map[string]string) {
 //   - https://datatracker.ietf.org/doc/rfc7230/
 func ScanElement(s string) (elem, rest string) {
 	for {
-		i := strings.IndexByte(s, ',')
-		if i < 0 {
+		before, after, found := strings.Cut(s, ",")
+		if !found {
 			break
 		}
-		var elem string
-		elem, s = s[:i], s[i+1:]
+		elem, s = before, after
 		elem = trimPrefixOWS(trimSuffixOWS(elem)) // Trim optional white spaces.
 		if elem == "" {                           // Ignore empty element.
 			continue

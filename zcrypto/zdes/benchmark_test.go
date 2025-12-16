@@ -14,7 +14,7 @@ var (
 
 func BenchmarkECB(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zdes.EncryptECB(key8, plaintext)
 		decrypted, _ := zdes.DecryptECB(key8, ciphertext)
 		_ = decrypted
@@ -23,7 +23,7 @@ func BenchmarkECB(b *testing.B) {
 
 func BenchmarkCBC(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zdes.EncryptCBC(key8, plaintext)
 		decrypted, _ := zdes.DecryptCBC(key8, ciphertext)
 		_ = decrypted
@@ -32,7 +32,7 @@ func BenchmarkCBC(b *testing.B) {
 
 func BenchmarkCFB(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zdes.EncryptCFB(key8, plaintext)
 		decrypted, _ := zdes.DecryptCFB(key8, ciphertext)
 		_ = decrypted
@@ -41,7 +41,7 @@ func BenchmarkCFB(b *testing.B) {
 
 func BenchmarkCTR(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zdes.EncryptCTR(key8, plaintext)
 		decrypted, _ := zdes.DecryptCTR(key8, ciphertext)
 		_ = decrypted
@@ -50,7 +50,7 @@ func BenchmarkCTR(b *testing.B) {
 
 func BenchmarkOFB(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zdes.EncryptOFB(key8, plaintext)
 		decrypted, _ := zdes.DecryptOFB(key8, ciphertext)
 		_ = decrypted
@@ -59,7 +59,7 @@ func BenchmarkOFB(b *testing.B) {
 
 func BenchmarkECB3(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zdes.EncryptECB3(key24, plaintext)
 		decrypted, _ := zdes.DecryptECB3(key24, ciphertext)
 		_ = decrypted
@@ -68,7 +68,7 @@ func BenchmarkECB3(b *testing.B) {
 
 func BenchmarkCBC3(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zdes.EncryptCBC3(key24, plaintext)
 		decrypted, _ := zdes.DecryptCBC3(key24, ciphertext)
 		_ = decrypted
@@ -77,7 +77,7 @@ func BenchmarkCBC3(b *testing.B) {
 
 func BenchmarkCFB3(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zdes.EncryptCFB3(key24, plaintext)
 		decrypted, _ := zdes.DecryptCFB3(key24, ciphertext)
 		_ = decrypted
@@ -86,7 +86,7 @@ func BenchmarkCFB3(b *testing.B) {
 
 func BenchmarkCTR3(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zdes.EncryptCTR3(key24, plaintext)
 		decrypted, _ := zdes.DecryptCTR3(key24, ciphertext)
 		_ = decrypted
@@ -95,7 +95,7 @@ func BenchmarkCTR3(b *testing.B) {
 
 func BenchmarkOFB3(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zdes.EncryptOFB3(key24, plaintext)
 		decrypted, _ := zdes.DecryptOFB3(key24, ciphertext)
 		_ = decrypted

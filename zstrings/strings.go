@@ -49,7 +49,7 @@ func CutLeftRune(s string, r rune) (before, after string, found bool) {
 		return s, "", false
 	}
 	rs := []rune(s)
-	for i := 0; i < len(rs); i++ {
+	for i := range len(rs) {
 		if rs[i] == r {
 			return string(rs[:i]), string(rs[i+1:]), true
 		}

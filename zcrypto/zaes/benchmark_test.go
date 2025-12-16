@@ -13,7 +13,7 @@ var (
 
 func BenchmarkECB(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zaes.EncryptECB(key, plaintext)
 		decrypted, _ := zaes.DecryptECB(key, ciphertext)
 		_ = decrypted
@@ -22,7 +22,7 @@ func BenchmarkECB(b *testing.B) {
 
 func BenchmarkCBC(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zaes.EncryptCBC(key, plaintext)
 		decrypted, _ := zaes.DecryptCBC(key, ciphertext)
 		_ = decrypted
@@ -31,7 +31,7 @@ func BenchmarkCBC(b *testing.B) {
 
 func BenchmarkCFB(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zaes.EncryptCFB(key, plaintext)
 		decrypted, _ := zaes.DecryptCFB(key, ciphertext)
 		_ = decrypted
@@ -40,7 +40,7 @@ func BenchmarkCFB(b *testing.B) {
 
 func BenchmarkCTR(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zaes.EncryptCTR(key, plaintext)
 		decrypted, _ := zaes.DecryptCTR(key, ciphertext)
 		_ = decrypted
@@ -49,7 +49,7 @@ func BenchmarkCTR(b *testing.B) {
 
 func BenchmarkOFB(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zaes.EncryptOFB(key, plaintext)
 		decrypted, _ := zaes.DecryptOFB(key, ciphertext)
 		_ = decrypted
@@ -58,7 +58,7 @@ func BenchmarkOFB(b *testing.B) {
 
 func BenchmarkGCM(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		ciphertext, _ := zaes.EncryptGCM(key, plaintext)
 		decrypted, _ := zaes.DecryptGCM(key, ciphertext)
 		_ = decrypted

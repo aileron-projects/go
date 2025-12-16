@@ -28,7 +28,7 @@ func BenchmarkSimple_XMLtoJSON(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		_, err := c.XMLtoJSON(data)
 		if err != nil {
 			b.Fatal(err)
@@ -50,7 +50,7 @@ func BenchmarkSimple_JSONtoXML(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		_, err := c.JSONtoXML(data)
 		if err != nil {
 			b.Fatal(err)
@@ -72,7 +72,7 @@ func BenchmarkRayFish_XMLtoJSON(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		_, err := c.XMLtoJSON(data)
 		if err != nil {
 			b.Fatal(err)
@@ -94,7 +94,7 @@ func BenchmarkRayFish_JSONtoXML(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		_, err := c.JSONtoXML(data)
 		if err != nil {
 			b.Fatal(err)
@@ -116,7 +116,7 @@ func BenchmarkBadgerFish_XMLtoJSON(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		_, err := c.XMLtoJSON(data)
 		if err != nil {
 			b.Fatal(err)
@@ -138,7 +138,7 @@ func BenchmarkBadgerFish_JSONtoXML(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		_, err := c.JSONtoXML(data)
 		if err != nil {
 			b.Fatal(err)

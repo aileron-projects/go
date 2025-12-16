@@ -8,21 +8,21 @@ import (
 
 func BenchmarkNewTime(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		zuid.NewTime()
 	}
 }
 
 func BenchmarkNewHost(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		zuid.NewHost()
 	}
 }
 
 func BenchmarkNewCount(b *testing.B) {
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		zuid.NewCount()
 	}
 }

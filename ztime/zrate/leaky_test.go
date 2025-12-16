@@ -131,7 +131,7 @@ func TestLeakyBucketLimiter_WaitNow(t *testing.T) {
 	t.Run("fully queue", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(5, time.Second).(*LeakyBucketLimiter)
 		wg := &sync.WaitGroup{}
-		for i := 0; i < 10; i++ {
+		for range 10 {
 			wg.Add(1)
 			go func() {
 				wg.Done()

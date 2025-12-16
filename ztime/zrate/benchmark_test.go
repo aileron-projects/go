@@ -12,7 +12,7 @@ import (
 func BenchmarkMaxConcurrentLimiter(b *testing.B) {
 	lim := zrate.NewConcurrentLimiter(math.MaxInt).(*zrate.ConcurrentLimiter)
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		lim.AllowNow()
 	}
 }
@@ -20,7 +20,7 @@ func BenchmarkMaxConcurrentLimiter(b *testing.B) {
 func BenchmarkFixedWindowLimiter(b *testing.B) {
 	lim := zrate.NewFixedWindowLimiterWidth(math.MaxInt, time.Nanosecond).(*zrate.BucketLimiter)
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		lim.AllowNow()
 	}
 }
@@ -28,7 +28,7 @@ func BenchmarkFixedWindowLimiter(b *testing.B) {
 func BenchmarkNewSlidingWindowLimiter(b *testing.B) {
 	lim := zrate.NewSlidingWindowLimiterWidth(math.MaxInt, time.Nanosecond).(*zrate.SlidingWindowLimiter)
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		lim.AllowNow()
 	}
 }
@@ -36,7 +36,7 @@ func BenchmarkNewSlidingWindowLimiter(b *testing.B) {
 func BenchmarkTokenBucketLimiter(b *testing.B) {
 	lim := zrate.NewTokenBucketInterval(math.MaxInt, math.MaxInt, time.Nanosecond).(*zrate.BucketLimiter)
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		lim.AllowNow()
 	}
 }
@@ -44,7 +44,7 @@ func BenchmarkTokenBucketLimiter(b *testing.B) {
 func BenchmarkLeakyBucketLimiter(b *testing.B) {
 	lim := zrate.NewLeakyBucketLimiter(math.MaxInt, time.Nanosecond).(*zrate.LeakyBucketLimiter)
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		lim.WaitNow(context.Background())
 	}
 }

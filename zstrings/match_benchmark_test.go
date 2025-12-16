@@ -23,14 +23,14 @@ Go is
 
 func BenchmarkMatch(b *testing.B) {
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		Match(matchPattern, matchStr)
 	}
 }
 
 func BenchmarkPathMatch(b *testing.B) {
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		path.Match(matchPattern, matchStr)
 	}
 }

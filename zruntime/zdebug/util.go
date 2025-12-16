@@ -16,8 +16,8 @@ func GoDebugEnv(key string) (string, bool) {
 	debugs := strings.Split(os.Getenv("GODEBUG"), ",")
 	key = key + "="
 	for _, debug := range debugs {
-		if strings.HasPrefix(debug, key) {
-			return strings.TrimPrefix(debug, key), true
+		if after, found := strings.CutPrefix(debug, key); found {
+			return after, true
 		}
 	}
 	return "", false

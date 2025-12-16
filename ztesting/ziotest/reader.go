@@ -100,10 +100,7 @@ func (r *errReader) Read(p []byte) (n int, err error) {
 		return 0, r.err
 	}
 	left := r.errAfter - r.read
-	nn := len(p)
-	if len(p) > int(left) {
-		nn = int(left)
-	}
+	nn := min(len(p), int(left))
 	n, err = r.reader.Read(p[:nn])
 	r.read += int64(n)
 	if err != nil {

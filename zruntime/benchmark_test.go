@@ -8,28 +8,28 @@ import (
 
 func BenchmarkCallerFrame(b *testing.B) {
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_ = zruntime.CallerFrame(0)
 	}
 }
 
 func BenchmarkCallerFrames(b *testing.B) {
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_ = zruntime.CallerFrames(0)
 	}
 }
 
 func BenchmarkConvertFrame(b *testing.B) {
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_ = zruntime.ConvertFrame(zruntime.CallerFrame(0))
 	}
 }
 
 func BenchmarkConvertFrames(b *testing.B) {
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_ = zruntime.ConvertFrames(zruntime.CallerFrames(0))
 	}
 }
