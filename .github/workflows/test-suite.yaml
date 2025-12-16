@@ -15,63 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  stable:
-    name: ${{ matrix.runner }}-stable
-    runs-on: ${{ matrix.runner }}-latest
-    timeout-minutes: 15
-    strategy:
-      matrix:
-        include:
-          - { runner: "ubuntu", os: "linux" }
-          - { runner: "windows", os: "windows" }
-          - { runner: "macos", os: "darwin" }
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - uses: aileron-projects/_scripts/.github/actions/go-test@main
-        with:
-          go-os: ${{ matrix.os }}
-          go-version: "stable"
-      - uses: codecov/codecov-action@v4
-        if: github.ref == 'refs/heads/main' && github.event_name != 'schedule'
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        with:
-          files: ./_output/coverage.txt
-          fail_ci_if_error: true
-          verbose: true
-          env_vars: ${{ matrix.os }}
-          name: ${{ matrix.os }}
-
-  qemu:
-    name: ${{ matrix.arch }}${{ matrix.arm }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    strategy:
-      matrix:
-        include:
-          - { arch: "amd64", arm: "" }
-          - { arch: "arm", arm: "5" }
-          - { arch: "arm", arm: "6" }
-          - { arch: "arm", arm: "7" }
-          - { arch: "arm64", arm: "" }
-          - { arch: "ppc64", arm: "" }
-          - { arch: "ppc64le", arm: "" }
-          - { arch: "riscv64", arm: "" }
-          - { arch: "s390x", arm: "" }
-          - { arch: "loong64", arm: "" }
-          - { arch: "386", arm: "" }
-          - { arch: "mips", arm: "" }
-          - { arch: "mips64", arm: "" }
-          - { arch: "mips64le", arm: "" }
-          - { arch: "mipsle", arm: "" }
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: true
-      - uses: aileron-projects/_scripts/.github/actions/go-test-qemu@main
-        with:
-          go-arch: ${{ matrix.arch }}
-          go-arm: ${{ matrix.arm }}
+  go-test:
+    uses: aileron-projects/_scripts/.github/actions/go-test@main
+  go-test-qemu:
+    uses: aileron-projects/_scripts/.github/actions/go-test-qemu@main
