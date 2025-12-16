@@ -29,4 +29,6 @@ jobs:
           pip install mkdocs mkdocs-material mkdocs-material-extensions mkdocs-static-i18n mike
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          mike deploy latest --update-aliases --push
+          mike deploy latest --update-aliases
+          mike set-default latest
+          git push origin gh-pages
