@@ -8,6 +8,7 @@ repo_name: aileron-projects/go
 repo_url: https://github.com/aileron-projects/go
 
 docs_dir: "./website"
+strict: true
 
 extra_css:
   - ./mkdocs.css
@@ -68,6 +69,7 @@ plugins:
           name: "日本語"
 
 markdown_extensions:
+  - attr_list
   - smarty
   - admonition
   - meta
@@ -102,7 +104,9 @@ markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
 
-extra: {}
+extra:
+  version:
+    provider: mike
   # analytics:
   #   provider: google
   #   property: G-XXXXXXX

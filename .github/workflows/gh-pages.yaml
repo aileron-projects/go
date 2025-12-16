@@ -21,7 +21,7 @@ jobs:
       - name: build
         run: |
           cd docs/
-          pip install mkdocs mkdocs-material mkdocs-material-extensions mkdocs-static-i18n
+          pip install mkdocs mkdocs-material mkdocs-material-extensions mkdocs-static-i18n mike
           mkdocs build
       - name: Upload pages artifact
         id: deployment

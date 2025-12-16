@@ -7,6 +7,7 @@
 
 # Ignore directory.
 _output/
+site/
 bin/
 tmp/
 temp/
