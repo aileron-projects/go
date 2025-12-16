@@ -1,12 +1,4 @@
----
-title: "UDPサーバ・プロキシ"
-linkTitle: "UDPサーバ・プロキシ"
-type: docs
-weight: 100
-categories: []
-tags: []
-description: ""
----
+# UDPサーバ・UDPプロキシ
 
 ## 概要
 
@@ -105,7 +97,7 @@ UDPサーバは、クライアントの`IP:Port`に対して仮想コネクシ�
 この実装例のハンドラは、受信したUDPのパケットを標準出力に出力するのみです。
 
 ```go
-{{% code source="ex_basic/main.go" %}}
+--8<-- "udp/ex_basic/main.go"
 ```
 
 ### UDPサーバランナー
@@ -187,7 +179,7 @@ graph LR
 ```
 
 ```go
-{{% code source="ex_proxy/main.go" %}}
+--8<-- "udp/ex_proxy/main.go"
 ```
 
 ## 参考資料

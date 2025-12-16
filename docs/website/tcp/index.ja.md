@@ -1,12 +1,4 @@
----
-title: "TCPサーバ・プロキシ"
-linkTitle: "TCPサーバ・プロキシ"
-type: docs
-weight: 50
-categories: []
-tags: []
-description: ""
----
+# TCPサーバ・TCPプロキシ
 
 ## 概要
 
@@ -107,7 +99,7 @@ TLSは利用していません。
 この実装例のハンドラは、受信したTCPデータを標準出力に出力するのみです。
 
 ```go
-{{% code source="ex_basic/main.go" %}}
+--8<-- "tcp/ex_basic/main.go"
 ```
 
 ### TCPサーバランナー
@@ -200,7 +192,7 @@ TCPサーバは[Unixドメインソケット](https://en.wikipedia.org/wiki/Unix
 この例では、TCPサーバをポート番号`8080`で待ち受け、`localhost:9090`のTCPサーバへプロキシしています。
 
 ```go
-{{% code source="ex_proxy_basic/main.go" %}}
+--8<-- "tcp/ex_proxy_basic/main.go"
 ```
 
 ### TLSによるプロキシ
@@ -211,7 +203,7 @@ TCPサーバは[Unixドメインソケット](https://en.wikipedia.org/wiki/Unix
 以下が実装例になります。
 
 ```go
-{{% code source="ex_proxy_tls/main.go" %}}
+--8<-- "tcp/ex_proxy_tls/main.go"
 ```
 
 この例はプロキシサーバと転送先サーバ間のみがTLSであり、クライアント側は非TLS通信になっています。

@@ -1,0 +1,119 @@
+site_name: AILERON Projects Go Extensions
+site_url: https://aileron-projects.github.io/go/
+site_description: AILERON Gateway design docs
+site_author: AILERON Gateway Community
+copyright: Copyright &copy; 2025 AILERON Gateway Community.
+
+repo_name: aileron-projects/go
+repo_url: https://github.com/aileron-projects/go
+
+docs_dir: "./website"
+
+extra_css:
+  - ./mkdocs.css
+
+extra_javascript:
+  - ./mkdocs.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+theme:
+  name: material
+  locale: en
+  highlightjs: true
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - search.highlight
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.expand
+    # - navigation.sections
+    - navigation.path
+    - navigation.indexes
+    # - navigation.footer
+    - announce.dismiss
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - toc.follow
+
+plugins:
+  - search
+  - tags
+  - i18n:
+      languages:
+        - locale: en
+          name: "English"
+          default: true
+        - locale: ja
+          name: "日本語"
+
+markdown_extensions:
+  - smarty
+  - admonition
+  - meta
+  - toc:
+      permalink: true
+      permalink_title: Anchor link to this section for reference
+  - tables
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path: "./website"
+      # check_paths: true
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.arithmatex:
+      generic: true
+
+extra: {}
+  # analytics:
+  #   provider: google
+  #   property: G-XXXXXXX
+
+nav:
+  - Packages:
+    - Packages: README.md
+    - cron: cron/index.md
+    - debug: debug/index.md
+    - env: env/index.md
+    - logging: logging/index.md
+    - rate: rate/index.md
+    - tcp: tcp/index.md
+    - udp: udp/index.md

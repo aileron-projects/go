@@ -1,12 +1,4 @@
----
-title: "レートリミット"
-linkTitle: "レートリミット"
-type: docs
-weight: 1
-categories: []
-tags: []
-description: ""
----
+# レートリミット
 
 ## 概要
 
@@ -155,7 +147,7 @@ APIのレートリミットに使用する例は、[FixedWindowによるAPIレ�
 また、リクエストが受理された場合、0-100ミリ秒間の間でランダムに待機した後200ステータスを返却します。
 
 ```go
-{{% code source="ex_leakybucket/main.go" %}}
+--8<-- "rate/ex_leakybucket/main.go"
 ```
 
 ### ConcurrencyによるAPIレートリミット
@@ -167,7 +159,7 @@ ConcurrencyアルゴリズムによるAPIレートリミットの簡単な実装
 また、リクエストが受理された場合、0-100ミリ秒間の間でランダムに待機した後200ステータスを返却します。
 
 ```go
-{{% code source="ex_concurrent/main.go" %}}
+--8<-- "rate/ex_concurrent/main.go"
 ```
 
 ### TokenBucketによるAPIレートリミット
@@ -179,7 +171,7 @@ TokenBucketアルゴリズムによるAPIレートリミットの簡単な実装
 また、リクエストが受理された場合、0-100ミリ秒間の間でランダムに待機した後200ステータスを返却します。
 
 ```go
-{{% code source="ex_tokenbucket/main.go" %}}
+--8<-- "rate/ex_tokenbucket/main.go"
 ```
 
 ### FixedWindowによるAPIレートリミット
@@ -191,7 +183,7 @@ FixedWindowアルゴリズムによるAPIレートリミットの簡単な実装
 また、リクエストが受理された場合、0-100ミリ秒間の間でランダムに待機した後200ステータスを返却します。
 
 ```go
-{{% code source="ex_fixedwindow/main.go" %}}
+--8<-- "rate/ex_fixedwindow/main.go"
 ```
 
 ### SlidingWindowによるAPIレートリミット
@@ -203,7 +195,7 @@ SlidingWindowアルゴリズムによるAPIレートリミットの簡単な実�
 また、リクエストが受理された場合、0-100ミリ秒間の間でランダムに待機した後200ステータスを返却します。
 
 ```go
-{{% code source="ex_slidingwindow/main.go" %}}
+--8<-- "rate/ex_slidingwindow/main.go"
 ```
 
 ## 参考資料

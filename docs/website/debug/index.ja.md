@@ -1,12 +1,4 @@
----
-title: "デバッグ"
-linkTitle: "デバッグ"
-type: docs
-weight: 1
-categories: []
-tags: []
-description: ""
----
+# デバッグ
 
 ## 概要
 
@@ -55,7 +47,7 @@ zdebug.DumpAlways("dump message", obj1, obj2)
 以下の実装例はプロフィール構造体のダンプを出力します。
 
 ```go
-{{% code source="ex_dump/main.go" %}}
+--8<-- "debug/ex_dump/main.go"
 ```
 
 上記コードを`-tags zdebugdump`付きで実行した場合、以下のような出力が得られます。
