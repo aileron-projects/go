@@ -3,7 +3,7 @@ name: Deploy Pages
 on:
   push:
     branches:
-      - "*"
+      - "main"
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
 
@@ -31,7 +31,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           pip install mkdocs mkdocs-material mkdocs-material-extensions mkdocs-static-i18n mike
       - name: latest
-        if: github.ref_type == 'branch'
+        if: github.ref == 'refs/heads/main'
         run: |
           cd docs/
           mike deploy latest --update-aliases
