@@ -97,7 +97,7 @@ UDPサーバは、クライアントの`IP:Port`に対して仮想コネクシ�
 この実装例のハンドラは、受信したUDPのパケットを標準出力に出力するのみです。
 
 ```go
---8<-- "udp/ex_basic/main.go"
+--8<-- "references/udp/ex_basic/main.go"
 ```
 
 ### UDPサーバランナー {#udp-server-runner-example}
@@ -108,7 +108,7 @@ UDPサーバランナーの実装例は以下の通りです。
 `syscall`パッケージの利用が制限されているプラットフォームもある点に注意してください。
 
 ```go
---8<-- "udp/ex_runner/main.go:32:53"
+--8<-- "references/udp/ex_runner/main.go:32:53"
 ```
 
 ### IPホワイトリスト {#ip-whitelist}
@@ -124,7 +124,7 @@ UDPサーバランナーの実装例は以下の通りです。
 この例では、ローカルホストである`127.0.0.1`と`::1`のIPアドレスのみ許可しています。
 
 ```go
---8<-- "udp/ex_whitelist/main.go:29:67"
+--8<-- "references/udp/ex_whitelist/main.go:29:67"
 ```
 
 ### IPブラックリスト {#ip-blacklist}
@@ -140,7 +140,7 @@ UDPサーバランナーの実装例は以下の通りです。
 この例では、ローカルホストである`192.168.0.0/16`の範囲にあるIPアドレスを拒否しています。
 
 ```go
---8<-- "udp/ex_blacklist/main.go:29:67"
+--8<-- "references/udp/ex_blacklist/main.go:29:67"
 ```
 
 ### Unixドメインソケット {#unix-domain-socket}
@@ -150,13 +150,13 @@ UDPサーバは[Unixドメインソケット](https://en.wikipedia.org/wiki/Unix
 パス名ソケットを利用する場合は、以下のように指定します。
 
 ```go
---8<-- "udp/ex_socket_path/main.go:28:37"
+--8<-- "references/udp/ex_socket_path/main.go:28:37"
 ```
 
 抽象ソケットを利用する場合は、以下のように指定します。
 
 ```go
---8<-- "udp/ex_socket_abstract/main.go:28:37"
+--8<-- "references/udp/ex_socket_abstract/main.go:28:37"
 ```
 
 ### デフォルトのプロキシ {#default-proxy}
@@ -179,7 +179,7 @@ graph LR
 ```
 
 ```go
---8<-- "udp/ex_proxy/main.go"
+--8<-- "references/udp/ex_proxy/main.go"
 ```
 
 ## 参考資料 {#reference}

@@ -9,6 +9,7 @@ include _scripts/makefiles/go-build.mk
 include _scripts/makefiles/go-licenses.mk
 include _scripts/makefiles/go-test.mk
 include _scripts/makefiles/go.mk
+include _scripts/makefiles/goda.mk
 include _scripts/makefiles/golangci-lint.mk
 include _scripts/makefiles/govulncheck.mk
 include _scripts/makefiles/markdownlint.mk

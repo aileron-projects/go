@@ -99,7 +99,7 @@ TLSは利用していません。
 この実装例のハンドラは、受信したTCPデータを標準出力に出力するのみです。
 
 ```go
---8<-- "tcp/ex_basic/main.go"
+--8<-- "references/tcp/ex_basic/main.go"
 ```
 
 ### TCPサーバランナー {#tcp-server-runner-example}
@@ -111,7 +111,7 @@ TCPサーバランナーの実装例は以下の通りです。
 `syscall`パッケージの利用が制限されているプラットフォームもある点に注意してください。
 
 ```go
---8<-- "tcp/ex_runner/main.go:32:53"
+--8<-- "references/tcp/ex_runner/main.go:32:53"
 ```
 
 ### TLS {#tls-server}
@@ -120,7 +120,7 @@ TLSを利用したTCPサーバの実装例は以下の通りです。
 TLSサーバのcertファイルとkeyファイルのパスを指定するのみでも起動可能、より細かいTLSの設定をする場合は`Server.TLSConfig`を利用します。
 
 ```go
---8<-- "tcp/ex_tls/main.go:28:38"
+--8<-- "references/tcp/ex_tls/main.go:28:38"
 ```
 
 ### コネクション数制限 {#connection-limiting}
@@ -130,7 +130,7 @@ TLSサーバのcertファイルとkeyファイルのパスを指定するのみ�
 実装例は以下となります。一部エラー処理は省略しています。
 
 ```go
---8<-- "tcp/ex_concurrency/main.go:29:43"
+--8<-- "references/tcp/ex_concurrency/main.go:29:43"
 ```
 
 ### IPホワイトリスト {#ip-whitelist}
@@ -146,7 +146,7 @@ TLSサーバのcertファイルとkeyファイルのパスを指定するのみ�
 この例では、ローカルホストである`127.0.0.1`と`::1`のIPアドレスのみ許可しています。
 
 ```go
---8<-- "tcp/ex_whitelist/main.go:29:43"
+--8<-- "references/tcp/ex_whitelist/main.go:29:43"
 ```
 
 ### IPブラックリスト {#ip-blacklist}
@@ -162,7 +162,7 @@ TLSサーバのcertファイルとkeyファイルのパスを指定するのみ�
 この例では、ローカルホストである`192.168.0.0/16`の範囲にあるIPアドレスを拒否しています。
 
 ```go
---8<-- "tcp/ex_blacklist/main.go:29:43"
+--8<-- "references/tcp/ex_blacklist/main.go:29:43"
 ```
 
 ### Unixドメインソケット {#unix-domain-socket}
@@ -172,13 +172,13 @@ TCPサーバは[Unixドメインソケット](https://en.wikipedia.org/wiki/Unix
 パス名ソケットを利用する場合は、以下のように指定します。
 
 ```go
---8<-- "tcp/ex_socket_path/main.go:28:39"
+--8<-- "references/tcp/ex_socket_path/main.go:28:39"
 ```
 
 抽象ソケットを利用する場合は、以下のように指定します。
 
 ```go
---8<-- "tcp/ex_socket_abstract/main.go:28:39"
+--8<-- "references/tcp/ex_socket_abstract/main.go:28:39"
 ```
 
 ### デフォルトのプロキシ {#default-proxy}
@@ -192,7 +192,7 @@ TCPサーバは[Unixドメインソケット](https://en.wikipedia.org/wiki/Unix
 この例では、TCPサーバをポート番号`8080`で待ち受け、`localhost:9090`のTCPサーバへプロキシしています。
 
 ```go
---8<-- "tcp/ex_proxy_basic/main.go"
+--8<-- "references/tcp/ex_proxy_basic/main.go"
 ```
 
 ### TLSによるプロキシ {#tls-proxy}
@@ -203,7 +203,7 @@ TCPサーバは[Unixドメインソケット](https://en.wikipedia.org/wiki/Unix
 以下が実装例になります。
 
 ```go
---8<-- "tcp/ex_proxy_tls/main.go"
+--8<-- "references/tcp/ex_proxy_tls/main.go"
 ```
 
 この例はプロキシサーバと転送先サーバ間のみがTLSであり、クライアント側は非TLS通信になっています。

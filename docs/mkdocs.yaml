@@ -1,9 +1,8 @@
-site_name: AILERON Projects Go Extensions
-site_url: https://aileron-projects.github.io/go/
-site_description: AILERON Projects Go Extensions
+site_name: AILERON | Go
+site_url: https://aileron-projects.github.io/go
+site_description: AILERON Projects | Go standard package extensions.
 site_author: AILERON Projects Community
 copyright: Copyright &copy; 2025 AILERON Projects Community.
-
 repo_name: aileron-projects/go
 repo_url: https://github.com/aileron-projects/go
 
@@ -12,7 +11,6 @@ strict: true
 
 extra_css:
   - ./mkdocs.css
-
 extra_javascript:
   - ./mkdocs.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
@@ -22,8 +20,8 @@ theme:
   name: material
   locale: en
   highlightjs: true
-  logo: ./logo-light.svg
-  favicon: ./logo-light.svg
+  logo: static/aileron.svg
+  favicon: static/aileron.svg
   icon:
     repo: fontawesome/brands/github
   palette:
@@ -47,10 +45,7 @@ theme:
     - navigation.tabs.sticky
     - navigation.top
     - navigation.expand
-    # - navigation.sections
     - navigation.path
-    - navigation.indexes
-    # - navigation.footer
     - announce.dismiss
     - content.action.edit
     - content.action.view
@@ -62,6 +57,9 @@ theme:
 plugins:
   - search
   - tags
+  - exclude:
+      regex:
+        - ".*/README.md"
   - i18n:
       languages:
         - locale: en
@@ -107,19 +105,29 @@ markdown_extensions:
       generic: true
 
 extra:
+  generator: false
   version:
     provider: mike
   # analytics:
   #   provider: google
   #   property: G-XXXXXXX
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/aileron-projects/go
 
 nav:
-  - Packages:
-      - Packages: README.md
-      - cron: cron/index.md
-      - debug: debug/index.md
-      - env: env/index.md
-      - logging: logging/index.md
-      - rate: rate/index.md
-      - tcp: tcp/index.md
-      - udp: udp/index.md
+  - Docs:
+      - overview: docs/overview/index.md
+      - getting-started: docs/getting-started/index.md
+      - community: docs/community/index.md
+      - contributing: docs/contributing/index.md
+  - References:
+      - cron: references/cron/index.md
+      - debug: references/debug/index.md
+      - env: references/env/index.md
+      - logging: references/logging/index.md
+      - rate: references/rate/index.md
+      - tcp: references/tcp/index.md
+      - udp: references/udp/index.md
+  - Examples: examples/index.md
+  - "": index.md

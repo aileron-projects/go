@@ -182,7 +182,7 @@ FOO="B\nR"    >> B<LF>R
 以下のコードでいくつかの環境変数を解決してみます。
 
 ```go
---8<-- "env/ex_envsubst/main.go"
+--8<-- "references/env/ex_envsubst/main.go"
 ```
 
 上記コードはにより以下の結果が出力されます。
@@ -223,7 +223,7 @@ ${FOO@U} --------- FOO
 パースされた値は`os.Setenv`により環境変数としてセットされるとともにマップデータとして返却されます。
 
 ```go
---8<-- "env/ex_loadenv/main.go"
+--8<-- "references/env/ex_loadenv/main.go"
 ```
 
 上記を実行すると以下の値が得られます。
