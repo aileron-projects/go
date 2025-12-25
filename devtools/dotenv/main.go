@@ -23,7 +23,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	kvs, err := zos.LoadEnv(b)
+	kvs, err := zos.ParseEnv(b)
 	if err != nil {
 		panic(err)
 	}

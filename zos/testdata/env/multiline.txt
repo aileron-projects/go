@@ -1,0 +1,8 @@
+MULTI1='
+line1
+line2
+'
+MULTI2="
+line1
+line2
+"

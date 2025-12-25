@@ -1,0 +1,2 @@
+# comment line
+FOO=foo # inline comment

@@ -1,0 +1,2 @@
+SEQ1='Single'"Double"
+SEQ2='Single' and "Double"
