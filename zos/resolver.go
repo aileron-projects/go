@@ -15,6 +15,7 @@ var (
 	typeResolve      = "zos: resolving env variable failed."
 	typeSubstitution = "zos: env substitution."
 	typeLoad         = "zos: loading env failed."
+	typeParse        = "zos: parsing env failed."
 )
 
 // EnvError is the environmental substitution error.
