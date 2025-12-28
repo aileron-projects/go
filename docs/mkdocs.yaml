@@ -5,16 +5,21 @@ site_author: AILERON Projects Community
 copyright: Copyright &copy; 2025 AILERON Projects Community.
 repo_name: aileron-projects/go
 repo_url: https://github.com/aileron-projects/go
+edit_uri: edit/main/docs/website/
 
 docs_dir: "./website"
 strict: true
 
 extra_css:
-  - ./mkdocs.css
+  - ./_customize/mkdocs.css
 extra_javascript:
-  - ./mkdocs.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - ./_customize/mathjax.js
+  - ./_customize/mermaid.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+exclude_docs: |
+  README.md
+  *.drawio
 
 theme:
   name: material
@@ -57,52 +62,56 @@ theme:
 plugins:
   - search
   - tags
-  - exclude:
-      regex:
-        - ".*/README.md"
   - i18n:
       languages:
         - locale: en
           name: "English"
-          default: true
+          default: false
+          build: false
         - locale: ja
           name: "日本語"
+          default: true
+          build: true
 
 markdown_extensions:
+  - abbr
   - attr_list
+  - def_list
+  - footnotes
+  - tables
   - smarty
   - admonition
   - meta
+  - md_in_html
   - toc:
       permalink: true
-      permalink_title: Anchor link to this section for reference
-  - tables
-  - def_list
-  - pymdownx.tasklist:
-      custom_checkbox: true
+      title: Table of Contents
+  - pymdownx.tasklist
   - pymdownx.emoji
   - pymdownx.details
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets:
-      base_path: "./website"
-      check_paths: true
   - pymdownx.mark
   - pymdownx.smartsymbols
+  - pymdownx.blocks.caption
+  - pymdownx.keys
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.betterem:
       smart_enable: all
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.snippets:
+      base_path: "./website"
+      check_paths: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.arithmatex:
-      generic: true
 
 extra:
   generator: false
