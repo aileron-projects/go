@@ -24,7 +24,7 @@ func TestGetMultiCookie(t *testing.T) {
 	})
 	t.Run("no index", func(t *testing.T) {
 		cookies := []*http.Cookie{
-			&http.Cookie{Name: "prefix", Value: "value"},
+			{Name: "prefix", Value: "value"},
 		}
 		cks, value := zhttp.GetMultiCookie("prefix", cookies)
 		ztesting.AssertEqual(t, "cookies should be empty", 0, len(cks))
@@ -32,7 +32,7 @@ func TestGetMultiCookie(t *testing.T) {
 	})
 	t.Run("parse index fails", func(t *testing.T) {
 		cookies := []*http.Cookie{
-			&http.Cookie{Name: "prefixNN", Value: "value"},
+			{Name: "prefixNN", Value: "value"},
 		}
 		cks, value := zhttp.GetMultiCookie("prefix", cookies)
 		ztesting.AssertEqual(t, "cookies should be empty", 0, len(cks))
@@ -40,7 +40,7 @@ func TestGetMultiCookie(t *testing.T) {
 	})
 	t.Run("index from 0 to 0", func(t *testing.T) {
 		cookies := []*http.Cookie{
-			&http.Cookie{Name: "prefix0", Value: "value0"},
+			{Name: "prefix0", Value: "value0"},
 		}
 		cks, value := zhttp.GetMultiCookie("prefix", cookies)
 		ztesting.AssertEqual(t, "cookies should be obtained", 1, len(cks))
@@ -48,8 +48,8 @@ func TestGetMultiCookie(t *testing.T) {
 	})
 	t.Run("index from 0 to 1", func(t *testing.T) {
 		cookies := []*http.Cookie{
-			&http.Cookie{Name: "prefix0", Value: "value0"},
-			&http.Cookie{Name: "prefix1", Value: "value1"},
+			{Name: "prefix0", Value: "value0"},
+			{Name: "prefix1", Value: "value1"},
 		}
 		cks, value := zhttp.GetMultiCookie("prefix", cookies)
 		ztesting.AssertEqual(t, "cookies should be obtained", 2, len(cks))
@@ -57,7 +57,7 @@ func TestGetMultiCookie(t *testing.T) {
 	})
 	t.Run("index starts 1", func(t *testing.T) {
 		cookies := []*http.Cookie{
-			&http.Cookie{Name: "prefix1", Value: "value1"},
+			{Name: "prefix1", Value: "value1"},
 		}
 		cks, value := zhttp.GetMultiCookie("prefix", cookies)
 		ztesting.AssertEqual(t, "cookies should be obtained", 1, len(cks))
@@ -65,11 +65,11 @@ func TestGetMultiCookie(t *testing.T) {
 	})
 	t.Run("ignore irrelevant cookie", func(t *testing.T) {
 		cookies := []*http.Cookie{
-			&http.Cookie{Name: "foo", Value: "foo"},
-			&http.Cookie{Name: "bar", Value: "bar"},
-			&http.Cookie{Name: "prefix", Value: "value"},
-			&http.Cookie{Name: "prefix0", Value: "value0"},
-			&http.Cookie{Name: "prefix1", Value: "value1"},
+			{Name: "foo", Value: "foo"},
+			{Name: "bar", Value: "bar"},
+			{Name: "prefix", Value: "value"},
+			{Name: "prefix0", Value: "value0"},
+			{Name: "prefix1", Value: "value1"},
 		}
 		cks, value := zhttp.GetMultiCookie("prefix", cookies)
 		ztesting.AssertEqual(t, "cookies should be obtained", 2, len(cks))
