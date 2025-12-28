@@ -1,0 +1,2 @@
+SINGLE='single and "double"'
+DOUBLE="'single' and double"

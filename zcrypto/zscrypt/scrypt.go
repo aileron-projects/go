@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"errors"
 
+	"github.com/aileron-projects/go/internal/must"
 	"github.com/aileron-projects/go/zcrypto/internal"
 	"golang.org/x/crypto/scrypt"
 )
@@ -77,7 +78,7 @@ func (c *SCrypt) Split(hashedPW []byte) (salt, hash []byte, err error) {
 func (c *SCrypt) Sum(password []byte) ([]byte, error) {
 	salt := make([]byte, c.saltLen)
 	_, err := rand.Read(salt)
-	internal.MustNil(err)
+	must.Nil(err)
 	hashed, err := scrypt.Key(password, salt, c.n, c.r, c.p, c.keyLen)
 	if err != nil {
 		return nil, err

@@ -4,12 +4,34 @@ import (
 	"bytes"
 	"errors"
 	"os"
+
+	"github.com/aileron-projects/go/internal/must"
 )
 
-// LoadEnv loads environmental variable from the given bytes.
-// Typically LoadEnv is used for loading .env file.
-// LoadEnv resolves embedded environmental variables in the b.
-// THe syntax for substituting environmental variable follows the
+// LoadEnv loads environmental variables from given files.
+// See the [ParseEnv] for available syntaxes for env files.
+func LoadEnv(files ...string) error {
+	for _, f := range files {
+		b, err := os.ReadFile(f)
+		if err != nil {
+			return &EnvError{Type: typeLoad, Info: "Filed to load env file.", Err: err}
+		}
+		kvs, err := ParseEnv(b)
+		if err != nil {
+			return &EnvError{Type: typeLoad, Info: "Filed to load env file.", Err: err}
+		}
+		for key, value := range kvs {
+			err := os.Setenv(key, value)
+			must.Nil(err)
+		}
+	}
+	return nil
+}
+
+// ParseEnv parses environmental variable from the given bytes.
+// Typically ParseEnv parses variables from files such as .env file.
+// ParseEnv resolves embedded environmental variables in the b.
+// The syntax for substituting environmental variable follows the
 // specification of [ResolveEnv].
 //
 // References:
@@ -60,7 +82,7 @@ import (
 //	Environmental variables:
 //		# LoadEnv resolves environmental variables.
 //		FOO=BAR${BAZ}
-func LoadEnv(b []byte) (map[string]string, error) {
+func ParseEnv(b []byte) (map[string]string, error) {
 	envs := map[string]string{}
 	inSingleQuote := false
 	inDoubleQuote := false
@@ -77,7 +99,7 @@ func LoadEnv(b []byte) (map[string]string, error) {
 		line = bytes.Trim(line, "\t\n\f\r ")
 		line, err := EnvSubst(line) // Replace environmental variable if exists.
 		if err != nil {
-			return nil, &EnvError{Err: err, Type: typeLoad}
+			return nil, &EnvError{Err: err, Type: typeParse}
 		}
 
 		if inSingleQuote || inDoubleQuote {
@@ -86,7 +108,6 @@ func LoadEnv(b []byte) (map[string]string, error) {
 			multilineValue += val
 			if !inSingleQuote && !inDoubleQuote {
 				envs[multilineName] = multilineValue
-				_ = os.Setenv(multilineName, multilineValue)
 				multilineName = ""  // Reset variable.
 				multilineValue = "" // Reset variable.
 			}
@@ -95,7 +116,7 @@ func LoadEnv(b []byte) (map[string]string, error) {
 			line = bytes.TrimLeft(line, "\t ")
 			name, rest, err := scanName(line)
 			if err != nil {
-				return nil, &EnvError{Err: err, Type: typeLoad}
+				return nil, &EnvError{Err: err, Type: typeParse}
 			}
 			if name == "" {
 				continue // Maybe comment line.
@@ -107,12 +128,11 @@ func LoadEnv(b []byte) (map[string]string, error) {
 				multilineValue = val
 			} else {
 				envs[name] = val
-				_ = os.Setenv(name, val)
 			}
 		}
 	}
 	if inSingleQuote || inDoubleQuote {
-		return nil, &EnvError{Type: typeLoad, Info: "Quotation is not closed in variable " + multilineName}
+		return nil, &EnvError{Type: typeParse, Info: "Quotation is not closed in variable " + multilineName}
 	}
 	return envs, nil
 }

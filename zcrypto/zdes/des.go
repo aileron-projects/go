@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"strconv"
 
+	"github.com/aileron-projects/go/internal/must"
 	"github.com/aileron-projects/go/zcrypto/internal"
 )
 
@@ -54,7 +55,7 @@ func newDES(key []byte) (cipher.Block, []byte, error) {
 	}
 	iv := make([]byte, des.BlockSize)
 	_, err = rand.Read(iv)
-	internal.MustNil(err)
+	must.Nil(err)
 	return c, iv, nil
 }
 
@@ -70,6 +71,6 @@ func new3DES(key []byte) (cipher.Block, []byte, error) {
 	}
 	iv := make([]byte, des.BlockSize)
 	_, err = rand.Read(iv)
-	internal.MustNil(err)
+	must.Nil(err)
 	return c, iv, nil
 }

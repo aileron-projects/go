@@ -1,0 +1,2 @@
+export FOO=foo
+export B_A_R=bar
