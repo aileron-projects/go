@@ -10,8 +10,11 @@ import (
 // Do not run test parallel when using this.
 // Call done after the test finished to set original rand.Reader.
 //
+// Example:
+//
 //	done := ztesting.ReplaceRandReader(YourReader)
 //	defer done()
+//	// Write your test here.
 func ReplaceRandReader(r io.Reader) (done func()) {
 	tmp := rand.Reader
 	rand.Reader = r
@@ -24,8 +27,11 @@ func ReplaceRandReader(r io.Reader) (done func()) {
 // Do not run test parallel when using this.
 // Call done after the test finished to set original Stdout.
 //
+// Example:
+//
 //	r, done := ztesting.ReplaceStdout()
 //	defer done()
+//	// Write your test here.
 func ReplaceStdout() (r *os.File, done func()) {
 	tmp := os.Stdout
 	r, w, _ := os.Pipe()
@@ -39,8 +45,11 @@ func ReplaceStdout() (r *os.File, done func()) {
 // Do not run test parallel when using this.
 // Call done after the test finished to set original Stderr.
 //
+// Example:
+//
 //	r, done := ztesting.ReplaceStderr()
 //	defer done()
+//	// Write your test here.
 func ReplaceStderr() (r *os.File, done func()) {
 	tmp := os.Stderr
 	r, w, _ := os.Pipe()
@@ -54,8 +63,11 @@ func ReplaceStderr() (r *os.File, done func()) {
 // Do not run test parallel when using this.
 // Call done after the test finished to set original Stdin.
 //
+// Example:
+//
 //	w, done := ztesting.ReplaceStdin()
 //	defer done()
+//	// Write your test here.
 func ReplaceStdin() (w *os.File, done func()) {
 	tmp := os.Stdin
 	r, w, _ := os.Pipe()

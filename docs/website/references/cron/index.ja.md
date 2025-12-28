@@ -125,7 +125,7 @@ func NextAfter(t time.Time) time.Time
 cronの基本的な利用方法は以下のようになります。
 
 ```go
---8<-- "cron/ex_basic/main.go"
+--8<-- "references/cron/ex_basic/main.go"
 ```
 
 ### ジョブ実行例 {#job-example}
@@ -136,7 +136,7 @@ cronの基本的な利用方法は以下のようになります。
 ジョブを非同期で実行したい場合は`go cron.Start()`のように実装します。
 
 ```go
---8<-- "cron/ex_job/main.go"
+--8<-- "references/cron/ex_job/main.go"
 ```
 
 ## 参考資料 {#reference}

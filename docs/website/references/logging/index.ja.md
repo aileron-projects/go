@@ -32,7 +32,7 @@ type Logger interface {
 以下はデフォルトの`slog.Logger`に対して上記の Logger インターフェースを実装する例です。
 
 ```go
---8<-- "logging/ex_logger/main.go"
+--8<-- "references/logging/ex_logger/main.go"
 ```
 
 ### 2. コンテキスト属性操作機能
@@ -57,7 +57,7 @@ attrs := zlog.AttrsFromContext(ctx)
 以下のコードで動作確認ができます。
 
 ```go
---8<-- "logging/ex_context_attr/main.go"
+--8<-- "references/logging/ex_context_attr/main.go"
 ```
 
 ### 3. コンテキストログレベル設定機能
@@ -87,7 +87,7 @@ lv := zslog.LevelFromContext(ctx)
 以下のコードで動作確認ができます。
 
 ```go
---8<-- "logging/ex_context_level/main.go"
+--8<-- "references/logging/ex_context_level/main.go"
 ```
 
 ### 4. 論理ファイル機能
@@ -165,7 +165,7 @@ if lg.InfoEnabled(ctx) {
 時間指定子(`%h`/`%m`/`%s`)が含まれない場合、それらは値がゼロ(00時/00分/00秒)として扱われます。
 
 ```go hl_lines="13"
---8<-- "logging/ex_logical_maxage/main.go"
+--8<-- "references/logging/ex_logical_maxage/main.go"
 ```
 
 ### MaxHistoryによるファイル管理
@@ -175,7 +175,7 @@ if lg.InfoEnabled(ctx) {
 履歴ファイルの数が５つより多くならないように、古いファイルを削除します。
 
 ```go hl_lines="13"
---8<-- "logging/ex_logical_maxhistory/main.go"
+--8<-- "references/logging/ex_logical_maxhistory/main.go"
 ```
 
 ### MaxTotalによるファイル管理
@@ -185,7 +185,7 @@ if lg.InfoEnabled(ctx) {
 全ての履歴ファイルのファイルサイズの合計が数が2000バイトより大きくならないように、古いファイルから削除します。
 
 ```go hl_lines="13"
---8<-- "logging/ex_logical_maxtotal/main.go"
+--8<-- "references/logging/ex_logical_maxtotal/main.go"
 ```
 
 ### ログのファイル出力
@@ -197,7 +197,7 @@ Goの標準パッケージである[log/slog.Handler](https://pkg.go.dev/log/slo
 このような実装により、履歴管理機能付きのロギングを実現することが可能です。
 
 ```go
---8<-- "logging/ex_logging/main.go"
+--8<-- "references/logging/ex_logging/main.go"
 ```
 
 ## 参考資料 {#reference}

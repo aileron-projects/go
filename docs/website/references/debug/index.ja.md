@@ -47,7 +47,7 @@ zdebug.DumpAlways("dump message", obj1, obj2)
 以下の実装例はプロフィール構造体のダンプを出力します。
 
 ```go
---8<-- "debug/ex_dump/main.go"
+--8<-- "references/debug/ex_dump/main.go"
 ```
 
 上記コードを`-tags zdebugdump`付きで実行した場合、以下のような出力が得られます。

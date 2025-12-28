@@ -1,29 +1,32 @@
-site_name: AILERON Projects Go Extensions
-site_url: https://aileron-projects.github.io/go/
-site_description: AILERON Projects Go Extensions
+site_name: AILERON | Go
+site_url: https://aileron-projects.github.io/go
+site_description: AILERON Projects | Go standard package extensions.
 site_author: AILERON Projects Community
 copyright: Copyright &copy; 2025 AILERON Projects Community.
-
 repo_name: aileron-projects/go
 repo_url: https://github.com/aileron-projects/go
+edit_uri: edit/main/docs/website/
 
 docs_dir: "./website"
 strict: true
 
 extra_css:
-  - ./mkdocs.css
-
+  - ./_customize/mkdocs.css
 extra_javascript:
-  - ./mkdocs.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - ./_customize/mathjax.js
+  - ./_customize/mermaid.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+exclude_docs: |
+  README.md
+  *.drawio
 
 theme:
   name: material
   locale: en
   highlightjs: true
-  logo: ./logo-light.svg
-  favicon: ./logo-light.svg
+  logo: static/aileron.svg
+  favicon: static/aileron.svg
   icon:
     repo: fontawesome/brands/github
   palette:
@@ -47,10 +50,7 @@ theme:
     - navigation.tabs.sticky
     - navigation.top
     - navigation.expand
-    # - navigation.sections
     - navigation.path
-    - navigation.indexes
-    # - navigation.footer
     - announce.dismiss
     - content.action.edit
     - content.action.view
@@ -66,60 +66,77 @@ plugins:
       languages:
         - locale: en
           name: "English"
-          default: true
+          default: false
+          build: false
         - locale: ja
           name: "日本語"
+          default: true
+          build: true
 
 markdown_extensions:
+  - abbr
   - attr_list
+  - def_list
+  - footnotes
+  - tables
   - smarty
   - admonition
   - meta
+  - md_in_html
   - toc:
       permalink: true
-      permalink_title: Anchor link to this section for reference
-  - tables
-  - def_list
-  - pymdownx.tasklist:
-      custom_checkbox: true
+      title: Table of Contents
+  - pymdownx.tasklist
   - pymdownx.emoji
   - pymdownx.details
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets:
-      base_path: "./website"
-      check_paths: true
   - pymdownx.mark
   - pymdownx.smartsymbols
+  - pymdownx.blocks.caption
+  - pymdownx.keys
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.betterem:
       smart_enable: all
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.snippets:
+      base_path: "./website"
+      check_paths: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.arithmatex:
-      generic: true
 
 extra:
+  generator: false
   version:
     provider: mike
   # analytics:
   #   provider: google
   #   property: G-XXXXXXX
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/aileron-projects/go
 
 nav:
-  - Packages:
-      - Packages: README.md
-      - cron: cron/index.md
-      - debug: debug/index.md
-      - env: env/index.md
-      - logging: logging/index.md
-      - rate: rate/index.md
-      - tcp: tcp/index.md
-      - udp: udp/index.md
+  - Docs:
+      - overview: docs/overview/index.md
+      - getting-started: docs/getting-started/index.md
+      - community: docs/community/index.md
+      - contributing: docs/contributing/index.md
+  - References:
+      - cron: references/cron/index.md
+      - debug: references/debug/index.md
+      - env: references/env/index.md
+      - logging: references/logging/index.md
+      - rate: references/rate/index.md
+      - tcp: references/tcp/index.md
+      - udp: references/udp/index.md
+  - Examples: examples/index.md
+  - "": index.md
