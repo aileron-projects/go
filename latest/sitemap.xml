@@ -4,140 +4,78 @@
         <loc>https://aileron-projects.github.io/go/latest/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latest/"/>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latestja/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/"/>
     </url>
     <url>
-        <loc>https://aileron-projects.github.io/go/latest/cron/</loc>
+        <loc>https://aileron-projects.github.io/go/latest/docs/community/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latest/cron/"/>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latestja/cron/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/docs/community/"/>
     </url>
     <url>
-        <loc>https://aileron-projects.github.io/go/latest/debug/</loc>
+        <loc>https://aileron-projects.github.io/go/latest/docs/contributing/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latest/debug/"/>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latestja/debug/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/docs/contributing/"/>
     </url>
     <url>
-        <loc>https://aileron-projects.github.io/go/latest/env/</loc>
+        <loc>https://aileron-projects.github.io/go/latest/docs/getting-started/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latest/env/"/>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latestja/env/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/docs/getting-started/"/>
     </url>
     <url>
-        <loc>https://aileron-projects.github.io/go/latest/logging/</loc>
+        <loc>https://aileron-projects.github.io/go/latest/docs/overview/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latest/logging/"/>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latestja/logging/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/docs/overview/"/>
     </url>
     <url>
-        <loc>https://aileron-projects.github.io/go/latest/rate/</loc>
+        <loc>https://aileron-projects.github.io/go/latest/examples/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latest/rate/"/>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latestja/rate/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/examples/"/>
     </url>
     <url>
-        <loc>https://aileron-projects.github.io/go/latest/tcp/</loc>
+        <loc>https://aileron-projects.github.io/go/latest/references/cron/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latest/tcp/"/>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latestja/tcp/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/references/cron/"/>
     </url>
     <url>
-        <loc>https://aileron-projects.github.io/go/latest/tcp/ex_proxy_tls/</loc>
+        <loc>https://aileron-projects.github.io/go/latest/references/debug/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latest/tcp/ex_proxy_tls/"/>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latestja/tcp/ex_proxy_tls/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/references/debug/"/>
     </url>
     <url>
-        <loc>https://aileron-projects.github.io/go/latest/tcp/ex_tls/</loc>
+        <loc>https://aileron-projects.github.io/go/latest/references/env/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latest/tcp/ex_tls/"/>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latestja/tcp/ex_tls/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/references/env/"/>
     </url>
     <url>
-        <loc>https://aileron-projects.github.io/go/latest/udp/</loc>
+        <loc>https://aileron-projects.github.io/go/latest/references/logging/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latest/udp/"/>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latestja/udp/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/references/logging/"/>
     </url>
     <url>
-        <loc>https://aileron-projects.github.io/go/latest/ja/</loc>
+        <loc>https://aileron-projects.github.io/go/latest/references/rate/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/ja/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latest"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/references/rate/"/>
     </url>
     <url>
-        <loc>https://aileron-projects.github.io/go/latest/ja/cron/</loc>
+        <loc>https://aileron-projects.github.io/go/latest/references/tcp/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/ja/cron/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latestcron/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/references/tcp/"/>
     </url>
     <url>
-        <loc>https://aileron-projects.github.io/go/latest/ja/debug/</loc>
+        <loc>https://aileron-projects.github.io/go/latest/references/udp/</loc>
         <lastmod>2025-12-28</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/ja/debug/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latestdebug/"/>
-    </url>
-    <url>
-        <loc>https://aileron-projects.github.io/go/latest/ja/env/</loc>
-        <lastmod>2025-12-28</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/ja/env/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latestenv/"/>
-    </url>
-    <url>
-        <loc>https://aileron-projects.github.io/go/latest/ja/logging/</loc>
-        <lastmod>2025-12-28</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/ja/logging/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latestlogging/"/>
-    </url>
-    <url>
-        <loc>https://aileron-projects.github.io/go/latest/ja/rate/</loc>
-        <lastmod>2025-12-28</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/ja/rate/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latestrate/"/>
-    </url>
-    <url>
-        <loc>https://aileron-projects.github.io/go/latest/ja/tcp/</loc>
-        <lastmod>2025-12-28</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/ja/tcp/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latesttcp/"/>
-    </url>
-    <url>
-        <loc>https://aileron-projects.github.io/go/latest/ja/tcp/ex_proxy_tls/</loc>
-        <lastmod>2025-12-28</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/ja/tcp/ex_proxy_tls/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latesttcp/ex_proxy_tls/"/>
-    </url>
-    <url>
-        <loc>https://aileron-projects.github.io/go/latest/ja/tcp/ex_tls/</loc>
-        <lastmod>2025-12-28</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/ja/tcp/ex_tls/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latesttcp/ex_tls/"/>
-    </url>
-    <url>
-        <loc>https://aileron-projects.github.io/go/latest/ja/udp/</loc>
-        <lastmod>2025-12-28</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/ja/udp/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://aileron-projects.github.io/go/latestudp/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aileron-projects.github.io/go/latest/references/udp/"/>
     </url>
 </urlset>
