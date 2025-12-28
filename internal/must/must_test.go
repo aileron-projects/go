@@ -1,11 +1,13 @@
-package zuid
+package must_test
 
 import (
 	"io"
 	"testing"
+
+	"github.com/aileron-projects/go/internal/must"
 )
 
-func TestMustNil(t *testing.T) {
+func TestNil(t *testing.T) {
 	t.Parallel()
 	t.Run("nil", func(t *testing.T) {
 		defer func() {
@@ -14,7 +16,7 @@ func TestMustNil(t *testing.T) {
 				t.Error("recovered value is not nil")
 			}
 		}()
-		mustNil(nil)
+		must.Nil(nil)
 	})
 	t.Run("non nil", func(t *testing.T) {
 		defer func() {
@@ -23,6 +25,6 @@ func TestMustNil(t *testing.T) {
 				t.Error("recovered error is not io.EOF")
 			}
 		}()
-		mustNil(io.EOF)
+		must.Nil(io.EOF)
 	})
 }

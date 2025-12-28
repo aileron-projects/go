@@ -7,6 +7,7 @@ import (
 	"errors"
 	"hash"
 
+	"github.com/aileron-projects/go/internal/must"
 	"github.com/aileron-projects/go/zcrypto/internal"
 	"golang.org/x/crypto/pbkdf2"
 )
@@ -94,7 +95,7 @@ func (c *PBKDF2) Split(hashedPW []byte) (salt, hash []byte, err error) {
 func (c *PBKDF2) Sum(password []byte) ([]byte, error) {
 	salt := make([]byte, c.saltLen)
 	_, err := rand.Read(salt)
-	internal.MustNil(err)
+	must.Nil(err)
 	hashed := pbkdf2.Key(password, salt, c.iter, c.keyLen, c.hashFunc)
 	return append(salt, hashed...), nil
 }

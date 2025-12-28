@@ -5,7 +5,7 @@ import (
 	"errors"
 	"os"
 
-	"github.com/aileron-projects/go/zos/internal"
+	"github.com/aileron-projects/go/internal/must"
 )
 
 // LoadEnv loads environmental variables from given files.
@@ -22,7 +22,7 @@ func LoadEnv(files ...string) error {
 		}
 		for key, value := range kvs {
 			err := os.Setenv(key, value)
-			internal.MustNil(err)
+			must.Nil(err)
 		}
 	}
 	return nil

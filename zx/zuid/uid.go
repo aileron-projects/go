@@ -7,6 +7,8 @@ import (
 	"os"
 	"sync/atomic"
 	"time"
+
+	"github.com/aileron-projects/go/internal/must"
 )
 
 var (
@@ -80,7 +82,7 @@ func NewTime() []byte {
 	id := [30]byte{}
 	binary.BigEndian.PutUint64(id[0:], uint64(timeNow().UnixMicro())) // Initial 8 bytes timestamp.
 	_, err := rand.Read(id[8:])                                       // Rest of 22 bytes random.
-	mustNil(err)
+	must.Nil(err)
 	return id[:]
 }
 
@@ -141,7 +143,7 @@ func NewHost() []byte {
 	binary.BigEndian.PutUint64(id[0:], uint64(timeNow().UnixMicro())) // Initial 8 bytes timestamp.
 	copy(id[8:], hostnameFNV1a64)                                     // Next 8 bytes hostname hash.
 	_, err := rand.Read(id[16:])                                      // Last 14 bytes random.
-	mustNil(err)
+	must.Nil(err)
 	return id[:]
 }
 
@@ -191,7 +193,7 @@ func NewCount() []byte {
 	id := [30]byte{}
 	binary.BigEndian.PutUint64(id[0:], uint64(timeNow().UnixMicro())) // Initial 8 bytes timestamp.
 	_, err := rand.Read(id[8:22])                                     // Next 14 bytes random.
-	mustNil(err)
+	must.Nil(err)
 	binary.BigEndian.PutUint64(id[22:], counter.Add(1)) // Last 8 bytes counter.
 	return id[:]
 }
