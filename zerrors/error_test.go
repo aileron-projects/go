@@ -17,16 +17,16 @@ func TestAttrs(t *testing.T) {
 	})
 	t.Run("primitive error", func(t *testing.T) {
 		m := zerrors.Attrs(io.EOF)
-		want := map[string]any{"msg": "EOF"}
+		want := map[string]any{"message": "EOF"}
 		ztesting.AssertEqual(t, "returned map mismatch", want, m)
 	})
 	t.Run("wrapped error", func(t *testing.T) {
 		err := fmt.Errorf("outer error [%w]", io.EOF)
 		m := zerrors.Attrs(err)
 		want := map[string]any{
-			"msg": "outer error [EOF]",
-			"wraps": map[string]any{
-				"msg": "EOF",
+			"message": "outer error [EOF]",
+			"cause": map[string]any{
+				"message": "EOF",
 			},
 		}
 		ztesting.AssertEqual(t, "msg mismatch", want, m)
@@ -36,7 +36,7 @@ func TestAttrs(t *testing.T) {
 func TestError_Unwrap(t *testing.T) {
 	t.Parallel()
 
-	e := &zerrors.Error{Inner: io.EOF}
+	e := &zerrors.Error{Cause: io.EOF}
 	u := e.Unwrap()
 	ztesting.AssertEqual(t, "unwrapped error is incorrect.", io.EOF, u)
 }
@@ -49,43 +49,43 @@ func TestError_Is(t *testing.T) {
 		same   bool
 	}{
 		"nil": {
-			use:    &zerrors.Error{Inner: io.EOF, Code: "c", Pkg: "p", Msg: "m"},
+			use:    &zerrors.Error{Cause: io.EOF, Code: "c", Kind: "k"},
 			target: nil,
 			same:   false,
 		},
 		"not equal": {
-			use:    &zerrors.Error{Inner: io.EOF, Pkg: "p", Msg: "m"},
+			use:    &zerrors.Error{Cause: io.EOF, Code: "c", Kind: "k"},
 			target: io.EOF,
 			same:   false,
 		},
 		"code mismatch": {
-			use:    &zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "e"},
-			target: &zerrors.Error{Code: "C", Pkg: "P", Msg: "m", Detail: "d", Ext: "e"},
+			use:    &zerrors.Error{Code: "c", Kind: "k"},
+			target: &zerrors.Error{Code: "C", Kind: "k"},
 			same:   false,
 		},
-		"pkg mismatch": {
-			use:    &zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "e"},
-			target: &zerrors.Error{Code: "c", Pkg: "P", Msg: "m", Detail: "d", Ext: "e"},
+		"kind mismatch": {
+			use:    &zerrors.Error{Code: "c", Kind: "k"},
+			target: &zerrors.Error{Code: "c", Kind: "K"},
 			same:   false,
 		},
-		"msg mismatch": {
-			use:    &zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "e"},
-			target: &zerrors.Error{Code: "c", Pkg: "p", Msg: "M", Detail: "d", Ext: "e"},
-			same:   false,
-		},
-		"detail mismatch": {
-			use:    &zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "e"},
-			target: &zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "D", Ext: "e"},
+		"name mismatch": {
+			use:    &zerrors.Error{Code: "c", Kind: "k", Name: "n"},
+			target: &zerrors.Error{Code: "c", Kind: "k", Name: "N"},
 			same:   true,
 		},
-		"ext mismatch": {
-			use:    &zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "e"},
-			target: &zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "D"},
+		"message mismatch": {
+			use:    &zerrors.Error{Code: "c", Kind: "k", Message: "m"},
+			target: &zerrors.Error{Code: "c", Kind: "k", Message: "M"},
+			same:   true,
+		},
+		"detail mismatch": {
+			use:    &zerrors.Error{Code: "c", Kind: "k", Detail: "d"},
+			target: &zerrors.Error{Code: "c", Kind: "k", Detail: "D"},
 			same:   true,
 		},
 		"same after unwrap": {
-			use:    &zerrors.Error{Code: "c", Pkg: "p", Msg: "m"},
-			target: fmt.Errorf("outer error [%w]", &zerrors.Error{Code: "c", Pkg: "p", Msg: "m"}),
+			use:    &zerrors.Error{Code: "c", Kind: "k"},
+			target: fmt.Errorf("outer error [%w]", &zerrors.Error{Code: "c", Kind: "k"}),
 			same:   true,
 		},
 	}
@@ -105,43 +105,43 @@ func TestDefinition_Is(t *testing.T) {
 		same   bool
 	}{
 		"nil": {
-			def:    zerrors.Definition{"c", "p", "m"},
+			def:    zerrors.Definition{Code: "c", Kind: "k"},
 			target: nil,
 			same:   false,
 		},
 		"not equal": {
-			def:    zerrors.Definition{"c", "p", "m"},
+			def:    zerrors.Definition{Code: "c", Kind: "k"},
 			target: io.EOF,
 			same:   false,
 		},
 		"code mismatch": {
-			def:    zerrors.Definition{"c", "p", "m", "d", "e"},
-			target: &zerrors.Error{Code: "C", Pkg: "P", Msg: "m", Detail: "d", Ext: "e"},
+			def:    zerrors.Definition{Code: "c", Kind: "k"},
+			target: &zerrors.Error{Code: "C", Kind: "k"},
 			same:   false,
 		},
-		"pkg mismatch": {
-			def:    zerrors.Definition{"c", "p", "m", "d", "e"},
-			target: &zerrors.Error{Code: "c", Pkg: "P", Msg: "m", Detail: "d", Ext: "e"},
+		"kind mismatch": {
+			def:    zerrors.Definition{Code: "c", Kind: "k"},
+			target: &zerrors.Error{Code: "c", Kind: "K"},
 			same:   false,
 		},
-		"msg mismatch": {
-			def:    zerrors.Definition{"c", "p", "m", "d", "e"},
-			target: &zerrors.Error{Code: "c", Pkg: "p", Msg: "M", Detail: "d", Ext: "e"},
-			same:   false,
-		},
-		"detail mismatch": {
-			def:    zerrors.Definition{"c", "p", "m", "d", "e"},
-			target: &zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "D", Ext: "e"},
+		"name mismatch": {
+			def:    zerrors.Definition{Code: "c", Kind: "k", Name: "n"},
+			target: &zerrors.Error{Code: "c", Kind: "k", Name: "N"},
 			same:   true,
 		},
-		"ext mismatch": {
-			def:    zerrors.Definition{"c", "p", "m", "d", "e"},
-			target: &zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "D"},
+		"message mismatch": {
+			def:    zerrors.Definition{Code: "c", Kind: "k", Message: "m"},
+			target: &zerrors.Error{Code: "c", Kind: "k", Message: "M"},
+			same:   true,
+		},
+		"detail mismatch": {
+			def:    zerrors.Definition{Code: "c", Kind: "k", Detail: "d"},
+			target: &zerrors.Error{Code: "c", Kind: "k", Detail: "D"},
 			same:   true,
 		},
 		"same after unwrap": {
-			def:    zerrors.Definition{"c", "p", "m", "d", "e"},
-			target: fmt.Errorf("outer error [%w]", &zerrors.Error{Code: "c", Pkg: "p", Msg: "m"}),
+			def:    zerrors.Definition{Code: "c", Kind: "k"},
+			target: fmt.Errorf("outer error [%w]", &zerrors.Error{Code: "c", Kind: "k"}),
 			same:   true,
 		},
 	}
@@ -160,45 +160,45 @@ func TestDefinition_New(t *testing.T) {
 		e := ed.New(nil)
 		w := zerrors.Error{}
 		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "pkg mismatch.", w.Pkg, e.Pkg)
-		ztesting.AssertEqual(t, "msg mismatch.", w.Msg, e.Msg)
-		ztesting.AssertEqual(t, "ext mismatch.", w.Ext, e.Ext)
+		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
+		ztesting.AssertEqual(t, "name mismatch.", w.Name, e.Name)
+		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
 		ztesting.AssertEqual(t, "detail mismatch.", w.Detail, e.Detail)
 		ztesting.AssertEqual(t, "unexpected frame length.", 0, len(e.Frames))
-		ztesting.AssertEqual(t, "inner error mismatch.", nil, e.Inner)
+		ztesting.AssertEqual(t, "cause mismatch.", nil, e.Cause)
 	})
 	t.Run("non inner error", func(t *testing.T) {
-		e := zerrors.Definition{"c", "p", "m", "d", "e"}.New(nil)
-		w := zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "e"}
+		e := (&zerrors.Definition{Code: "c", Kind: "k", Name: "n", Message: "m", Detail: "d"}).New(nil)
+		w := zerrors.Error{Code: "c", Kind: "k", Name: "n", Message: "m", Detail: "d"}
 		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "pkg mismatch.", w.Pkg, e.Pkg)
-		ztesting.AssertEqual(t, "msg mismatch.", w.Msg, e.Msg)
-		ztesting.AssertEqual(t, "ext mismatch.", w.Ext, e.Ext)
+		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
+		ztesting.AssertEqual(t, "name mismatch.", w.Name, e.Name)
+		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
 		ztesting.AssertEqual(t, "detail mismatch.", w.Detail, e.Detail)
 		ztesting.AssertEqual(t, "unexpected frame length.", 0, len(e.Frames))
-		ztesting.AssertEqual(t, "inner error mismatch.", nil, e.Inner)
+		ztesting.AssertEqual(t, "cause mismatch.", nil, e.Cause)
 	})
 	t.Run("inner error", func(t *testing.T) {
-		e := zerrors.Definition{"c", "p", "m", "d", "e"}.New(io.EOF)
-		w := zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "e"}
+		e := (&zerrors.Definition{Code: "c", Kind: "k", Name: "n", Message: "m", Detail: "d"}).New(io.EOF)
+		w := zerrors.Error{Code: "c", Kind: "k", Name: "n", Message: "m", Detail: "d"}
 		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "pkg mismatch.", w.Pkg, e.Pkg)
-		ztesting.AssertEqual(t, "msg mismatch.", w.Msg, e.Msg)
-		ztesting.AssertEqual(t, "ext mismatch.", w.Ext, e.Ext)
+		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
+		ztesting.AssertEqual(t, "name mismatch.", w.Name, e.Name)
+		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
 		ztesting.AssertEqual(t, "detail mismatch.", w.Detail, e.Detail)
 		ztesting.AssertEqual(t, "unexpected frame length.", 0, len(e.Frames))
-		ztesting.AssertEqual(t, "inner error mismatch.", io.EOF, e.Inner)
+		ztesting.AssertEqual(t, "cause mismatch.", io.EOF, e.Cause)
 	})
 	t.Run("format detail", func(t *testing.T) {
-		e := zerrors.Definition{"c", "p", "m", "foo=%s", "e"}.New(nil, "xxx")
-		w := zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "foo=xxx", Ext: "e"}
+		e := (&zerrors.Definition{Code: "c", Kind: "k", Name: "n", Message: "m", Detail: "foo=%s"}).New(nil, "xxx")
+		w := zerrors.Error{Code: "c", Kind: "k", Name: "n", Message: "m", Detail: "foo=xxx"}
 		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "pkg mismatch.", w.Pkg, e.Pkg)
-		ztesting.AssertEqual(t, "msg mismatch.", w.Msg, e.Msg)
-		ztesting.AssertEqual(t, "ext mismatch.", w.Ext, e.Ext)
+		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
+		ztesting.AssertEqual(t, "name mismatch.", w.Name, e.Name)
+		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
 		ztesting.AssertEqual(t, "detail mismatch.", w.Detail, e.Detail)
 		ztesting.AssertEqual(t, "unexpected frame length.", 0, len(e.Frames))
-		ztesting.AssertEqual(t, "inner error mismatch.", nil, e.Inner)
+		ztesting.AssertEqual(t, "cause mismatch.", nil, e.Cause)
 	})
 }
 
@@ -209,34 +209,34 @@ func TestDefinition_NewStack(t *testing.T) {
 		e := ed.NewStack(nil)
 		w := zerrors.Error{}
 		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "pkg mismatch.", w.Pkg, e.Pkg)
-		ztesting.AssertEqual(t, "msg mismatch.", w.Msg, e.Msg)
-		ztesting.AssertEqual(t, "ext mismatch.", w.Ext, e.Ext)
+		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
+		ztesting.AssertEqual(t, "name mismatch.", w.Name, e.Name)
+		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
 		ztesting.AssertEqual(t, "detail mismatch.", w.Detail, e.Detail)
 		ztesting.AssertEqual(t, "unexpected frame length.", true, len(e.Frames) > 0)
-		ztesting.AssertEqual(t, "inner error mismatch.", nil, e.Inner)
+		ztesting.AssertEqual(t, "cause mismatch.", nil, e.Cause)
 	})
-	t.Run("inner error without stack", func(t *testing.T) {
-		e := zerrors.Definition{"c", "p", "m", "d", "e"}.NewStack(io.EOF)
-		w := zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "e"}
+	t.Run("cause without stack", func(t *testing.T) {
+		e := (&zerrors.Definition{Code: "c", Kind: "k", Name: "n", Message: "m", Detail: "d"}).NewStack(io.EOF)
+		w := zerrors.Error{Code: "c", Kind: "k", Name: "n", Message: "m", Detail: "d"}
 		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "pkg mismatch.", w.Pkg, e.Pkg)
-		ztesting.AssertEqual(t, "msg mismatch.", w.Msg, e.Msg)
-		ztesting.AssertEqual(t, "ext mismatch.", w.Ext, e.Ext)
+		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
+		ztesting.AssertEqual(t, "name mismatch.", w.Name, e.Name)
+		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
 		ztesting.AssertEqual(t, "detail mismatch.", w.Detail, e.Detail)
 		ztesting.AssertEqual(t, "unexpected frame length.", true, len(e.Frames) > 0)
-		ztesting.AssertEqual(t, "inner error mismatch.", io.EOF, e.Inner)
+		ztesting.AssertEqual(t, "cause mismatch.", io.EOF, e.Cause)
 	})
 	t.Run("inner error with stack", func(t *testing.T) {
 		inner := &zerrors.Error{Frames: []zerrors.Frame{{}, {}}}
-		e := zerrors.Definition{"c", "p", "m", "d", "e"}.NewStack(inner)
-		w := zerrors.Error{Code: "c", Pkg: "p", Msg: "m", Detail: "d", Ext: "e"}
+		e := (&zerrors.Definition{Code: "c", Kind: "k", Name: "n", Message: "m", Detail: "d"}).NewStack(inner)
+		w := zerrors.Error{Code: "c", Kind: "k", Name: "n", Message: "m", Detail: "d"}
 		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "pkg mismatch.", w.Pkg, e.Pkg)
-		ztesting.AssertEqual(t, "msg mismatch.", w.Msg, e.Msg)
-		ztesting.AssertEqual(t, "ext mismatch.", w.Ext, e.Ext)
+		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
+		ztesting.AssertEqual(t, "name mismatch.", w.Name, e.Name)
+		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
 		ztesting.AssertEqual(t, "detail mismatch.", w.Detail, e.Detail)
 		ztesting.AssertEqual(t, "unexpected frame length.", 0, len(e.Frames))
-		ztesting.AssertEqual(t, "inner error mismatch.", error(inner), e.Inner)
+		ztesting.AssertEqual(t, "cause mismatch.", error(inner), e.Cause)
 	})
 }

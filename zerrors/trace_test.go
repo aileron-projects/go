@@ -160,17 +160,26 @@ func TestTraceTo(t *testing.T) {
 		err   *Error
 		wants []string
 	}{
-		"empty": {
-			err:   &Error{},
-			wants: []string{`1970-01-01 00:00:00 [TRACE]`, `"msg":  ""`, `"pkg":  ""`},
+		"empty error": {
+			err: &Error{},
+			wants: []string{
+				`1970-01-01 00:00:00 [TRACE]`,
+				`"code":    ""`,
+				`"kind":    ""`,
+				`"name":    ""`,
+				`"message": ""`,
+			},
 		},
-		"with pkg": {
-			err:   &Error{Pkg: "test"},
-			wants: []string{`1970-01-01 00:00:00 [TRACE]`, `"pkg":  "test"`},
-		},
-		"with msg": {
-			err:   &Error{Msg: "test"},
-			wants: []string{`1970-01-01 00:00:00 [TRACE]`, `"msg":  "test"`},
+		"trace error": {
+			err: &Error{Code: "TestCode", Name: "TestName", Kind: "TestKind", Message: "TestMessage", Detail: "TestDetail"},
+			wants: []string{
+				`1970-01-01 00:00:00 [TRACE]`,
+				`"code":    "TestCode"`,
+				`"kind":    "TestKind"`,
+				`"name":    "TestName"`,
+				`"message": "TestMessage"`,
+				`"detail":  "TestDetail"`,
+			},
 		},
 	}
 
@@ -179,10 +188,10 @@ func TestTraceTo(t *testing.T) {
 			var buf bytes.Buffer
 			traceTo(&buf, tc.err)
 			result := buf.String()
+			if !strings.Contains(result, "1970-01-01 00:00:00 [TRACE]") {
+				t.Error("dump result does not contain date and time. got:\n" + result)
+			}
 			for _, w := range tc.wants {
-				if !strings.Contains(result, "1970-01-01 00:00:00 [TRACE]") {
-					t.Error("dump result does not contain date and time. got:\n" + result)
-				}
 				if !strings.Contains(result, w) {
 					t.Error("expected dump result not output. want: `" + w + "` got:\n" + result)
 				}

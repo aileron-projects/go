@@ -59,5 +59,5 @@ func TestErrorAttr(t *testing.T) {
 	t.Parallel()
 	attr := ErrorAttr(io.EOF)
 	ztesting.AssertEqual(t, "invalid attribute key.", "error", attr.Key)
-	ztesting.AssertEqual(t, "unexpected error attribute.", "map[msg:EOF]", fmt.Sprint(attr.Value.Any()))
+	ztesting.AssertEqual(t, "unexpected error attribute.", "map[message:EOF]", fmt.Sprint(attr.Value.Any()))
 }

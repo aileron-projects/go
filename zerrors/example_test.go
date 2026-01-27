@@ -16,14 +16,14 @@ func ExampleAttrs() {
 	fmt.Println(zerrors.Attrs(fmt.Errorf("example3 [%w]", e1)))
 	fmt.Println(zerrors.Attrs(errors.Join(e1, e2)))
 	// Output:
-	// map[msg:example1]
-	// map[msg:example3 [example1] wraps:map[msg:example1]]
-	// map[err1:map[msg:example1] err2:map[msg:example2]]
+	// map[message:example1]
+	// map[cause:map[message:example1] message:example3 [example1]]
+	// map[cause.1:map[message:example1] cause.2:map[message:example2]]
 }
 
 func ExampleDefinition_New() {
 	// Define an error with detail template.
-	def := zerrors.NewDefinition("E123", "pkgX", "example error", "foo=%s bar=%s")
+	def := zerrors.NewDefinition("E123", "KindXXX", "ErrYYY", "example error.", "foo=%s bar=%s")
 
 	fmt.Println(def.New(nil, "FOO", "BAR").Error())        // With arguments.
 	fmt.Println(def.New(nil).Error())                      // No arguments.
@@ -31,9 +31,9 @@ func ExampleDefinition_New() {
 	fmt.Println(def.New(nil, "FOO", "BAR", "BAZ").Error()) // Too many arguments.
 	fmt.Println(def.New(io.EOF, "FOO", "BAR").Error())     // With inner error.
 	// Output:
-	// E123: pkgX: example error: foo=FOO bar=BAR
-	// E123: pkgX: example error: foo=%!s(MISSING) bar=%!s(MISSING)
-	// E123: pkgX: example error: foo=FOO bar=%!s(MISSING)
-	// E123: pkgX: example error: foo=FOO bar=BAR%!(EXTRA string=BAZ)
-	// E123: pkgX: example error: foo=FOO bar=BAR [EOF]
+	// E123 ErrYYY KindXXX : example error. foo=FOO bar=BAR
+	// E123 ErrYYY KindXXX : example error. foo=%!s(MISSING) bar=%!s(MISSING)
+	// E123 ErrYYY KindXXX : example error. foo=FOO bar=%!s(MISSING)
+	// E123 ErrYYY KindXXX : example error. foo=FOO bar=BAR%!(EXTRA string=BAZ)
+	// E123 ErrYYY KindXXX : example error. foo=FOO bar=BAR [EOF]
 }

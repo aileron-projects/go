@@ -11,10 +11,10 @@ docs_dir: "./website"
 strict: true
 
 extra_css:
-  - ./_customize/mkdocs.css
+  - _customize/mkdocs.css
 extra_javascript:
-  - ./_customize/mathjax.js
-  - ./_customize/mermaid.js
+  - _customize/mathjax.js
+  - _customize/mermaid.js
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 
 exclude_docs: |
@@ -25,8 +25,8 @@ theme:
   name: material
   locale: en
   highlightjs: true
-  logo: static/aileron.svg
-  favicon: static/aileron.svg
+  logo: _customize/logo.svg
+  favicon: _customize/logo.svg
   icon:
     repo: fontawesome/brands/github
   palette:
