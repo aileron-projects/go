@@ -68,7 +68,7 @@ func (e *Error) Error() string {
 	_, _ = builder.WriteString(string(e.Code) + " ")
 	_, _ = builder.WriteString(e.Name + " ")
 	_, _ = builder.WriteString(string(e.Kind) + " : ")
-	_, _ = builder.WriteString(string(e.Message))
+	_, _ = builder.WriteString(e.Message)
 	if e.Detail != "" {
 		_, _ = builder.WriteString(" " + e.Detail)
 	}
