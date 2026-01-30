@@ -1,6 +1,7 @@
 package zslog
 
 import (
+	"cmp"
 	"context"
 	"log/slog"
 	"math"
@@ -13,8 +14,7 @@ import (
 )
 
 func init() {
-	h := &ctxHandler{slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{})}
-	slog.SetDefault(slog.New(h))
+	slog.SetDefault(slog.New(&ctxHandler{slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{})}))
 	SetDefault(New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{})))
 }
 
@@ -51,7 +51,7 @@ func New(h slog.Handler) *Logger {
 
 // Logger is the logger type that uses [slog.Handler].
 // A Logger created with [New] is compatible with the
-// [ContextWithLevel] and the [zlog.ContextWithAttrs].
+// [ContextWithLevel] and the [ContextWithAttrs].
 type Logger struct {
 	slog.Handler
 	// AddCaller specifies the log level ranges that
@@ -147,10 +147,8 @@ func (l *Logger) ErrorContext(ctx context.Context, msg string, args ...any) {
 }
 
 // ctxHandler wraps [slog.Handler].
-// ctxHandler checks if the handler is enabled or not
-// based on the log level contained in context.
-// ctxHandler extracts log attributes from context
-// and add it to log records.
+// ctxHandler uses log leven in the context. See [ContextWithLevel].
+// ctxHandler adds log attributes in context to log records. See [log.ContextWithAttrs].
 type ctxHandler struct {
 	slog.Handler
 }
@@ -163,7 +161,8 @@ func (h *ctxHandler) Enabled(ctx context.Context, lv slog.Level) bool {
 }
 
 func (h *ctxHandler) Handle(ctx context.Context, r slog.Record) error {
-	attrs := zlog.AttrsFromContext(ctx)
+	attrs := AttrsFromContext(ctx)
 	r.Add(attrs...)
-	return h.Handler.Handle(ctx, r)
+	hh := HandlerFromContext(ctx) // Use handler in context if exists.
+	return cmp.Or(hh, h.Handler).Handle(ctx, r)
 }
