@@ -71,11 +71,11 @@ func traceTo(w io.Writer, e *Error) {
 		loc = " Pkg:" + f0.Pkg + " File:" + f0.File + " Func:" + f0.Func + " Line:" + strconv.Itoa(f0.Line)
 	}
 	var buf bytes.Buffer
-	_, _ = pretty.Fprintf(&buf, "%# v", Attrs(e))
+	_, _ = pretty.Fprintf(&buf, "%# v", ToMap(e))
 	_ = buf.WriteByte('\n')
 
 	w = cmp.Or(w, writer, io.Writer(os.Stdout))
-	_, _ = w.Write([]byte(timeNow().Format(time.DateTime) + " [TRACE]" + loc + "\n"))
+	_, _ = w.Write([]byte(timeNow().Format(time.DateTime) + " [ERROR]" + loc + "\n"))
 	_, _ = writeWithPrefix(w, buf.Bytes())
 }
 

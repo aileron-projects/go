@@ -3,32 +3,27 @@ package zerrors
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"strconv"
 	"strings"
 )
 
-// Attributes provides error attributes as a map.
-type Attributes interface {
-	// Attrs returns error attributes as map.
-	Attrs() map[string]any
-}
-
-// Attrs returns error attributes as a map.
-// If the given error implements the [Attributes] interface,
-// is call the [Attributes.Attrs] internally.
-// Attrs repeatedly unwraps the given error using [errors.Unwrap].
-// Attrs returns nil map when the given error was nil.
-func Attrs(err error) map[string]any {
+// ToMap returns the given error in map.
+// If the given error implements the interface { Map() map[string]any },
+// is call the method Map().
+// ToMap repeatedly unwraps the given error using [errors.Unwrap].
+// ToMap returns nil map when the given error was nil.
+func ToMap(err error) map[string]any {
 	if err == nil {
 		return nil
 	}
-	if a, ok := err.(Attributes); ok {
-		return a.Attrs()
+	if a, ok := err.(interface{ Map() map[string]any }); ok {
+		return a.Map()
 	}
 	if errs := UnwrapErrs(err); len(errs) > 0 {
 		m := make(map[string]any, len(errs))
 		for i, e := range errs {
-			m["cause."+strconv.Itoa(i+1)] = Attrs(e)
+			m["cause."+strconv.Itoa(i+1)] = ToMap(e)
 		}
 		return m
 	}
@@ -36,13 +31,12 @@ func Attrs(err error) map[string]any {
 		"message": err.Error(),
 	}
 	if err = UnwrapErr(err); err != nil {
-		m["cause"] = Attrs(err)
+		m["cause"] = ToMap(err)
 	}
 	return m
 }
 
-// Error is the error type.
-// Error implements [error] and [Attributer] interface.
+// Error is the general error type.
 type Error struct {
 	// Cause is the error cause.
 	Cause error `json:"cause,omitempty" msgpack:"cause,omitempty" xml:"cause,omitempty" yaml:"cause,omitempty"`
@@ -51,12 +45,10 @@ type Error struct {
 	Code Code `json:"code" msgpack:"code" xml:"code" yaml:"code"`
 	// Kind is the error kind.
 	Kind Kind `json:"kind" msgpack:"kind" xml:"kind" yaml:"kind"`
-	// Name is the error name.
-	Name string `json:"name" msgpack:"name" xml:"name" yaml:"name"`
 	// Message is the error message.
 	Message string `json:"message" msgpack:"message" xml:"message" yaml:"message"`
-	// Detail is the error detail.
-	Detail string `json:"detail,omitempty" msgpack:"detail,omitempty" xml:"detail,omitempty" yaml:"detail,omitempty"`
+	// Attrs are the attribution, or extra information, to this error.
+	Attrs map[string]string `json:"attrs" msgpack:"attrs" xml:"attrs" yaml:"attrs"`
 	// Frames is the list of stack trace frames.
 	// Use [Error.WithStack] to fill this field.
 	Frames []Frame `json:"frames,omitempty" msgpack:"frames,omitempty" xml:"frames,omitempty" yaml:"frames,omitempty"`
@@ -64,13 +56,16 @@ type Error struct {
 
 func (e *Error) Error() string {
 	var builder strings.Builder
-	builder.Grow(len(e.Code) + len(e.Kind) + len(e.Name) + len(e.Message) + len(e.Detail) + 6)
+	builder.Grow(len(e.Code) + len(e.Kind) + len(e.Message) + 3)
 	_, _ = builder.WriteString(string(e.Code) + " ")
-	_, _ = builder.WriteString(e.Name + " ")
-	_, _ = builder.WriteString(string(e.Kind) + " : ")
+	_, _ = builder.WriteString(string(e.Kind) + " :")
 	_, _ = builder.WriteString(e.Message)
-	if e.Detail != "" {
-		_, _ = builder.WriteString(" " + e.Detail)
+	if len(e.Attrs) > 0 {
+		kvs := make([]string, 0, len(e.Attrs))
+		for k, v := range e.Attrs {
+			kvs = append(kvs, k+"="+v)
+		}
+		_, _ = builder.WriteString(" (" + strings.Join(kvs, ",") + ")")
 	}
 	if e.Cause != nil {
 		_, _ = builder.WriteString(" [")
@@ -100,29 +95,27 @@ func (e *Error) Is(err error) bool {
 	return false
 }
 
-// Attrs returns error attributes in map.
-// Extra attributes in e.Extra is copied to the returned map.
-func (e *Error) Attrs() map[string]any {
-	attrs := map[string]any{
+// Map returns error information in map.
+func (e *Error) Map() map[string]any {
+	m := map[string]any{
 		"code":    e.Code,
-		"name":    e.Name,
 		"kind":    e.Kind,
 		"message": e.Message,
 	}
-	if e.Detail != "" {
-		attrs["detail"] = e.Detail
+	if e.Attrs != nil {
+		m["attrs"] = maps.Clone(e.Attrs)
 	}
 	if len(e.Frames) > 0 {
 		fs := make([]string, 0, len(e.Frames))
 		for _, f := range e.Frames {
 			fs = append(fs, f.Pkg+":"+f.File+":L"+strconv.Itoa(f.Line)+"("+f.Func+")")
 		}
-		attrs["frames"] = fs
+		m["frames"] = fs
 	}
-	if wrap := Attrs(e.Cause); wrap != nil {
-		attrs["cause"] = wrap
+	if cause := ToMap(e.Cause); cause != nil {
+		m["cause"] = cause
 	}
-	return attrs
+	return m
 }
 
 // Code is the error code type.
@@ -135,13 +128,12 @@ type Kind string
 
 // NewDefinition returns a new error definition.
 // See [Definition].
-func NewDefinition(code Code, kind Kind, name, message, detail string) *Definition {
+func NewDefinition(code Code, kind Kind, message string, attrs map[string]string) *Definition {
 	return &Definition{
 		Code:    code,
 		Kind:    kind,
-		Name:    name,
 		Message: message,
-		Detail:  detail,
+		Attrs:   maps.Clone(attrs),
 	}
 }
 
@@ -153,15 +145,13 @@ type Definition struct {
 	// Kind is the error kind that this error belongs to.
 	// Kind is compared in [Definition.Is].
 	Kind Kind
-	// Name is the human readable error name.
-	// Name is NOT compared in [Definition.Is].
-	Name string
-	// Message is the fixed error message.
+	// Message is the error message.
+	// Format string for fmt.Sprintf can be used.
 	// Message is NOT compared in [Definition.Is].
 	Message string
-	// Detail is the text template in the format of [fmt.Sprintf].
-	// Detail is NOT compared in [Definition.Is].
-	Detail string
+	// Attrs are the attribution, or extra information, to this kind.
+	// Attrs are NOT compared in [Definition.Is].
+	Attrs map[string]string
 }
 
 // Is returns if the target err is the same as this definition.
@@ -176,35 +166,31 @@ func (d *Definition) Is(err error) bool {
 	return false
 }
 
-// New returns a new [Error] instance from the definition
-// with the given error cause and the detail values.
+// New returns a new [Error] instance from the definition.
 // New does not fill the [Error.Frames].
-// Use [Definition.NewStack] if stack frames are necessary.
+// Use [Definition.NewStack] when stack frames are necessary.
 func (d *Definition) New(cause error, values ...any) *Error {
 	err := &Error{
 		Cause:   cause,
 		Code:    d.Code,
 		Kind:    d.Kind,
-		Name:    d.Name,
-		Message: d.Message,
-		Detail:  fmt.Sprintf(d.Detail, values...),
+		Message: fmt.Sprintf(d.Message, values...),
+		Attrs:   maps.Clone(d.Attrs),
 	}
 	traceTo(nil, err)
 	return err
 }
 
-// NewStack returns a new [Error] instance from the definition
-// with the given error cause and the detail values.
+// NewStack returns a new [Error] instance from the definition.
 // NewStack fills [Error.Frames] field.
-// Use [Definition.New] if stack frames are not necessary.
+// Use [Definition.New] when stack frames are not necessary.
 func (d *Definition) NewStack(cause error, values ...any) *Error {
 	err := &Error{
 		Cause:   cause,
 		Code:    d.Code,
 		Kind:    d.Kind,
-		Name:    d.Name,
 		Message: d.Message,
-		Detail:  fmt.Sprintf(d.Detail, values...),
+		Attrs:   maps.Clone(d.Attrs),
 	}
 	e := cause
 	for e != nil {

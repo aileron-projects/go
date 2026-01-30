@@ -68,5 +68,5 @@ func StackTraceAttrs(skip int) slog.Attr {
 // ErrorAttr returns the error
 // as slog attributes with "error" key.
 func ErrorAttr(err error) slog.Attr {
-	return slog.Any("error", zerrors.Attrs(err))
+	return slog.Any("error", zerrors.ToMap(err))
 }

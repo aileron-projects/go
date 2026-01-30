@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	ErrExample1 = zerrors.NewDefinition("E001", "KindSystemError", "ErrFoo", "error foo.", "detail foo.")
-	ErrExample2 = zerrors.NewDefinition("E002", "KindSystemError", "ErrBar", "error bar.", "detail bar.")
+	ErrExample1 = zerrors.NewDefinition("E001", "ErrFoo", "error foo.", map[string]string{"foo": "FOO"})
+	ErrExample2 = zerrors.NewDefinition("E002", "ErrBar", "error bar.", map[string]string{"bar": "BAR"})
 )
 
 // main tests tracing errors. Use following tags when building.
