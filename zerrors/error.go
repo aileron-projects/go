@@ -167,7 +167,7 @@ func (e *Error) SlogAttrs() []slog.Attr {
 		slog.String("message", e.Message),
 	}
 	if e.Attrs != nil {
-		aa := []slog.Attr{}
+		aa := make([]slog.Attr, 0, len(e.Attrs))
 		for k, v := range e.Attrs {
 			aa = append(aa, slog.String(k, v))
 		}
