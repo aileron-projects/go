@@ -3,6 +3,7 @@ package zerrors_test
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"testing"
 
 	"github.com/aileron-projects/go/zerrors"
@@ -31,14 +32,98 @@ func TestToMap(t *testing.T) {
 		}
 		ztesting.AssertEqual(t, "msg mismatch", want, m)
 	})
+	t.Run("interface", func(t *testing.T) {
+		def := zerrors.NewDefinition("c", "k", "m", nil)
+		err := def.NewStack(nil)
+		m := zerrors.ToMap(err)
+		ztesting.AssertEqual(t, "code mismatch", "c", m["code"])
+		ztesting.AssertEqual(t, "kind mismatch", "k", m["kind"])
+		ztesting.AssertEqual(t, "message mismatch", "m", m["message"])
+		ztesting.AssertEqual(t, "empty frame", true, len(m["frames"].([]string)) > 0)
+	})
+}
+
+func TestToSlogAttrs(t *testing.T) {
+	t.Parallel()
+	t.Run("nil", func(t *testing.T) {
+		m := zerrors.ToSlogAttrs(nil)
+		ztesting.AssertEqual(t, "attrs mismatch", nil, m)
+	})
+	t.Run("primitive error", func(t *testing.T) {
+		m := zerrors.ToSlogAttrs(io.EOF)
+		want := []slog.Attr{slog.String("message", "EOF")}
+		ztesting.AssertEqual(t, "attrs mismatch", want, m)
+	})
+	t.Run("wrapped error", func(t *testing.T) {
+		err := fmt.Errorf("outer error [%w]", io.EOF)
+		m := zerrors.ToSlogAttrs(err)
+		want := []slog.Attr{
+			slog.String("message", "outer error [EOF]"),
+			slog.GroupAttrs("cause", slog.String("message", "EOF")),
+		}
+		ztesting.AssertEqual(t, "attrs mismatch", want, m)
+	})
+	t.Run("interface", func(t *testing.T) {
+		def := zerrors.NewDefinition("c", "k", "m", nil)
+		err := def.New(nil)
+		m := zerrors.ToSlogAttrs(err)
+		want := []slog.Attr{
+			slog.String("code", "c"),
+			slog.String("kind", "k"),
+			slog.String("message", "m"),
+		}
+		ztesting.AssertEqual(t, "attrs mismatch", want, m)
+	})
 }
 
 func TestError_Unwrap(t *testing.T) {
 	t.Parallel()
-
 	e := &zerrors.Error{Cause: io.EOF}
 	u := e.Unwrap()
 	ztesting.AssertEqual(t, "unwrapped error is incorrect.", io.EOF, u)
+}
+
+func TestError_Error(t *testing.T) {
+	t.Parallel()
+	testCases := map[string]struct {
+		err  *zerrors.Error
+		want string
+	}{
+		"code": {
+			err:  &zerrors.Error{Code: "c"},
+			want: "c  :",
+		},
+		"kind": {
+			err:  &zerrors.Error{Kind: "k"},
+			want: " k :",
+		},
+		"message": {
+			err:  &zerrors.Error{Message: "m"},
+			want: "  :m",
+		},
+		"code kind": {
+			err:  &zerrors.Error{Code: "c", Kind: "k"},
+			want: "c k :",
+		},
+		"code kind message": {
+			err:  &zerrors.Error{Code: "c", Kind: "k", Message: "m"},
+			want: "c k :m",
+		},
+		"attrs": {
+			err:  &zerrors.Error{Code: "c", Kind: "k", Message: "m", Attrs: map[string]string{"foo": "bar"}},
+			want: "c k :m (foo=bar)",
+		},
+		"cause": {
+			err:  &zerrors.Error{Code: "c", Kind: "k", Message: "m", Cause: io.EOF},
+			want: "c k :m [EOF]",
+		},
+	}
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			got := tc.err.Error()
+			ztesting.AssertEqual(t, "error string not match", tc.want, got)
+		})
+	}
 }
 
 func TestError_Is(t *testing.T) {
@@ -49,9 +134,24 @@ func TestError_Is(t *testing.T) {
 		same   bool
 	}{
 		"nil": {
+			use:    nil,
+			target: nil,
+			same:   false,
+		},
+		"nil pointer": {
+			use:    nil,
+			target: (*zerrors.Error)(nil),
+			same:   true,
+		},
+		"nil target": {
 			use:    &zerrors.Error{Cause: io.EOF, Code: "c", Kind: "k"},
 			target: nil,
 			same:   false,
+		},
+		"equal": {
+			use:    &zerrors.Error{Code: "c", Kind: "k"},
+			target: &zerrors.Error{Code: "c", Kind: "k"},
+			same:   true,
 		},
 		"not equal": {
 			use:    &zerrors.Error{Cause: io.EOF, Code: "c", Kind: "k"},
@@ -90,6 +190,90 @@ func TestError_Is(t *testing.T) {
 			ztesting.AssertEqual(t, "incorrect error identification.", tc.same, is)
 		})
 	}
+}
+
+func TestError_Map(t *testing.T) {
+	t.Parallel()
+	t.Run("minimum", func(t *testing.T) {
+		e := &zerrors.Error{Code: "c", Kind: "k", Message: "m"}
+		got := e.Map()
+		want := map[string]any{
+			"code":    "c",
+			"kind":    "k",
+			"message": "m",
+		}
+		ztesting.AssertEqual(t, "maps not matched", want, got)
+	})
+	t.Run("cause", func(t *testing.T) {
+		e := &zerrors.Error{Cause: io.EOF}
+		got := e.Map()
+		want := map[string]any{
+			"message": "EOF",
+		}
+		ztesting.AssertEqual(t, "maps not matched", want, got["cause"].(map[string]any))
+	})
+	t.Run("attrs", func(t *testing.T) {
+		e := &zerrors.Error{Attrs: map[string]string{"foo": "bar"}}
+		got := e.Map()
+		want := map[string]string{
+			"foo": "bar",
+		}
+		ztesting.AssertEqual(t, "maps not matched", want, got["attrs"].(map[string]string))
+	})
+	t.Run("frames", func(t *testing.T) {
+		def := zerrors.NewDefinition("c", "k", "m", nil)
+		e := def.NewStack(nil)
+		got := e.Map()
+		ztesting.AssertEqual(t, "empty frame", true, len(got["frames"].([]string)) > 0)
+	})
+}
+
+func TestError_SlogAttrs(t *testing.T) {
+	t.Parallel()
+	t.Run("minimum", func(t *testing.T) {
+		e := &zerrors.Error{Code: "c", Kind: "k", Message: "m"}
+		got := e.SlogAttrs()
+		want := []slog.Attr{
+			slog.String("code", "c"),
+			slog.String("kind", "k"),
+			slog.String("message", "m"),
+		}
+		ztesting.AssertEqual(t, "attrs not matched", want, got)
+	})
+	t.Run("cause", func(t *testing.T) {
+		e := &zerrors.Error{Cause: io.EOF}
+		got := e.SlogAttrs()
+		want := []slog.Attr{
+			slog.String("code", ""),
+			slog.String("kind", ""),
+			slog.String("message", ""),
+			slog.GroupAttrs("cause", slog.String("message", "EOF")),
+		}
+		ztesting.AssertEqual(t, "attrs not matched", want, got)
+	})
+	t.Run("attrs", func(t *testing.T) {
+		e := &zerrors.Error{Attrs: map[string]string{"foo": "bar"}}
+		got := e.SlogAttrs()
+		want := []slog.Attr{
+			slog.String("code", ""),
+			slog.String("kind", ""),
+			slog.String("message", ""),
+			slog.GroupAttrs("attrs", slog.String("foo", "bar")),
+		}
+		ztesting.AssertEqual(t, "attrs not matched", want, got)
+	})
+	t.Run("frames", func(t *testing.T) {
+		def := zerrors.NewDefinition("c", "k", "m", nil)
+		e := def.NewStack(nil)
+		got := e.SlogAttrs()
+		for _, a := range got {
+			if a.Key == "frames" {
+				ztesting.AssertEqual(t, "empty frame", true, len(a.Value.Any().([]string)) > 0)
+				return
+			}
+		}
+		t.Error("frame does not exist.")
+	})
 }
 
 func TestDefinition_Is(t *testing.T) {

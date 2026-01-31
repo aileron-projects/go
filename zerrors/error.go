@@ -3,6 +3,7 @@ package zerrors
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"maps"
 	"strconv"
 	"strings"
@@ -11,7 +12,8 @@ import (
 // ToMap returns the given error in map.
 // If the given error implements the interface { Map() map[string]any },
 // is call the method Map().
-// ToMap repeatedly unwraps the given error using [errors.Unwrap].
+// ToMap repeatedly unwraps the given error by interfaxe{ Unwrap() error }
+// or interface{ Unwrap []error }.
 // ToMap returns nil map when the given error was nil.
 func ToMap(err error) map[string]any {
 	if err == nil {
@@ -20,20 +22,45 @@ func ToMap(err error) map[string]any {
 	if a, ok := err.(interface{ Map() map[string]any }); ok {
 		return a.Map()
 	}
-	if errs := UnwrapErrs(err); len(errs) > 0 {
-		m := make(map[string]any, len(errs))
-		for i, e := range errs {
-			m["cause."+strconv.Itoa(i+1)] = ToMap(e)
-		}
+	m := map[string]any{"message": err.Error()}
+	if e := UnwrapErr(err); e != nil {
+		m["cause"] = ToMap(e)
 		return m
 	}
-	m := map[string]any{
-		"message": err.Error(),
-	}
-	if err = UnwrapErr(err); err != nil {
-		m["cause"] = ToMap(err)
+	if errs := UnwrapErrs(err); len(errs) > 0 {
+		s := make([]map[string]any, len(errs))
+		for i, e := range errs {
+			s[i] = ToMap(e)
+		}
+		m["cause"] = s
 	}
 	return m
+}
+
+// ToSlogAttrs returns the error in [slog.Attr] format.
+// If the given error implements the interface { SlogAttrs() []slog.Attr },
+// is call the method SlogAttrs().
+// ToSlogAttrs repeatedly unwraps the given error by interfaxe{ Unwrap() error }
+// or interface{ Unwrap []error }.
+// ToSlogAttrs returns nil slice when the given error was nil.
+func ToSlogAttrs(err error) []slog.Attr {
+	if err == nil {
+		return nil
+	}
+	if a, ok := err.(interface{ SlogAttrs() []slog.Attr }); ok {
+		return a.SlogAttrs()
+	}
+	s := []slog.Attr{slog.String("message", err.Error())}
+	if e := UnwrapErr(err); e != nil {
+		s = append(s, slog.GroupAttrs("cause", ToSlogAttrs(e)...))
+		return s
+	}
+	if errs := UnwrapErrs(err); len(errs) > 0 {
+		for i, e := range errs {
+			s = append(s, slog.GroupAttrs("cause."+strconv.Itoa(i+1), ToSlogAttrs(e)...))
+		}
+	}
+	return s
 }
 
 // Error is the general error type.
@@ -42,9 +69,9 @@ type Error struct {
 	Cause error `json:"cause,omitempty" msgpack:"cause,omitempty" xml:"cause,omitempty" yaml:"cause,omitempty"`
 	// Code is the error code, name or alias for the error.
 	// Code is compared in the [Errors.Is] method.
-	Code Code `json:"code" msgpack:"code" xml:"code" yaml:"code"`
+	Code string `json:"code" msgpack:"code" xml:"code" yaml:"code"`
 	// Kind is the error kind.
-	Kind Kind `json:"kind" msgpack:"kind" xml:"kind" yaml:"kind"`
+	Kind string `json:"kind" msgpack:"kind" xml:"kind" yaml:"kind"`
 	// Message is the error message.
 	Message string `json:"message" msgpack:"message" xml:"message" yaml:"message"`
 	// Attrs are the attribution, or extra information, to this error.
@@ -54,11 +81,12 @@ type Error struct {
 	Frames []Frame `json:"frames,omitempty" msgpack:"frames,omitempty" xml:"frames,omitempty" yaml:"frames,omitempty"`
 }
 
+// Error implements [error] interface.
 func (e *Error) Error() string {
 	var builder strings.Builder
 	builder.Grow(len(e.Code) + len(e.Kind) + len(e.Message) + 3)
-	_, _ = builder.WriteString(string(e.Code) + " ")
-	_, _ = builder.WriteString(string(e.Kind) + " :")
+	_, _ = builder.WriteString(e.Code + " ")
+	_, _ = builder.WriteString(e.Kind + " :")
 	_, _ = builder.WriteString(e.Message)
 	if len(e.Attrs) > 0 {
 		kvs := make([]string, 0, len(e.Attrs))
@@ -81,6 +109,7 @@ func (e *Error) Unwrap() error {
 }
 
 // Is returns if this error is identical to the given error.
+// This can be used with [errors.Is].
 func (e *Error) Is(err error) bool {
 	if err == nil || e == nil {
 		return e == err
@@ -118,17 +147,48 @@ func (e *Error) Map() map[string]any {
 	return m
 }
 
-// Code is the error code type.
-// For example, "E123", "E456".
-type Code string
-
-// Kind is the error kind type.
-// For example, "ClientError", "ServerError".
-type Kind string
+// Map returns error information in slice of [slog.Attr].
+//
+// Example:
+//
+//	lg := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+//	def := zerrors.NewDefinition("E123", "KindXXX", "example. foo=%s", map[string]string{"tag": "val"})
+//	err := def.New(io.EOF, "bar")
+//
+//	lg.InfoContext(context.Background(), "message.", "error", err.SlogAttrs())
+//	// JSON logger output >>
+//	// {"level":"INFO","msg":"message.","error":{"code":"E123","kind":"KindXXX","message":"example. foo=bar","attrs":{"tag":"val"},"cause":{"message":"EOF"}}}
+//	// Text logger output >>
+//	// level=INFO msg="message." error.code=E123 error.kind=KindXXX error.message="example. foo=bar" error.attrs.tag=val error.cause.message=EOF
+func (e *Error) SlogAttrs() []slog.Attr {
+	a := []slog.Attr{
+		slog.String("code", e.Code),
+		slog.String("kind", e.Kind),
+		slog.String("message", e.Message),
+	}
+	if e.Attrs != nil {
+		aa := []slog.Attr{}
+		for k, v := range e.Attrs {
+			aa = append(aa, slog.String(k, v))
+		}
+		a = append(a, slog.GroupAttrs("attrs", aa...))
+	}
+	if len(e.Frames) > 0 {
+		fs := make([]string, 0, len(e.Frames))
+		for _, f := range e.Frames {
+			fs = append(fs, f.Pkg+":"+f.File+":L"+strconv.Itoa(f.Line)+"("+f.Func+")")
+		}
+		a = append(a, slog.Any("frames", fs))
+	}
+	if causes := ToSlogAttrs(e.Cause); len(causes) > 0 {
+		a = append(a, slog.GroupAttrs("cause", causes...))
+	}
+	return a
+}
 
 // NewDefinition returns a new error definition.
 // See [Definition].
-func NewDefinition(code Code, kind Kind, message string, attrs map[string]string) *Definition {
+func NewDefinition(code, kind, message string, attrs map[string]string) *Definition {
 	return &Definition{
 		Code:    code,
 		Kind:    kind,
@@ -141,10 +201,10 @@ func NewDefinition(code Code, kind Kind, message string, attrs map[string]string
 type Definition struct {
 	// Code is the error code.
 	// Code is compared in [Definition.Is].
-	Code Code
+	Code string
 	// Kind is the error kind that this error belongs to.
 	// Kind is compared in [Definition.Is].
-	Kind Kind
+	Kind string
 	// Message is the error message.
 	// Format string for fmt.Sprintf can be used.
 	// Message is NOT compared in [Definition.Is].
@@ -189,7 +249,7 @@ func (d *Definition) NewStack(cause error, values ...any) *Error {
 		Cause:   cause,
 		Code:    d.Code,
 		Kind:    d.Kind,
-		Message: d.Message,
+		Message: fmt.Sprintf(d.Message, values...),
 		Attrs:   maps.Clone(d.Attrs),
 	}
 	e := cause
