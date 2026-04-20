@@ -47,15 +47,15 @@ type HTTPError struct {
 	// It must always be -1 or valid http status code such as [net/http.StatusOK].
 	// StatusCode -1 indicates that response should not be written or
 	// a response content is already written or the error is logging only.
-	// StatusCode is compared in [ProxyError.Is].
+	// StatusCode is compared in [HTTPError.Is].
 	Code int
 	// Cause is the error cause of the error.
 	// It must always be non empty string.
-	// Cause is compared in [ProxyError.Is].
+	// Cause is compared in [HTTPError.Is].
 	Cause string
 	// Details is the additional information
 	// of the error if any. It can be empty.
-	// Cause is not compared in [ProxyError.Is].
+	// Cause is not compared in [HTTPError.Is].
 	Detail string
 }
 

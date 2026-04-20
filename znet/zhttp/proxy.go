@@ -167,7 +167,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if preRT := p.PreRoundTrip; preRT != nil {
 		if err := preRT(r, outReq); err != nil {
-			p.handleError(w, r, &HTTPError{Code: http.StatusInternalServerError, Cause: CausePreRoundTrip})
+			p.handleError(w, r, &HTTPError{Err: err, Code: http.StatusInternalServerError, Cause: CausePreRoundTrip})
 			return
 		}
 	}
@@ -182,7 +182,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if postRT := p.PostRoundTrip; postRT != nil {
 		if err := postRT(r, outRes); err != nil {
-			p.handleError(w, r, &HTTPError{Code: http.StatusInternalServerError, Cause: CausePostRoundTrip})
+			p.handleError(w, r, &HTTPError{Err: err, Code: http.StatusInternalServerError, Cause: CausePostRoundTrip})
 			return
 		}
 	}
