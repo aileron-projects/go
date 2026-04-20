@@ -17,9 +17,9 @@ func TestIPResolver(t *testing.T) {
 			},
 		}
 		err := r.Resolve(context.Background())
-		ztesting.AssertEqualErr(t, "error should be nil", nil, err)
-		ztesting.AssertEqual(t, "ip addresses not match", []string{}, r.IPs())
-		ztesting.AssertEqual(t, "address not match", "", r.Next())
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, []string{}, r.IPs())
+		ztesting.AssertEqual(t, "", r.Next())
 	})
 	t.Run("resolve 1 address", func(t *testing.T) {
 		r := &IPResolver{
@@ -28,10 +28,10 @@ func TestIPResolver(t *testing.T) {
 			},
 		}
 		err := r.Resolve(context.Background())
-		ztesting.AssertEqualErr(t, "error should be nil", nil, err)
-		ztesting.AssertEqual(t, "ip addresses not match", []string{"127.0.0.1"}, r.IPs())
-		ztesting.AssertEqual(t, "1st address not match", "127.0.0.1", r.Next())
-		ztesting.AssertEqual(t, "2nd address not match", "127.0.0.1", r.Next())
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, []string{"127.0.0.1"}, r.IPs())
+		ztesting.AssertEqual(t, "127.0.0.1", r.Next())
+		ztesting.AssertEqual(t, "127.0.0.1", r.Next())
 	})
 	t.Run("resolve 3 addresses", func(t *testing.T) {
 		var n, h string
@@ -44,13 +44,13 @@ func TestIPResolver(t *testing.T) {
 			},
 		}
 		err := r.Resolve(context.Background())
-		ztesting.AssertEqualErr(t, "error should be nil", nil, err)
-		ztesting.AssertEqual(t, "network not match", "ip", n)
-		ztesting.AssertEqual(t, "host not match", "test.com", h)
-		ztesting.AssertEqual(t, "ip addresses not match", []string{"127.0.0.1", "127.0.0.2", "127.0.0.3"}, r.IPs())
-		ztesting.AssertEqual(t, "1st address not match", "127.0.0.2", r.Next())
-		ztesting.AssertEqual(t, "2nd address not match", "127.0.0.3", r.Next())
-		ztesting.AssertEqual(t, "3rd address not match", "127.0.0.1", r.Next())
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, "ip", n)
+		ztesting.AssertEqual(t, "test.com", h)
+		ztesting.AssertEqual(t, []string{"127.0.0.1", "127.0.0.2", "127.0.0.3"}, r.IPs())
+		ztesting.AssertEqual(t, "127.0.0.2", r.Next())
+		ztesting.AssertEqual(t, "127.0.0.3", r.Next())
+		ztesting.AssertEqual(t, "127.0.0.1", r.Next())
 	})
 	t.Run("network and host", func(t *testing.T) {
 		var n, h string
@@ -64,9 +64,9 @@ func TestIPResolver(t *testing.T) {
 			},
 		}
 		err := r.Resolve(context.Background())
-		ztesting.AssertEqualErr(t, "error should be nil", nil, err)
-		ztesting.AssertEqual(t, "network not match", "ip4", n)
-		ztesting.AssertEqual(t, "host not match", "test.com", h)
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, "ip4", n)
+		ztesting.AssertEqual(t, "test.com", h)
 	})
 	t.Run("resolve error", func(t *testing.T) {
 		r := &IPResolver{
@@ -75,13 +75,13 @@ func TestIPResolver(t *testing.T) {
 			},
 		}
 		err := r.Resolve(context.Background())
-		ztesting.AssertEqualErr(t, "error not match", &net.AddrError{Err: "test", Addr: ""}, err)
+		ztesting.AssertEqualErr(t, &net.AddrError{Err: "test", Addr: ""}, err)
 	})
 	t.Run("default resolver", func(t *testing.T) {
 		r := &IPResolver{
 			LookupIP: nil,
 		}
 		err := r.Resolve(context.Background())
-		ztesting.AssertEqualErr(t, "error not match", &net.DNSError{Err: "no such host"}, err)
+		ztesting.AssertEqualErr(t, &net.DNSError{Err: "no such host"}, err)
 	})
 }

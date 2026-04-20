@@ -14,29 +14,29 @@ func TestHTTPHeader(t *testing.T) {
 		h := httpHeader{}
 		h.Add("Test", "v1")
 		h.Add("Test", "v2")
-		ztesting.AssertEqual(t, "values not match", []string{"v1", "v2"}, h["Test"])
+		ztesting.AssertEqual(t, []string{"v1", "v2"}, h["Test"])
 	})
 	t.Run("del", func(t *testing.T) {
 		h := httpHeader{"Test": {"value"}}
 		h.Del("Test")
-		ztesting.AssertEqual(t, "values not match", nil, h["Test"])
+		ztesting.AssertEqual(t, nil, h["Test"])
 	})
 	t.Run("get exist", func(t *testing.T) {
 		h := httpHeader{"Test": {"v1", "v2"}}
-		ztesting.AssertEqual(t, "values not match", "v1", h.Get("Test"))
+		ztesting.AssertEqual(t, "v1", h.Get("Test"))
 	})
 	t.Run("get non exist", func(t *testing.T) {
 		h := httpHeader{}
-		ztesting.AssertEqual(t, "values not match", "", h.Get("Test"))
+		ztesting.AssertEqual(t, "", h.Get("Test"))
 	})
 	t.Run("set", func(t *testing.T) {
 		h := httpHeader{"Test": {"v1", "v2"}}
 		h.Set("Test", "v3")
-		ztesting.AssertEqual(t, "values not match", []string{"v3"}, h["Test"])
+		ztesting.AssertEqual(t, []string{"v3"}, h["Test"])
 	})
 	t.Run("values", func(t *testing.T) {
 		h := httpHeader{"Test": {"v1", "v2"}}
-		ztesting.AssertEqual(t, "values not match", []string{"v1", "v2"}, h.Values("Test"))
+		ztesting.AssertEqual(t, []string{"v1", "v2"}, h.Values("Test"))
 	})
 }
 
@@ -49,11 +49,11 @@ func TestSetForwardedHeaders(t *testing.T) {
 		}
 		h := http.Header{}
 		SetForwardedHeaders(r, h)
-		ztesting.AssertEqual(t, "Forwarded not match", `for="127.0.0.1"; host="test.com"; proto=http`, h.Get("Forwarded"))
-		ztesting.AssertEqual(t, "X-Forwarded-For not match", "127.0.0.1", h.Get("X-Forwarded-For"))
-		ztesting.AssertEqual(t, "X-Forwarded-Port not match", "1234", h.Get("X-Forwarded-Port"))
-		ztesting.AssertEqual(t, "X-Forwarded-Host not match", "test.com", h.Get("X-Forwarded-Host"))
-		ztesting.AssertEqual(t, "X-Forwarded-Proto not match", "http", h.Get("X-Forwarded-Proto"))
+		ztesting.AssertEqual(t, `for="127.0.0.1"; host="test.com"; proto=http`, h.Get("Forwarded"))
+		ztesting.AssertEqual(t, "127.0.0.1", h.Get("X-Forwarded-For"))
+		ztesting.AssertEqual(t, "1234", h.Get("X-Forwarded-Port"))
+		ztesting.AssertEqual(t, "test.com", h.Get("X-Forwarded-Host"))
+		ztesting.AssertEqual(t, "http", h.Get("X-Forwarded-Proto"))
 	})
 	t.Run("invalid remote addr", func(t *testing.T) {
 		r := &http.Request{
@@ -62,11 +62,11 @@ func TestSetForwardedHeaders(t *testing.T) {
 		}
 		h := http.Header{}
 		SetForwardedHeaders(r, h)
-		ztesting.AssertEqual(t, "Forwarded not match", "", h.Get("Forwarded"))
-		ztesting.AssertEqual(t, "X-Forwarded-For not match", "", h.Get("X-Forwarded-For"))
-		ztesting.AssertEqual(t, "X-Forwarded-Port not match", "", h.Get("X-Forwarded-Port"))
-		ztesting.AssertEqual(t, "X-Forwarded-Host not match", "test.com", h.Get("X-Forwarded-Host"))
-		ztesting.AssertEqual(t, "X-Forwarded-Proto not match", "http", h.Get("X-Forwarded-Proto"))
+		ztesting.AssertEqual(t, "", h.Get("Forwarded"))
+		ztesting.AssertEqual(t, "", h.Get("X-Forwarded-For"))
+		ztesting.AssertEqual(t, "", h.Get("X-Forwarded-Port"))
+		ztesting.AssertEqual(t, "test.com", h.Get("X-Forwarded-Host"))
+		ztesting.AssertEqual(t, "http", h.Get("X-Forwarded-Proto"))
 	})
 	t.Run("https", func(t *testing.T) {
 		r := &http.Request{
@@ -76,11 +76,11 @@ func TestSetForwardedHeaders(t *testing.T) {
 		}
 		h := http.Header{}
 		SetForwardedHeaders(r, h)
-		ztesting.AssertEqual(t, "Forwarded not match", `for="127.0.0.1"; host="test.com"; proto=https`, h.Get("Forwarded"))
-		ztesting.AssertEqual(t, "X-Forwarded-For not match", "127.0.0.1", h.Get("X-Forwarded-For"))
-		ztesting.AssertEqual(t, "X-Forwarded-Port not match", "1234", h.Get("X-Forwarded-Port"))
-		ztesting.AssertEqual(t, "X-Forwarded-Host not match", "test.com", h.Get("X-Forwarded-Host"))
-		ztesting.AssertEqual(t, "X-Forwarded-Proto not match", "https", h.Get("X-Forwarded-Proto"))
+		ztesting.AssertEqual(t, `for="127.0.0.1"; host="test.com"; proto=https`, h.Get("Forwarded"))
+		ztesting.AssertEqual(t, "127.0.0.1", h.Get("X-Forwarded-For"))
+		ztesting.AssertEqual(t, "1234", h.Get("X-Forwarded-Port"))
+		ztesting.AssertEqual(t, "test.com", h.Get("X-Forwarded-Host"))
+		ztesting.AssertEqual(t, "https", h.Get("X-Forwarded-Proto"))
 	})
 	t.Run("Forwarded exists", func(t *testing.T) {
 		r := &http.Request{
@@ -96,11 +96,11 @@ func TestSetForwardedHeaders(t *testing.T) {
 		}
 		h := http.Header{}
 		SetForwardedHeaders(r, h)
-		ztesting.AssertEqual(t, "Forwarded not match", `for="192.168.0.1", for="127.0.0.1"; host="test.com"; proto=http`, h.Get("Forwarded"))
-		ztesting.AssertEqual(t, "X-Forwarded-For not match", "192.168.0.1, 127.0.0.1", h.Get("X-Forwarded-For"))
-		ztesting.AssertEqual(t, "X-Forwarded-Port not match", "1234", h.Get("X-Forwarded-Port"))
-		ztesting.AssertEqual(t, "X-Forwarded-Host not match", "test.com", h.Get("X-Forwarded-Host"))
-		ztesting.AssertEqual(t, "X-Forwarded-Proto not match", "http", h.Get("X-Forwarded-Proto"))
+		ztesting.AssertEqual(t, `for="192.168.0.1", for="127.0.0.1"; host="test.com"; proto=http`, h.Get("Forwarded"))
+		ztesting.AssertEqual(t, "192.168.0.1, 127.0.0.1", h.Get("X-Forwarded-For"))
+		ztesting.AssertEqual(t, "1234", h.Get("X-Forwarded-Port"))
+		ztesting.AssertEqual(t, "test.com", h.Get("X-Forwarded-Host"))
+		ztesting.AssertEqual(t, "http", h.Get("X-Forwarded-Proto"))
 	})
 	t.Run("don't set Forwarded", func(t *testing.T) {
 		r := &http.Request{
@@ -111,7 +111,7 @@ func TestSetForwardedHeaders(t *testing.T) {
 		h := http.Header{}
 		SetForwardedHeaders(r, h)
 		_, found := h["Forwarded"]
-		ztesting.AssertEqual(t, "found not match", false, found)
+		ztesting.AssertEqual(t, false, found)
 	})
 	t.Run("don't set X-Forwarded-For", func(t *testing.T) {
 		r := &http.Request{
@@ -122,7 +122,7 @@ func TestSetForwardedHeaders(t *testing.T) {
 		h := http.Header{}
 		SetForwardedHeaders(r, h)
 		_, found := h["X-Forwarded-For"]
-		ztesting.AssertEqual(t, "found not match", false, found)
+		ztesting.AssertEqual(t, false, found)
 	})
 	t.Run("don't set X-Forwarded-Port", func(t *testing.T) {
 		r := &http.Request{
@@ -133,7 +133,7 @@ func TestSetForwardedHeaders(t *testing.T) {
 		h := http.Header{}
 		SetForwardedHeaders(r, h)
 		_, found := h["X-Forwarded-Port"]
-		ztesting.AssertEqual(t, "found not match", false, found)
+		ztesting.AssertEqual(t, false, found)
 	})
 	t.Run("don't set X-Forwarded-Host", func(t *testing.T) {
 		r := &http.Request{
@@ -144,7 +144,7 @@ func TestSetForwardedHeaders(t *testing.T) {
 		h := http.Header{}
 		SetForwardedHeaders(r, h)
 		_, found := h["X-Forwarded-Host"]
-		ztesting.AssertEqual(t, "found not match", false, found)
+		ztesting.AssertEqual(t, false, found)
 	})
 	t.Run("don't set X-Forwarded-Proto", func(t *testing.T) {
 		r := &http.Request{
@@ -155,7 +155,7 @@ func TestSetForwardedHeaders(t *testing.T) {
 		h := http.Header{}
 		SetForwardedHeaders(r, h)
 		_, found := h["X-Forwarded-Proto"]
-		ztesting.AssertEqual(t, "found not match", false, found)
+		ztesting.AssertEqual(t, false, found)
 	})
 }
 
@@ -176,17 +176,17 @@ func TestRemoveHopByHopHeaders(t *testing.T) {
 		"Baz":                 []string{"Value-Baz"},
 	}
 	RemoveHopByHopHeaders(h)
-	ztesting.AssertEqual(t, "header not deleted", "", h.Get("Keep-Alive"))
-	ztesting.AssertEqual(t, "header not deleted", "", h.Get("Proxy-Authenticate"))
-	ztesting.AssertEqual(t, "header not deleted", "", h.Get("Proxy-Authorization"))
-	ztesting.AssertEqual(t, "header not deleted", "", h.Get("Te"))
-	ztesting.AssertEqual(t, "header not deleted", "", h.Get("Trailer"))
-	ztesting.AssertEqual(t, "header not deleted", "", h.Get("Transfer-Encoding"))
-	ztesting.AssertEqual(t, "header not deleted", "", h.Get("Upgrade"))
-	ztesting.AssertEqual(t, "header not deleted", "", h.Get("Proxy-Connection"))
-	ztesting.AssertEqual(t, "header not deleted", "", h.Get("Foo"))
-	ztesting.AssertEqual(t, "header not deleted", "", h.Get("Bar"))
-	ztesting.AssertEqual(t, "header was deleted", "Value-Baz", h.Get("Baz"))
+	ztesting.AssertEqual(t, "", h.Get("Keep-Alive"))
+	ztesting.AssertEqual(t, "", h.Get("Proxy-Authenticate"))
+	ztesting.AssertEqual(t, "", h.Get("Proxy-Authorization"))
+	ztesting.AssertEqual(t, "", h.Get("Te"))
+	ztesting.AssertEqual(t, "", h.Get("Trailer"))
+	ztesting.AssertEqual(t, "", h.Get("Transfer-Encoding"))
+	ztesting.AssertEqual(t, "", h.Get("Upgrade"))
+	ztesting.AssertEqual(t, "", h.Get("Proxy-Connection"))
+	ztesting.AssertEqual(t, "", h.Get("Foo"))
+	ztesting.AssertEqual(t, "", h.Get("Bar"))
+	ztesting.AssertEqual(t, "Value-Baz", h.Get("Baz"))
 }
 
 func TestCopyHeaders(t *testing.T) {
@@ -200,9 +200,9 @@ func TestCopyHeaders(t *testing.T) {
 		"Baz": []string{"baz"},
 	}
 	CopyHeaders(dst, src)
-	ztesting.AssertEqual(t, "value not match", []string{"foo"}, dst.Values("Foo"))
-	ztesting.AssertEqual(t, "value not match", []string{"bar1", "bar2"}, dst.Values("Bar"))
-	ztesting.AssertEqual(t, "value not match", []string{"baz"}, dst.Values("Baz"))
+	ztesting.AssertEqual(t, []string{"foo"}, dst.Values("Foo"))
+	ztesting.AssertEqual(t, []string{"bar1", "bar2"}, dst.Values("Bar"))
+	ztesting.AssertEqual(t, []string{"baz"}, dst.Values("Baz"))
 }
 
 func TestCopyTrailers(t *testing.T) {
@@ -216,10 +216,10 @@ func TestCopyTrailers(t *testing.T) {
 		"Baz": []string{"baz"},
 	}
 	CopyTrailers(dst, src)
-	ztesting.AssertEqual(t, "value not match", []string{"foo"}, dst.Values("Foo"))
-	ztesting.AssertEqual(t, "value not match", []string{"bar1"}, dst.Values("Bar"))
-	ztesting.AssertEqual(t, "value not match", []string{"bar2"}, dst.Values(http.TrailerPrefix+"Bar"))
-	ztesting.AssertEqual(t, "value not match", []string{"baz"}, dst.Values(http.TrailerPrefix+"Baz"))
+	ztesting.AssertEqual(t, []string{"foo"}, dst.Values("Foo"))
+	ztesting.AssertEqual(t, []string{"bar1"}, dst.Values("Bar"))
+	ztesting.AssertEqual(t, []string{"bar2"}, dst.Values(http.TrailerPrefix+"Bar"))
+	ztesting.AssertEqual(t, []string{"baz"}, dst.Values(http.TrailerPrefix+"Baz"))
 }
 
 func TestParseQualifiedHeader(t *testing.T) {
@@ -265,9 +265,9 @@ func TestParseQualifiedHeader(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			values, params := ParseQualifiedHeader(tc.header)
-			ztesting.AssertEqual(t, "values not match", tc.values, values)
+			ztesting.AssertEqual(t, tc.values, values)
 			for i := range tc.params {
-				ztesting.AssertEqual(t, "params not match", tc.params[i], params[i])
+				ztesting.AssertEqual(t, tc.params[i], params[i])
 			}
 		})
 	}
@@ -294,9 +294,9 @@ func TestParseHeader(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			values, params := ParseHeader(tc.header)
-			ztesting.AssertEqual(t, "values not match", tc.values, values)
+			ztesting.AssertEqual(t, tc.values, values)
 			for i := range tc.params {
-				ztesting.AssertEqual(t, "params not match", tc.params[i], params[i])
+				ztesting.AssertEqual(t, tc.params[i], params[i])
 			}
 		})
 	}
@@ -331,7 +331,7 @@ func TestMatchMediaType(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got := MatchMediaType(tc.mt, tc.list)
-			ztesting.AssertEqual(t, "returned type not match", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -360,7 +360,7 @@ func TestScanElement(t *testing.T) {
 					got = append(got, e)
 				}
 			}
-			ztesting.AssertEqual(t, "elems not match", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }

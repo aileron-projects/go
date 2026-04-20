@@ -50,7 +50,7 @@ func TestInitDebug(t *testing.T) {
 			initDebug(tc.writeTo, func(dir, pattern string) (*os.File, error) {
 				return os.Stdin, nil
 			})
-			ztesting.AssertEqual(t, "writer not matched.", tc.wants, writer)
+			ztesting.AssertEqual(t, tc.wants, writer)
 		})
 	}
 }
@@ -60,7 +60,7 @@ func TestInitDebug_panics(t *testing.T) {
 	err := errors.New("file create error")
 	defer func() {
 		rec := recover()
-		ztesting.AssertEqual(t, "error not matched.", err, rec.(error))
+		ztesting.AssertEqual(t, err, rec.(error))
 	}()
 	initDebug("file", func(dir, pattern string) (*os.File, error) {
 		return nil, err
@@ -139,7 +139,7 @@ func TestPrefixWriter(t *testing.T) {
 				w.Write(v)
 			}
 			result := buf.String()
-			ztesting.AssertEqual(t, " does not match.", tc.wants, result)
+			ztesting.AssertEqual(t, tc.wants, result)
 		})
 	}
 }
@@ -152,9 +152,9 @@ func TestDump(t *testing.T) {
 	Dump("", int(123))
 	result := buf.String()
 	if dumpEnabled {
-		ztesting.AssertEqual(t, "dump does not contain datetime", true, strings.Contains(result, "1970-01-01 00:00:00 [DUMP]"))
+		ztesting.AssertEqual(t, true, strings.Contains(result, "1970-01-01 00:00:00 [DUMP]"))
 	} else {
-		ztesting.AssertEqual(t, "dump should be empty", "", result)
+		ztesting.AssertEqual(t, "", result)
 	}
 }
 
@@ -165,6 +165,6 @@ func TestDumpAlways(t *testing.T) {
 	defer func() { writer = tmp }()
 	DumpAlways("", int(123))
 	result := buf.String()
-	ztesting.AssertEqual(t, "dump does not contain datetime", true, strings.Contains(result, "1970-01-01 00:00:00 [DUMP]"))
+	ztesting.AssertEqual(t, true, strings.Contains(result, "1970-01-01 00:00:00 [DUMP]"))
 
 }

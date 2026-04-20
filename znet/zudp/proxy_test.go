@@ -22,13 +22,13 @@ func TestNewProxy(t *testing.T) {
 	t.Run("no targets", func(t *testing.T) {
 		defer func() {
 			r := recover()
-			ztesting.AssertEqual(t, "recovered value not match", r.(error), ErrNoTarget)
+			ztesting.AssertEqual(t, r.(error), ErrNoTarget)
 		}()
 		NewProxy()
 	})
 	t.Run("with targets", func(t *testing.T) {
 		p := NewProxy("foo", "bar")
-		ztesting.AssertEqual(t, "dialer is nil", true, p.Dial != nil)
+		ztesting.AssertEqual(t, true, p.Dial != nil)
 	})
 }
 
@@ -44,21 +44,21 @@ func TestRoundRobinDialer(t *testing.T) {
 			got = append(got, rrd.next())
 		}
 		want := []string{"addr1", "addr2", "addr3", "addr1", "addr2", "addr3"}
-		ztesting.AssertEqual(t, "address not match", want, got)
+		ztesting.AssertEqual(t, want, got)
 	})
 	t.Run("invalid udp address", func(t *testing.T) {
 		rrd := &roundRobinDialer{addrs: []string{"udp://12345"}}
 		conn, err := rrd.dial(context.Background(), nil)
-		ztesting.AssertEqual(t, "conn should be nil", nil, conn)
+		ztesting.AssertEqual(t, nil, conn)
 		_, ok := err.(*net.AddrError)
-		ztesting.AssertEqual(t, "error should be addr error", true, ok)
+		ztesting.AssertEqual(t, true, ok)
 	})
 	t.Run("dial udp", func(t *testing.T) {
 		pc, _ := net.ListenPacket("udp4", ":0")
 		defer pc.Close()
 		rrd := &roundRobinDialer{addrs: []string{"udp4://" + pc.LocalAddr().String()}}
 		conn, err := rrd.dial(context.Background(), nil)
-		ztesting.AssertEqual(t, "non nil error returned", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		conn.Close()
 	})
 	t.Run("dial unix", func(t *testing.T) {
@@ -67,14 +67,14 @@ func TestRoundRobinDialer(t *testing.T) {
 		rrd := &roundRobinDialer{addrs: []string{"unixgram://" + s}}
 		_, err := rrd.dial(context.Background(), nil)
 		_, ok := err.(*net.OpError)
-		ztesting.AssertEqual(t, "error should be net op error", true, ok)
+		ztesting.AssertEqual(t, true, ok)
 	})
 	t.Run("dial fallback", func(t *testing.T) {
 		pc, _ := net.ListenPacket("udp", ":0")
 		defer pc.Close()
 		rrd := &roundRobinDialer{addrs: []string{pc.LocalAddr().String()}}
 		conn, err := rrd.dial(context.Background(), nil)
-		ztesting.AssertEqual(t, "non nil error returned", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		conn.Close()
 	})
 }
@@ -91,8 +91,8 @@ func TestProxy_handleError(t *testing.T) {
 			},
 		}
 		p.handleError(nil, nil, io.EOF)
-		ztesting.AssertEqual(t, "handler not called", true, called)
-		ztesting.AssertEqualErr(t, "error not match", io.EOF, got)
+		ztesting.AssertEqual(t, true, called)
+		ztesting.AssertEqualErr(t, io.EOF, got)
 	})
 	t.Run("handle nil", func(t *testing.T) {
 		var got error
@@ -104,8 +104,8 @@ func TestProxy_handleError(t *testing.T) {
 			},
 		}
 		p.handleError(nil, nil, nil)
-		ztesting.AssertEqual(t, "handler called", false, called)
-		ztesting.AssertEqualErr(t, "error not match", nil, got)
+		ztesting.AssertEqual(t, false, called)
+		ztesting.AssertEqualErr(t, nil, got)
 	})
 }
 
@@ -166,11 +166,11 @@ func TestProxy(t *testing.T) {
 		for dWriter.Len() == 0 || uWriter.Len() == 0 {
 			time.Sleep(100 * time.Millisecond) // Wait both written.
 		}
-		ztesting.AssertEqual(t, "upstream data was not written", "upstream data", dWriter.String())
-		ztesting.AssertEqual(t, "downstream data was not written", "downstream data", uWriter.String())
-		ztesting.AssertEqual(t, "upstream conn was not closed", true, uConn.closed)
-		ztesting.AssertEqual(t, "downstream conn was closed", false, dConn.closed)
-		ztesting.AssertEqualErr(t, "error not match", nil, handledErr)
+		ztesting.AssertEqual(t, "upstream data", dWriter.String())
+		ztesting.AssertEqual(t, "downstream data", uWriter.String())
+		ztesting.AssertEqual(t, true, uConn.closed)
+		ztesting.AssertEqual(t, false, dConn.closed)
+		ztesting.AssertEqualErr(t, nil, handledErr)
 	})
 	t.Run("dial error", func(t *testing.T) {
 		var handledErr error
@@ -181,7 +181,7 @@ func TestProxy(t *testing.T) {
 			ErrorHandler: func(dc Conn, uc net.Conn, err error) { handledErr = err },
 		}
 		p.ServeUDP(context.Background(), nil)
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, handledErr)
+		ztesting.AssertEqualErr(t, net.ErrClosed, handledErr)
 	})
 	t.Run("read error", func(t *testing.T) {
 		dWriter := bytes.NewBuffer(nil)
@@ -205,11 +205,11 @@ func TestProxy(t *testing.T) {
 		for dWriter.Len() == 0 || uWriter.Len() == 0 {
 			time.Sleep(100 * time.Millisecond) // Wait both written.
 		}
-		ztesting.AssertEqual(t, "upstream data was not written", "upstream", dWriter.String())
-		ztesting.AssertEqual(t, "downstream data was not written", "downstream", uWriter.String())
-		ztesting.AssertEqual(t, "upstream conn was not closed", true, uConn.closed)
-		ztesting.AssertEqual(t, "downstream conn was closed", false, dConn.closed)
-		ztesting.AssertEqualErr(t, "error not match", io.ErrClosedPipe, handledErr)
+		ztesting.AssertEqual(t, "upstream", dWriter.String())
+		ztesting.AssertEqual(t, "downstream", uWriter.String())
+		ztesting.AssertEqual(t, true, uConn.closed)
+		ztesting.AssertEqual(t, false, dConn.closed)
+		ztesting.AssertEqualErr(t, io.ErrClosedPipe, handledErr)
 	})
 	t.Run("short write", func(t *testing.T) {
 		dWriter := bytes.NewBuffer(nil)
@@ -233,11 +233,11 @@ func TestProxy(t *testing.T) {
 		for dWriter.Len() == 0 || uWriter.Len() == 0 {
 			time.Sleep(100 * time.Millisecond) // Wait both written.
 		}
-		ztesting.AssertEqual(t, "upstream data was not written", "upstream", dWriter.String())
-		ztesting.AssertEqual(t, "downstream data was not written", "downstream", uWriter.String())
-		ztesting.AssertEqual(t, "upstream conn was not closed", true, uConn.closed)
-		ztesting.AssertEqual(t, "downstream conn was closed", false, dConn.closed)
-		ztesting.AssertEqualErr(t, "error not match", io.ErrClosedPipe, handledErr)
+		ztesting.AssertEqual(t, "upstream", dWriter.String())
+		ztesting.AssertEqual(t, "downstream", uWriter.String())
+		ztesting.AssertEqual(t, true, uConn.closed)
+		ztesting.AssertEqual(t, false, dConn.closed)
+		ztesting.AssertEqualErr(t, io.ErrClosedPipe, handledErr)
 	})
 	t.Run("timeout", func(t *testing.T) {
 		var eof atomic.Bool
@@ -257,7 +257,7 @@ func TestProxy(t *testing.T) {
 		}
 		p.ServeUDP(context.Background(), dConn)
 		eof.Store(true) // Close goroutine
-		ztesting.AssertEqual(t, "upstream conn was not closed", true, uConn.closed)
-		ztesting.AssertEqual(t, "downstream conn was closed", false, dConn.closed)
+		ztesting.AssertEqual(t, true, uConn.closed)
+		ztesting.AssertEqual(t, false, dConn.closed)
 	})
 }

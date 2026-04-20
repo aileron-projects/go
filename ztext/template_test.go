@@ -18,14 +18,14 @@ func TestTemplate_WithTagFunc(t *testing.T) {
 		tpl.WithTagFunc("a", func(s string) []byte { return []byte("A") })
 		tpl.WithTagFunc("b", func(s string) []byte { return []byte("B") })
 		got := tpl.ExecuteString(nil)
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=B", got)
+		ztesting.AssertEqual(t, "a=A b=B", got)
 	})
 
 	t.Run("key not found", func(t *testing.T) {
 		tpl := NewTemplate("a={a} b={b}", "{", "}")
 		tpl.WithTagFunc("a", func(s string) []byte { return []byte("A") })
 		got := tpl.ExecuteString(nil)
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=", got)
+		ztesting.AssertEqual(t, "a=A b=", got)
 	})
 
 	t.Run("empty tag", func(t *testing.T) {
@@ -33,7 +33,7 @@ func TestTemplate_WithTagFunc(t *testing.T) {
 		tpl.WithTagFunc("a", func(s string) []byte { return []byte("A") })
 		tpl.WithTagFunc("", func(s string) []byte { return []byte("B") })
 		got := tpl.ExecuteString(nil)
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=", got)
+		ztesting.AssertEqual(t, "a=A b=", got)
 	})
 
 	t.Run("nil func", func(t *testing.T) {
@@ -41,7 +41,7 @@ func TestTemplate_WithTagFunc(t *testing.T) {
 		tpl.WithTagFunc("a", func(s string) []byte { return []byte("A") })
 		tpl.WithTagFunc("b", nil)
 		got := tpl.ExecuteString(nil)
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=", got)
+		ztesting.AssertEqual(t, "a=A b=", got)
 	})
 }
 
@@ -53,17 +53,17 @@ func TestTemplate_Execute(t *testing.T) {
 
 	t.Run("key found", func(t *testing.T) {
 		got := tpl.Execute(map[string]any{"b": "B"})
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=B", string(got))
+		ztesting.AssertEqual(t, "a=A b=B", string(got))
 	})
 
 	t.Run("key not found", func(t *testing.T) {
 		got := tpl.Execute(map[string]any{"c": "C"})
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=", string(got))
+		ztesting.AssertEqual(t, "a=A b=", string(got))
 	})
 
 	t.Run("nil map", func(t *testing.T) {
 		got := tpl.Execute(nil)
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=", string(got))
+		ztesting.AssertEqual(t, "a=A b=", string(got))
 	})
 }
 
@@ -75,17 +75,17 @@ func TestTemplate_ExecuteString(t *testing.T) {
 
 	t.Run("key found", func(t *testing.T) {
 		got := tpl.ExecuteString(map[string]any{"b": "B"})
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=B", got)
+		ztesting.AssertEqual(t, "a=A b=B", got)
 	})
 
 	t.Run("key not found", func(t *testing.T) {
 		got := tpl.ExecuteString(map[string]any{"c": "C"})
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=", got)
+		ztesting.AssertEqual(t, "a=A b=", got)
 	})
 
 	t.Run("nil map", func(t *testing.T) {
 		got := tpl.ExecuteString(nil)
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=", got)
+		ztesting.AssertEqual(t, "a=A b=", got)
 	})
 }
 
@@ -97,12 +97,12 @@ func TestTemplate_ExecuteFunc(t *testing.T) {
 
 	t.Run("non-nil func", func(t *testing.T) {
 		got := tpl.ExecuteFunc(func(s string) []byte { return []byte(strings.ToUpper(s)) })
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=B", string(got))
+		ztesting.AssertEqual(t, "a=A b=B", string(got))
 	})
 
 	t.Run("nil func", func(t *testing.T) {
 		got := tpl.ExecuteFunc(nil)
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=", string(got))
+		ztesting.AssertEqual(t, "a=A b=", string(got))
 	})
 }
 
@@ -115,28 +115,28 @@ func TestTemplate_ExecuteWriter(t *testing.T) {
 	t.Run("key found", func(t *testing.T) {
 		var buf bytes.Buffer
 		err := tpl.ExecuteWriter(&buf, map[string]any{"b": "B"})
-		ztesting.AssertEqual(t, "unexpected error returned.", nil, err)
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=B", buf.String())
+		ztesting.AssertEqual(t, nil, err)
+		ztesting.AssertEqual(t, "a=A b=B", buf.String())
 	})
 
 	t.Run("key not found", func(t *testing.T) {
 		var buf bytes.Buffer
 		err := tpl.ExecuteWriter(&buf, map[string]any{"c": "C"})
-		ztesting.AssertEqual(t, "unexpected error returned.", nil, err)
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=", buf.String())
+		ztesting.AssertEqual(t, nil, err)
+		ztesting.AssertEqual(t, "a=A b=", buf.String())
 	})
 
 	t.Run("nil map", func(t *testing.T) {
 		var buf bytes.Buffer
 		err := tpl.ExecuteWriter(&buf, nil)
-		ztesting.AssertEqual(t, "unexpected error returned.", nil, err)
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=", buf.String())
+		ztesting.AssertEqual(t, nil, err)
+		ztesting.AssertEqual(t, "a=A b=", buf.String())
 	})
 
 	t.Run("write error", func(t *testing.T) {
 		buf := ziotest.ErrWriter(nil, 0)
 		err := tpl.ExecuteWriter(buf, map[string]any{"b": "B"})
-		ztesting.AssertEqual(t, "unexpected error returned.", io.ErrClosedPipe, err)
+		ztesting.AssertEqual(t, io.ErrClosedPipe, err)
 	})
 }
 
@@ -149,21 +149,21 @@ func TestTemplate_ExecuteWriterFunc(t *testing.T) {
 	t.Run("non-nil func", func(t *testing.T) {
 		var buf bytes.Buffer
 		err := tpl.ExecuteWriterFunc(&buf, func(s string) []byte { return []byte(strings.ToUpper(s)) })
-		ztesting.AssertEqual(t, "unexpected error returned.", nil, err)
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=B", buf.String())
+		ztesting.AssertEqual(t, nil, err)
+		ztesting.AssertEqual(t, "a=A b=B", buf.String())
 	})
 
 	t.Run("nil func", func(t *testing.T) {
 		var buf bytes.Buffer
 		err := tpl.ExecuteWriterFunc(&buf, nil)
-		ztesting.AssertEqual(t, "unexpected error returned.", nil, err)
-		ztesting.AssertEqual(t, "wrong result of template.", "a=A b=", buf.String())
+		ztesting.AssertEqual(t, nil, err)
+		ztesting.AssertEqual(t, "a=A b=", buf.String())
 	})
 
 	t.Run("write error", func(t *testing.T) {
 		buf := ziotest.ErrWriter(nil, 0)
 		err := tpl.ExecuteWriterFunc(buf, func(s string) []byte { return []byte(strings.ToUpper(s)) })
-		ztesting.AssertEqual(t, "unexpected error returned.", io.ErrClosedPipe, err)
+		ztesting.AssertEqual(t, io.ErrClosedPipe, err)
 	})
 }
 
@@ -207,7 +207,7 @@ func TestMapValue(t *testing.T) {
 		for name, tc := range testCases {
 			t.Run(name, func(t *testing.T) {
 				got := tc.mv.value(tc.tag)
-				ztesting.AssertEqual(t, "wrong result of template.", string(tc.expect), string(got))
+				ztesting.AssertEqual(t, string(tc.expect), string(got))
 			})
 		}
 	})

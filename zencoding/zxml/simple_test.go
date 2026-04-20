@@ -65,7 +65,7 @@ func TestSimple_Decode(t *testing.T) {
 			xmlBytes, _ := os.ReadFile("./testdata/xml/" + tc.file + ".xml")
 			jsonBytes, _ := os.ReadFile("./testdata/simple/" + tc.file + ".json")
 			b, err := c.XMLtoJSON(xmlBytes)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqualErr(t, tc.err, err)
 			if tc.err != nil {
 				return
 			}
@@ -91,7 +91,7 @@ func TestSimple_Decode_short(t *testing.T) {
 			xmlBytes, _ := os.ReadFile("./testdata/xml/" + tc.file + ".xml")
 			jsonBytes, _ := os.ReadFile("./testdata/simple/" + tc.file + "_short.json")
 			b, err := c.XMLtoJSON(xmlBytes)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqualErr(t, tc.err, err)
 			if tc.err != nil {
 				return
 			}
@@ -158,7 +158,7 @@ func TestSimple_Encode(t *testing.T) {
 			xmlBytes, _ := os.ReadFile("./testdata/simple/" + tc.file + ".xml")
 			jsonBytes, _ := os.ReadFile("./testdata/simple/" + tc.file + ".json")
 			b, err := c.JSONtoXML(jsonBytes)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqualErr(t, tc.err, err)
 			if tc.err != nil {
 				return
 			}
@@ -184,7 +184,7 @@ func TestSimple_Encode_short(t *testing.T) {
 			xmlBytes, _ := os.ReadFile("./testdata/simple/" + tc.file + ".xml")
 			jsonBytes, _ := os.ReadFile("./testdata/simple/" + tc.file + "_short.json")
 			b, err := c.JSONtoXML(jsonBytes)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqualErr(t, tc.err, err)
 			if tc.err != nil {
 				return
 			}

@@ -13,11 +13,11 @@ func TestTrue(t *testing.T) {
 	t.Run("test int", func(t *testing.T) {
 		t.Run("true", func(t *testing.T) {
 			v := zcmp.True(true, 1, 2)
-			ztesting.AssertEqual(t, "invalid response value.", 1, v)
+			ztesting.AssertEqual(t, 1, v)
 		})
 		t.Run("false", func(t *testing.T) {
 			v := zcmp.True(false, 1, 2)
-			ztesting.AssertEqual(t, "invalid response value.", 2, v)
+			ztesting.AssertEqual(t, 2, v)
 		})
 	})
 
@@ -25,12 +25,12 @@ func TestTrue(t *testing.T) {
 		t.Run("true", func(t *testing.T) {
 			var np *struct{}
 			v := zcmp.True(true, nil, np)
-			ztesting.AssertEqual(t, "invalid response value.", nil, v)
+			ztesting.AssertEqual(t, nil, v)
 		})
 		t.Run("false", func(t *testing.T) {
 			var np *struct{}
 			v := zcmp.True(false, nil, np)
-			ztesting.AssertEqual(t, "invalid response value.", np, v)
+			ztesting.AssertEqual(t, np, v)
 		})
 	})
 }
@@ -41,11 +41,11 @@ func TestFalse(t *testing.T) {
 	t.Run("test int", func(t *testing.T) {
 		t.Run("false", func(t *testing.T) {
 			v := zcmp.False(false, 1, 2)
-			ztesting.AssertEqual(t, "invalid response value.", 1, v)
+			ztesting.AssertEqual(t, 1, v)
 		})
 		t.Run("true", func(t *testing.T) {
 			v := zcmp.False(true, 1, 2)
-			ztesting.AssertEqual(t, "invalid response value.", 2, v)
+			ztesting.AssertEqual(t, 2, v)
 		})
 	})
 
@@ -53,12 +53,12 @@ func TestFalse(t *testing.T) {
 		t.Run("false", func(t *testing.T) {
 			var np *struct{}
 			v := zcmp.False(false, nil, np)
-			ztesting.AssertEqual(t, "invalid response value.", nil, v)
+			ztesting.AssertEqual(t, nil, v)
 		})
 		t.Run("true", func(t *testing.T) {
 			var np *struct{}
 			v := zcmp.False(true, nil, np)
-			ztesting.AssertEqual(t, "invalid response value.", np, v)
+			ztesting.AssertEqual(t, np, v)
 		})
 	})
 }
@@ -93,7 +93,7 @@ func TestOrSlice(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			v := zcmp.OrSlice(tc.vals...)
-			ztesting.AssertEqual(t, "wrong element returned.", tc.want, v)
+			ztesting.AssertEqual(t, tc.want, v)
 		})
 	}
 }
@@ -128,7 +128,7 @@ func TestOrMap(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			v := zcmp.OrMap(tc.vals...)
-			ztesting.AssertEqual(t, "wrong element returned.", tc.want, v)
+			ztesting.AssertEqual(t, tc.want, v)
 		})
 	}
 }

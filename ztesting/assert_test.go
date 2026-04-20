@@ -19,18 +19,18 @@ func TestAssertEqual(t *testing.T) {
 	t.Run("equal", func(t *testing.T) {
 		tt := &testT{}
 		mocT = tt
-		AssertEqual(t, "error message", "foo", "foo")
+		AssertEqual(t, "foo", "foo")
 		mocT = nil // Reset moc
-		AssertEqual(t, "helper is not called", true, tt.helperCalled)
-		AssertEqual(t, "length of args not match", 0, len(tt.gotArgs))
+		AssertEqual(t, true, tt.helperCalled)
+		AssertEqual(t, 0, len(tt.gotArgs))
 	})
 	t.Run("not equal", func(t *testing.T) {
 		tt := &testT{}
 		mocT = tt
-		AssertEqual(t, "error message", "foo", "bar")
+		AssertEqual(t, "foo", "bar")
 		mocT = nil // Reset moc
-		AssertEqual(t, "helper is not called", true, tt.helperCalled)
-		AssertEqual(t, "length of args not match", 1, len(tt.gotArgs))
+		AssertEqual(t, true, tt.helperCalled)
+		AssertEqual(t, 1, len(tt.gotArgs))
 	})
 }
 
@@ -39,33 +39,33 @@ func TestAssertEqualErr(t *testing.T) {
 	t.Run("equal pointer", func(t *testing.T) {
 		tt := &testT{}
 		mocT = tt
-		AssertEqualErr(t, "error message", io.EOF, io.EOF)
+		AssertEqualErr(t, io.EOF, io.EOF)
 		mocT = nil // Reset moc
-		AssertEqual(t, "helper is not called", true, tt.helperCalled)
-		AssertEqual(t, "length of args not match", 0, len(tt.gotArgs))
+		AssertEqual(t, true, tt.helperCalled)
+		AssertEqual(t, 0, len(tt.gotArgs))
 	})
 	t.Run("equal by is", func(t *testing.T) {
 		tt := &testT{}
 		mocT = tt
-		AssertEqualErr(t, "error message", io.EOF, fmt.Errorf("wrap [%w]", io.EOF))
+		AssertEqualErr(t, io.EOF, fmt.Errorf("wrap [%w]", io.EOF))
 		mocT = nil // Reset moc
-		AssertEqual(t, "helper is not called", true, tt.helperCalled)
-		AssertEqual(t, "length of args not match", 0, len(tt.gotArgs))
+		AssertEqual(t, true, tt.helperCalled)
+		AssertEqual(t, 0, len(tt.gotArgs))
 	})
 	t.Run("equal by message", func(t *testing.T) {
 		tt := &testT{}
 		mocT = tt
-		AssertEqualErr(t, "error message", io.EOF, fmt.Errorf("EOF"))
+		AssertEqualErr(t, io.EOF, fmt.Errorf("EOF"))
 		mocT = nil // Reset moc
-		AssertEqual(t, "helper is not called", true, tt.helperCalled)
-		AssertEqual(t, "length of args not match", 0, len(tt.gotArgs))
+		AssertEqual(t, true, tt.helperCalled)
+		AssertEqual(t, 0, len(tt.gotArgs))
 	})
 	t.Run("not equal", func(t *testing.T) {
 		tt := &testT{}
 		mocT = tt
-		AssertEqualErr(t, "error message", io.EOF, io.ErrUnexpectedEOF)
+		AssertEqualErr(t, io.EOF, io.ErrUnexpectedEOF)
 		mocT = nil // Reset moc
-		AssertEqual(t, "helper is not called", true, tt.helperCalled)
-		AssertEqual(t, "length of args not match", 1, len(tt.gotArgs))
+		AssertEqual(t, true, tt.helperCalled)
+		AssertEqual(t, 1, len(tt.gotArgs))
 	})
 }

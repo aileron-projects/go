@@ -63,7 +63,7 @@ func TestRayFish_Decode(t *testing.T) {
 			xmlBytes, _ := os.ReadFile("./testdata/xml/" + tc.file + ".xml")
 			jsonBytes, _ := os.ReadFile("./testdata/rayfish/" + tc.file + ".json")
 			b, err := c.XMLtoJSON(xmlBytes)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqualErr(t, tc.err, err)
 			if tc.err != nil {
 				return
 			}
@@ -128,7 +128,7 @@ func TestRayFish_Encode(t *testing.T) {
 			xmlBytes, _ := os.ReadFile("./testdata/rayfish/" + tc.file + ".xml")
 			jsonBytes, _ := os.ReadFile("./testdata/rayfish/" + tc.file + ".json")
 			b, err := c.JSONtoXML(jsonBytes)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqualErr(t, tc.err, err)
 			if tc.err != nil {
 				return
 			}

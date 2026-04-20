@@ -33,8 +33,8 @@ func TestParseNetAddr(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			n, a := znet.ParseNetAddr(tc.addr)
-			ztesting.AssertEqual(t, "network not match", tc.network, n)
-			ztesting.AssertEqual(t, "address not match", tc.address, a)
+			ztesting.AssertEqual(t, tc.network, n)
+			ztesting.AssertEqual(t, tc.address, a)
 		})
 	}
 }

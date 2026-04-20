@@ -15,36 +15,36 @@ func TestNewLeakyBucketLimiter(t *testing.T) {
 		lim := NewLeakyBucketLimiter(-1, time.Second)
 		for range 5 { // Token should always be false.
 			token := lim.Accept(context.Background())
-			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
+			ztesting.AssertEqual(t, false, token.OK())
 		}
 	})
 	t.Run("queueSize=0", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(0, time.Second)
 		for range 5 { // Token should always be false.
 			token := lim.Accept(context.Background())
-			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
+			ztesting.AssertEqual(t, false, token.OK())
 		}
 	})
 	t.Run("interval=-1sec", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(1, -time.Second)
 		for range 5 { // Token should always be true.
 			token := lim.Accept(context.Background())
-			ztesting.AssertEqual(t, "incorrect token status", true, token.OK())
+			ztesting.AssertEqual(t, true, token.OK())
 		}
 	})
 	t.Run("interval=0", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(1, 0)
 		for range 5 { // Token should always be true.
 			token := lim.Accept(context.Background())
-			ztesting.AssertEqual(t, "incorrect token status", true, token.OK())
+			ztesting.AssertEqual(t, true, token.OK())
 		}
 	})
 	t.Run("queueSize=1", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(1, time.Second).(*LeakyBucketLimiter)
 		t1 := lim.Accept(context.Background())
-		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
+		ztesting.AssertEqual(t, true, t1.OK())
 		t2 := lim.Accept(context.Background())
-		ztesting.AssertEqual(t, "process not allowed", true, t2.OK())
+		ztesting.AssertEqual(t, true, t2.OK())
 	})
 }
 
@@ -53,23 +53,23 @@ func TestLeakyBucketLimiter_AllowNow(t *testing.T) {
 	t.Run("queueSize=1", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(1, time.Second).(*LeakyBucketLimiter)
 		t1 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
+		ztesting.AssertEqual(t, true, t1.OK())
 		t2 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process allowed", false, t2.OK())
+		ztesting.AssertEqual(t, false, t2.OK())
 	})
 	t.Run("queueSize=2", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(2, time.Second).(*LeakyBucketLimiter)
 		t1 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
+		ztesting.AssertEqual(t, true, t1.OK())
 		t2 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process allowed", false, t2.OK())
+		ztesting.AssertEqual(t, false, t2.OK())
 	})
 	t.Run("queueSize=2", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(2, time.Second).(*LeakyBucketLimiter)
 		t1 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
+		ztesting.AssertEqual(t, true, t1.OK())
 		t2 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process allowed", false, t2.OK())
+		ztesting.AssertEqual(t, false, t2.OK())
 	})
 	t.Run("interval passed", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(2, time.Second).(*LeakyBucketLimiter)
@@ -77,10 +77,10 @@ func TestLeakyBucketLimiter_AllowNow(t *testing.T) {
 		now := &tm
 		lim.timeNow = func() time.Time { return *now }
 		t1 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
+		ztesting.AssertEqual(t, true, t1.OK())
 		*now = now.Add(time.Second)
 		t2 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process not allowed", true, t2.OK())
+		ztesting.AssertEqual(t, true, t2.OK())
 	})
 	t.Run("someone waiting", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(5, time.Second).(*LeakyBucketLimiter)
@@ -94,7 +94,7 @@ func TestLeakyBucketLimiter_AllowNow(t *testing.T) {
 		}
 		wg.Wait() // All 5 goroutine started.
 		t1 := lim.AllowNow()
-		ztesting.AssertEqual(t, "process not allowed", false, t1.OK())
+		ztesting.AssertEqual(t, false, t1.OK())
 	})
 }
 
@@ -103,19 +103,19 @@ func TestLeakyBucketLimiter_WaitNow(t *testing.T) {
 	t.Run("queueSize=1, wait", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(1, 100*time.Millisecond).(*LeakyBucketLimiter)
 		t1 := lim.WaitNow(context.Background())
-		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
+		ztesting.AssertEqual(t, true, t1.OK())
 		t2 := lim.WaitNow(context.Background())
-		ztesting.AssertEqual(t, "process not allowed", true, t2.OK())
+		ztesting.AssertEqual(t, true, t2.OK())
 	})
 	t.Run("queueSize=1, context deadline error", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(1, time.Second).(*LeakyBucketLimiter)
 		t1 := lim.WaitNow(context.Background())
-		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
+		ztesting.AssertEqual(t, true, t1.OK())
 		dc, cancel := context.WithDeadline(context.Background(), time.Now().Add(100*time.Millisecond))
 		defer cancel()
 		t2 := lim.WaitNow(dc)
-		ztesting.AssertEqual(t, "process allowed", false, t2.OK())
-		ztesting.AssertEqualErr(t, "wrong error reason", context.DeadlineExceeded, t2.Err())
+		ztesting.AssertEqual(t, false, t2.OK())
+		ztesting.AssertEqualErr(t, context.DeadlineExceeded, t2.Err())
 	})
 	t.Run("interval passed", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(2, time.Second).(*LeakyBucketLimiter)
@@ -123,10 +123,10 @@ func TestLeakyBucketLimiter_WaitNow(t *testing.T) {
 		now := &tm
 		lim.timeNow = func() time.Time { return *now }
 		t1 := lim.WaitNow(context.Background())
-		ztesting.AssertEqual(t, "process not allowed", true, t1.OK())
+		ztesting.AssertEqual(t, true, t1.OK())
 		*now = now.Add(time.Second)
 		t2 := lim.WaitNow(context.Background())
-		ztesting.AssertEqual(t, "process not allowed", true, t2.OK())
+		ztesting.AssertEqual(t, true, t2.OK())
 	})
 	t.Run("fully queue", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(5, time.Second).(*LeakyBucketLimiter)
@@ -142,7 +142,7 @@ func TestLeakyBucketLimiter_WaitNow(t *testing.T) {
 		dc, cancel := context.WithDeadline(context.Background(), time.Now().Add(100*time.Millisecond))
 		defer cancel()
 		t1 := lim.WaitNow(dc)
-		ztesting.AssertEqual(t, "process allowed", false, t1.OK())
+		ztesting.AssertEqual(t, false, t1.OK())
 	})
 	t.Run("canceled context", func(t *testing.T) {
 		lim := NewLeakyBucketLimiter(1, time.Minute).(*LeakyBucketLimiter)
@@ -150,7 +150,7 @@ func TestLeakyBucketLimiter_WaitNow(t *testing.T) {
 		cancel()
 		lim.AllowNow() // Remove token if exists
 		t1 := lim.WaitNow(dc)
-		ztesting.AssertEqual(t, "process allowed", false, t1.OK())
-		ztesting.AssertEqualErr(t, "wrong error reason", context.DeadlineExceeded, t1.Err())
+		ztesting.AssertEqual(t, false, t1.OK())
+		ztesting.AssertEqualErr(t, context.DeadlineExceeded, t1.Err())
 	})
 }

@@ -23,22 +23,22 @@ func TestNewStreamReader(t *testing.T) {
 	nonce := []byte("123456789012")
 	t.Run("invalid key", func(t *testing.T) {
 		_, err := zchacha20.NewStreamReader(nil, nonce, nil)
-		ztesting.AssertEqualErr(t, "error not match", errWrongKey, err)
+		ztesting.AssertEqualErr(t, errWrongKey, err)
 	})
 	t.Run("encrypt", func(t *testing.T) {
 		r, err := zchacha20.NewStreamReader(key, nonce, strings.NewReader("test"))
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqualErr(t, nil, err)
 		buf := make([]byte, 100)
 		n, _ := r.Read(buf)
-		ztesting.AssertEqual(t, "ciphertext not match", "3f416920", hex.EncodeToString(buf[:n]))
+		ztesting.AssertEqual(t, "3f416920", hex.EncodeToString(buf[:n]))
 	})
 	t.Run("decrypt", func(t *testing.T) {
 		c, _ := hex.DecodeString("3f416920")
 		r, err := zchacha20.NewStreamReader(key, nonce, bytes.NewReader(c))
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqualErr(t, nil, err)
 		buf := make([]byte, 100)
 		n, _ := r.Read(buf)
-		ztesting.AssertEqual(t, "plaintext not match", "test", string(buf[:n]))
+		ztesting.AssertEqual(t, "test", string(buf[:n]))
 	})
 }
 
@@ -48,22 +48,22 @@ func TestNewStreamWriter(t *testing.T) {
 	nonce := []byte("123456789012")
 	t.Run("invalid key", func(t *testing.T) {
 		_, err := zchacha20.NewStreamWriter(nil, nonce, nil)
-		ztesting.AssertEqualErr(t, "error not match", errWrongKey, err)
+		ztesting.AssertEqualErr(t, errWrongKey, err)
 	})
 	t.Run("encrypt", func(t *testing.T) {
 		var buf bytes.Buffer
 		w, err := zchacha20.NewStreamWriter(key, nonce, &buf)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqualErr(t, nil, err)
 		w.Write([]byte("test"))
-		ztesting.AssertEqual(t, "ciphertext not match", "3f416920", hex.EncodeToString(buf.Bytes()))
+		ztesting.AssertEqual(t, "3f416920", hex.EncodeToString(buf.Bytes()))
 	})
 	t.Run("decrypt", func(t *testing.T) {
 		c, _ := hex.DecodeString("3f416920")
 		var buf bytes.Buffer
 		w, err := zchacha20.NewStreamWriter(key, nonce, &buf)
 		w.Write(c)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqual(t, "plaintext not match", "test", buf.String())
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, "test", buf.String())
 	})
 }
 
@@ -73,40 +73,40 @@ func TestCopy(t *testing.T) {
 	nonce := []byte("123456789012")
 	t.Run("invalid key", func(t *testing.T) {
 		err := zchacha20.Copy(nil, nonce, nil, nil)
-		ztesting.AssertEqualErr(t, "error not match", errWrongKey, err)
+		ztesting.AssertEqualErr(t, errWrongKey, err)
 	})
 	t.Run("encrypt", func(t *testing.T) {
 		var buf bytes.Buffer
 		err := zchacha20.Copy(key, nonce, &buf, strings.NewReader("test"))
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqual(t, "ciphertext not match", "3f416920", hex.EncodeToString(buf.Bytes()))
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, "3f416920", hex.EncodeToString(buf.Bytes()))
 	})
 	t.Run("decrypt", func(t *testing.T) {
 		c, _ := hex.DecodeString("3f416920")
 		var buf bytes.Buffer
 		err := zchacha20.Copy(key, nonce, &buf, bytes.NewReader(c))
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqual(t, "plaintext not match", "test", buf.String())
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, "test", buf.String())
 	})
 	t.Run("read error", func(t *testing.T) {
 		c, _ := hex.DecodeString("3f416920")
 		var buf bytes.Buffer
 		err := zchacha20.Copy(key, nonce, &buf, ziotest.ErrReader(bytes.NewReader(c), 3))
-		ztesting.AssertEqualErr(t, "error not match", io.ErrClosedPipe, err)
-		ztesting.AssertEqual(t, "plaintext not match", "tes", buf.String())
+		ztesting.AssertEqualErr(t, io.ErrClosedPipe, err)
+		ztesting.AssertEqual(t, "tes", buf.String())
 	})
 	t.Run("write error", func(t *testing.T) {
 		c, _ := hex.DecodeString("3f416920")
 		var buf bytes.Buffer
 		err := zchacha20.Copy(key, nonce, ziotest.ErrWriter(&buf, 3), bytes.NewReader(c))
-		ztesting.AssertEqualErr(t, "error not match", io.ErrClosedPipe, err)
-		ztesting.AssertEqual(t, "plaintext not match", "tes", buf.String())
+		ztesting.AssertEqualErr(t, io.ErrClosedPipe, err)
+		ztesting.AssertEqual(t, "tes", buf.String())
 	})
 	t.Run("short write", func(t *testing.T) {
 		c, _ := hex.DecodeString("3f416920")
 		var buf bytes.Buffer
 		err := zchacha20.Copy(key, nonce, ziotest.ErrWriterWith(&buf, 3, nil), bytes.NewReader(c))
-		ztesting.AssertEqualErr(t, "error not match", io.ErrShortWrite, err)
-		ztesting.AssertEqual(t, "plaintext not match", "tes", buf.String())
+		ztesting.AssertEqualErr(t, io.ErrShortWrite, err)
+		ztesting.AssertEqual(t, "tes", buf.String())
 	})
 }

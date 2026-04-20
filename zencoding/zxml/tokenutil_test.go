@@ -19,7 +19,7 @@ func TestXMLError_Error(t *testing.T) {
 			Detail: "detail",
 		}
 		msg := err.Error()
-		ztesting.AssertEqual(t, "error message not match", "zxml: cause detail", msg)
+		ztesting.AssertEqual(t, "zxml: cause detail", msg)
 	})
 	t.Run("with inner error", func(t *testing.T) {
 		err := &XMLError{
@@ -28,7 +28,7 @@ func TestXMLError_Error(t *testing.T) {
 			Detail: "detail",
 		}
 		msg := err.Error()
-		ztesting.AssertEqual(t, "error message not match", "zxml: cause detail [EOF]", msg)
+		ztesting.AssertEqual(t, "zxml: cause detail [EOF]", msg)
 	})
 }
 
@@ -36,7 +36,7 @@ func TestXMLError_Unwrap(t *testing.T) {
 	t.Parallel()
 	err := &XMLError{Err: io.EOF, Cause: "cause"}
 	inner := err.Unwrap()
-	ztesting.AssertEqualErr(t, "errors not match", io.EOF, inner)
+	ztesting.AssertEqualErr(t, io.EOF, inner)
 }
 
 func TestXMLError_Is(t *testing.T) {
@@ -45,31 +45,31 @@ func TestXMLError_Is(t *testing.T) {
 		err1 := &XMLError{Cause: "cause"}
 		err2 := &XMLError{Cause: "cause"}
 		same := err1.Is(err2)
-		ztesting.AssertEqual(t, "errors should be the same", true, same)
+		ztesting.AssertEqual(t, true, same)
 	})
 	t.Run("same after unwrap", func(t *testing.T) {
 		err1 := &XMLError{Cause: "cause"}
 		err2 := fmt.Errorf("outer error [%w]", &XMLError{Cause: "cause"})
 		same := err1.Is(err2)
-		ztesting.AssertEqual(t, "errors should be the same", true, same)
+		ztesting.AssertEqual(t, true, same)
 	})
 	t.Run("not same", func(t *testing.T) {
 		err1 := &XMLError{Cause: "cause"}
 		err2 := io.EOF
 		same := err1.Is(err2)
-		ztesting.AssertEqual(t, "errors should not be the same", false, same)
+		ztesting.AssertEqual(t, false, same)
 	})
 	t.Run("different cause", func(t *testing.T) {
 		err1 := &XMLError{Cause: "cause1"}
 		err2 := &XMLError{Cause: "cause2"}
 		same := err1.Is(err2)
-		ztesting.AssertEqual(t, "errors should not be the same", false, same)
+		ztesting.AssertEqual(t, false, same)
 	})
 	t.Run("nil", func(t *testing.T) {
 		err1 := &XMLError{Cause: "cause"}
 		err2 := error(nil)
 		same := err1.Is(err2)
-		ztesting.AssertEqual(t, "errors should not be the same", false, same)
+		ztesting.AssertEqual(t, false, same)
 	})
 }
 
@@ -88,7 +88,7 @@ func TestAttrName(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			out := attrName(tc.name, tc.prefix, tc.sep)
-			ztesting.AssertEqual(t, "result not match", tc.out, out)
+			ztesting.AssertEqual(t, tc.out, out)
 		})
 	}
 }
@@ -108,7 +108,7 @@ func TestTokenName(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			out := tokenName(tc.name, tc.sep)
-			ztesting.AssertEqual(t, "result not match", tc.out, out)
+			ztesting.AssertEqual(t, tc.out, out)
 		})
 	}
 }
@@ -136,7 +136,7 @@ func TestRestoreNamespace(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			out := restoreNamespace(tc.sep, tc.key)
-			ztesting.AssertEqual(t, "output not match", tc.out, out)
+			ztesting.AssertEqual(t, tc.out, out)
 		})
 	}
 }
@@ -161,8 +161,8 @@ func TestJsonValueToToken(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			token, err := jsonValueToToken(tc.trim, tc.value)
-			ztesting.AssertEqual(t, "token not match", true, reflect.DeepEqual(tc.token, token))
-			ztesting.AssertEqualErr(t, "error should be nil", tc.err, err)
+			ztesting.AssertEqual(t, true, reflect.DeepEqual(tc.token, token))
+			ztesting.AssertEqualErr(t, tc.err, err)
 		})
 	}
 }

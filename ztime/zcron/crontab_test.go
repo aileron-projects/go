@@ -2,7 +2,6 @@ package zcron
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"testing"
 	"time"
@@ -14,17 +13,17 @@ func TestCrontab(t *testing.T) {
 	t.Parallel()
 	t.Run("nil time func", func(t *testing.T) {
 		ct, err := Parse("* * * * *")
-		ztesting.AssertEqual(t, "non nil error returned", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		ct.WithTimeFunc(nil)
 		ct.Next() // No panic.
 	})
 	t.Run("non nil time func", func(t *testing.T) {
 		ct, err := Parse("* * * * *")
-		ztesting.AssertEqual(t, "non nil error returned", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		now := time.Now().Add(time.Hour)
 		ct.WithTimeFunc(func() time.Time { return now })
 		got := ct.Now()
-		ztesting.AssertEqual(t, "time not match", 0, now.Compare(got))
+		ztesting.AssertEqual(t, 0, now.Compare(got))
 	})
 }
 
@@ -124,9 +123,9 @@ func TestCrontab_NextAfter(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			ct, err := Parse(tc.cron)
-			ztesting.AssertEqual(t, "non nil error returned", nil, err)
+			ztesting.AssertEqual(t, nil, err)
 			got := ct.NextAfter(tc.t)
-			ztesting.AssertEqual(t, "time not match", 0, tc.want.Compare(got))
+			ztesting.AssertEqual(t, 0, tc.want.Compare(got))
 			t.Log(tc.want, got)
 		})
 	}
@@ -150,7 +149,7 @@ func TestNextTime(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got := nextTime(tc.targets, tc.now, tc.max)
-			ztesting.AssertEqual(t, "invalid result", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -163,24 +162,24 @@ func TestParseError(t *testing.T) {
 			What:  "what",
 			Value: "val",
 		}
-		ztesting.AssertEqual(t, "message mismatch", "ztime/zcron: parse error. invalid what(got:val)", err.Error())
-		ztesting.AssertEqual(t, "inner error mismatch", nil, err.Unwrap())
+		ztesting.AssertEqual(t, "ztime/zcron: parse error. invalid what(got:val)", err.Error())
+		ztesting.AssertEqual(t, nil, err.Unwrap())
 	})
 	t.Run("with inner error", func(t *testing.T) {
 		err := &ParseError{
 			Err:  io.EOF,
 			What: "what",
 		}
-		ztesting.AssertEqual(t, "message mismatch", "ztime/zcron: parse error. invalid what[EOF]", err.Error())
-		ztesting.AssertEqual(t, "inner error mismatch", io.EOF, err.Unwrap())
+		ztesting.AssertEqual(t, "ztime/zcron: parse error. invalid what[EOF]", err.Error())
+		ztesting.AssertEqual(t, io.EOF, err.Unwrap())
 	})
 	t.Run("compare", func(t *testing.T) {
 		err1 := &ParseError{Err: nil, What: "what"}
 		err2 := &ParseError{Err: io.EOF, What: "what"}
-		ztesting.AssertEqual(t, "error not equal", true, errors.Is(err1, err2))
-		ztesting.AssertEqual(t, "error not equal", true, errors.Is(err2, err1))
-		ztesting.AssertEqual(t, "error not equal", true, errors.Is(err2, io.EOF))
-		ztesting.AssertEqual(t, "error equal", false, errors.Is(err1, io.EOF))
+		ztesting.AssertEqual(t, true, errors.Is(err1, err2))
+		ztesting.AssertEqual(t, true, errors.Is(err2, err1))
+		ztesting.AssertEqual(t, true, errors.Is(err2, io.EOF))
+		ztesting.AssertEqual(t, false, errors.Is(err1, io.EOF))
 	})
 }
 
@@ -334,17 +333,17 @@ func TestParse(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			ct, err := Parse(tc.exp)
-			ztesting.AssertEqualErr(t, "error mismatched", tc.err, err)
+			ztesting.AssertEqualErr(t, tc.err, err)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "non nil crontab", nil, ct)
+				ztesting.AssertEqual(t, nil, ct)
 				return
 			}
-			ztesting.AssertEqual(t, "wrong second"+fmt.Sprintf("%b", ct.second), tc.ct.second, ct.second)
-			ztesting.AssertEqual(t, "wrong minute"+fmt.Sprintf("%b", ct.minute), tc.ct.minute, ct.minute)
-			ztesting.AssertEqual(t, "wrong hour"+fmt.Sprintf("%b", ct.hour), tc.ct.hour, ct.hour)
-			ztesting.AssertEqual(t, "wrong day"+fmt.Sprintf("%b", ct.day), tc.ct.day, ct.day)
-			ztesting.AssertEqual(t, "wrong month"+fmt.Sprintf("%b", ct.month), tc.ct.month, ct.month)
-			ztesting.AssertEqual(t, "wrong week"+fmt.Sprintf("%b", ct.week), tc.ct.week, ct.week)
+			ztesting.AssertEqual(t, tc.ct.second, ct.second)
+			ztesting.AssertEqual(t, tc.ct.minute, ct.minute)
+			ztesting.AssertEqual(t, tc.ct.hour, ct.hour)
+			ztesting.AssertEqual(t, tc.ct.day, ct.day)
+			ztesting.AssertEqual(t, tc.ct.month, ct.month)
+			ztesting.AssertEqual(t, tc.ct.week, ct.week)
 		})
 	}
 }
@@ -398,7 +397,7 @@ func TestReplaceAlias(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got := replaceAlias(tc.exp)
-			ztesting.AssertEqual(t, "wrong normalization", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -422,7 +421,7 @@ func TestNormalizeMonth(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got := normalizeMonth(tc.exp)
-			ztesting.AssertEqual(t, "wrong normalization", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -446,7 +445,7 @@ func TestNormalizeWeek(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got := normalizeWeek(tc.exp)
-			ztesting.AssertEqual(t, "wrong normalization", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -495,8 +494,8 @@ func TestParseValue(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			cron, ok := parseValue(tc.exp, tc.min, tc.max)
-			ztesting.AssertEqual(t, "invalid cron: "+fmt.Sprintf("%b", cron), tc.cron, cron)
-			ztesting.AssertEqual(t, "wrong bool value returned", tc.ok, ok)
+			ztesting.AssertEqual(t, tc.cron, cron)
+			ztesting.AssertEqual(t, tc.ok, ok)
 		})
 	}
 }
@@ -538,9 +537,9 @@ func TestParseRange(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			under, upper, ok := parseRange(tc.exp, tc.min, tc.max)
-			ztesting.AssertEqual(t, "minimum value invalid", tc.under, under)
-			ztesting.AssertEqual(t, "maximum value invalid", tc.upper, upper)
-			ztesting.AssertEqual(t, "wrong bool value returned", tc.ok, ok)
+			ztesting.AssertEqual(t, tc.under, under)
+			ztesting.AssertEqual(t, tc.upper, upper)
+			ztesting.AssertEqual(t, tc.ok, ok)
 		})
 	}
 }

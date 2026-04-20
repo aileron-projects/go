@@ -18,12 +18,12 @@ func TestRegisterHash(t *testing.T) {
 		got := FNV32.New()
 		t.Log(h.Sum(nil))
 		t.Log(got.Sum(nil))
-		ztesting.AssertEqual(t, "hash not match", true, slices.Equal(h.Sum(nil), got.Sum(nil)))
+		ztesting.AssertEqual(t, true, slices.Equal(h.Sum(nil), got.Sum(nil)))
 	})
 	t.Run("failed", func(t *testing.T) {
 		defer func() {
 			r := recover()
-			ztesting.AssertEqualErr(t, "error not match", ErrUnknown, r.(error))
+			ztesting.AssertEqualErr(t, ErrUnknown, r.(error))
 		}()
 		RegisterHash(maxHash, nil)
 	})
@@ -51,7 +51,7 @@ func TestHash_String(t *testing.T) {
 	for name, tc := range testCase {
 		t.Run(name, func(t *testing.T) {
 			got := tc.h.String()
-			ztesting.AssertEqual(t, "name does not match", tc.s, got)
+			ztesting.AssertEqual(t, tc.s, got)
 		})
 	}
 }
@@ -61,7 +61,7 @@ func TestHash_Size(t *testing.T) {
 	t.Run("panic unknown", func(t *testing.T) {
 		defer func() {
 			r := recover()
-			ztesting.AssertEqualErr(t, "error not match", ErrUnknown, r.(error))
+			ztesting.AssertEqualErr(t, ErrUnknown, r.(error))
 		}()
 		maxHash.Size()
 	})
@@ -85,7 +85,7 @@ func TestHash_Size(t *testing.T) {
 	for name, tc := range testCase {
 		t.Run(name, func(t *testing.T) {
 			got := tc.h.Size()
-			ztesting.AssertEqual(t, "size does not match", tc.s, got)
+			ztesting.AssertEqual(t, tc.s, got)
 		})
 	}
 }
@@ -94,12 +94,12 @@ func TestHash_Available(t *testing.T) {
 	t.Parallel()
 	t.Run("max hash", func(t *testing.T) {
 		got := maxHash.Available()
-		ztesting.AssertEqual(t, "unknown alg is available", false, got)
+		ztesting.AssertEqual(t, false, got)
 	})
 	t.Run("available", func(t *testing.T) {
 		RegisterHash(FNV32, func() hash.Hash { return fnv.New32() })
 		got := FNV32.Available()
-		ztesting.AssertEqual(t, "unknown alg is available", true, got)
+		ztesting.AssertEqual(t, true, got)
 	})
 }
 
@@ -108,7 +108,7 @@ func TestHash_New(t *testing.T) {
 	t.Run("not available", func(t *testing.T) {
 		defer func() {
 			r := recover()
-			ztesting.AssertEqualErr(t, "error not match", ErrNotAvailable, r.(error))
+			ztesting.AssertEqualErr(t, ErrNotAvailable, r.(error))
 		}()
 		maxHash.New()
 	})
@@ -116,7 +116,7 @@ func TestHash_New(t *testing.T) {
 		RegisterHash(FNV32, func() hash.Hash { return fnv.New32() })
 		h := FNV32.New()
 		h.Write([]byte("test"))
-		ztesting.AssertEqual(t, "invalid hash", "bc2c0be9", hex.EncodeToString(h.Sum(nil)))
+		ztesting.AssertEqual(t, "bc2c0be9", hex.EncodeToString(h.Sum(nil)))
 	})
 }
 
@@ -125,7 +125,7 @@ func TestHash_NewFunc(t *testing.T) {
 	t.Run("not available", func(t *testing.T) {
 		defer func() {
 			r := recover()
-			ztesting.AssertEqualErr(t, "error not match", ErrNotAvailable, r.(error))
+			ztesting.AssertEqualErr(t, ErrNotAvailable, r.(error))
 		}()
 		maxHash.NewFunc()
 	})
@@ -134,7 +134,7 @@ func TestHash_NewFunc(t *testing.T) {
 		f := FNV32.NewFunc()
 		h := f()
 		h.Write([]byte("test"))
-		ztesting.AssertEqual(t, "invalid hash", "bc2c0be9", hex.EncodeToString(h.Sum(nil)))
+		ztesting.AssertEqual(t, "bc2c0be9", hex.EncodeToString(h.Sum(nil)))
 	})
 }
 
@@ -143,14 +143,14 @@ func TestHash_Sum(t *testing.T) {
 	t.Run("not available", func(t *testing.T) {
 		defer func() {
 			r := recover()
-			ztesting.AssertEqualErr(t, "error not match", ErrNotAvailable, r.(error))
+			ztesting.AssertEqualErr(t, ErrNotAvailable, r.(error))
 		}()
 		maxHash.Sum([]byte("test"))
 	})
 	t.Run("available", func(t *testing.T) {
 		RegisterHash(FNV32, func() hash.Hash { return fnv.New32() })
 		got := FNV32.Sum([]byte("test"))
-		ztesting.AssertEqual(t, "invalid returned value", "bc2c0be9", hex.EncodeToString(got))
+		ztesting.AssertEqual(t, "bc2c0be9", hex.EncodeToString(got))
 	})
 }
 
@@ -160,13 +160,13 @@ func TestHash_Equal(t *testing.T) {
 		RegisterHash(FNV32, func() hash.Hash { return fnv.New32() })
 		b, _ := hex.DecodeString("bc2c0be9")
 		got := FNV32.Equal(b, []byte("test"))
-		ztesting.AssertEqual(t, "invalid compare result", true, got)
+		ztesting.AssertEqual(t, true, got)
 	})
 	t.Run("not equal", func(t *testing.T) {
 		RegisterHash(FNV32, func() hash.Hash { return fnv.New32() })
 		b, _ := hex.DecodeString("bc2c0be9")
 		got := FNV32.Equal(b, []byte("wrong"))
-		ztesting.AssertEqual(t, "invalid compare result", false, got)
+		ztesting.AssertEqual(t, false, got)
 	})
 }
 
@@ -176,16 +176,16 @@ func TestHash_Compare(t *testing.T) {
 		RegisterHash(FNV32, func() hash.Hash { return fnv.New32() })
 		b, _ := hex.DecodeString("bc2c0be9")
 		got := FNV32.Compare(b, []byte("test"))
-		ztesting.AssertEqualErr(t, "invalid compare result", nil, got)
+		ztesting.AssertEqualErr(t, nil, got)
 	})
 	t.Run("not equal", func(t *testing.T) {
 		RegisterHash(FNV32, func() hash.Hash { return fnv.New32() })
 		b, _ := hex.DecodeString("bc2c0be9")
 		got := FNV32.Compare(b, []byte("wrong"))
-		ztesting.AssertEqualErr(t, "invalid compare result", ErrNotMatch, got)
+		ztesting.AssertEqualErr(t, ErrNotMatch, got)
 	})
 	t.Run("alg unknown", func(t *testing.T) {
 		err := maxHash.Compare([]byte("xxx"), []byte("yyy"))
-		ztesting.AssertEqualErr(t, "error not match", ErrNotAvailable, err)
+		ztesting.AssertEqualErr(t, ErrNotAvailable, err)
 	})
 }

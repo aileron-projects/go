@@ -18,14 +18,14 @@ func TestSetupRewindBody(t *testing.T) {
 			Body: nil,
 		}
 		err := zhttp.SetupRewindBody(r)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("no body", func(t *testing.T) {
 		r := &http.Request{
 			Body: http.NoBody,
 		}
 		err := zhttp.SetupRewindBody(r)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("idempotent", func(t *testing.T) {
 		r := &http.Request{
@@ -33,17 +33,17 @@ func TestSetupRewindBody(t *testing.T) {
 			Body:   io.NopCloser(strings.NewReader("body")),
 		}
 		err := zhttp.SetupRewindBody(r)
-		ztesting.AssertEqualErr(t, "error not match", zhttp.ErrCannotRewind, err)
+		ztesting.AssertEqualErr(t, zhttp.ErrCannotRewind, err)
 	})
 	t.Run("no get body", func(t *testing.T) {
 		r := &http.Request{
 			Body: io.NopCloser(strings.NewReader("body")),
 		}
 		err := zhttp.SetupRewindBody(r)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqualErr(t, nil, err)
 		gb, _ := r.GetBody()
 		body, _ := io.ReadAll(gb)
-		ztesting.AssertEqual(t, "body not match", "body", string(body))
+		ztesting.AssertEqual(t, "body", string(body))
 	})
 	t.Run("get body", func(t *testing.T) {
 		b := io.NopCloser(strings.NewReader("body"))
@@ -52,15 +52,15 @@ func TestSetupRewindBody(t *testing.T) {
 			Body:    b,
 		}
 		err := zhttp.SetupRewindBody(r)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqual(t, "body not match", b, r.Body)
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, b, r.Body)
 	})
 	t.Run("body read error", func(t *testing.T) {
 		r := &http.Request{
 			Body: io.NopCloser(ziotest.ErrReader(strings.NewReader("body"), 2)),
 		}
 		err := zhttp.SetupRewindBody(r)
-		ztesting.AssertEqualErr(t, "error not match", io.ErrClosedPipe, err)
+		ztesting.AssertEqualErr(t, io.ErrClosedPipe, err)
 	})
 }
 
@@ -71,14 +71,14 @@ func TestRewindBody(t *testing.T) {
 			Body: nil,
 		}
 		err := zhttp.RewindBody(r)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("no body", func(t *testing.T) {
 		r := &http.Request{
 			Body: http.NoBody,
 		}
 		err := zhttp.RewindBody(r)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("idempotent", func(t *testing.T) {
 		r := &http.Request{
@@ -86,14 +86,14 @@ func TestRewindBody(t *testing.T) {
 			Body:   io.NopCloser(strings.NewReader("body")),
 		}
 		err := zhttp.RewindBody(r)
-		ztesting.AssertEqualErr(t, "error not match", zhttp.ErrCannotRewind, err)
+		ztesting.AssertEqualErr(t, zhttp.ErrCannotRewind, err)
 	})
 	t.Run("no get body", func(t *testing.T) {
 		r := &http.Request{
 			Body: io.NopCloser(strings.NewReader("body")),
 		}
 		err := zhttp.RewindBody(r)
-		ztesting.AssertEqualErr(t, "error not match", zhttp.ErrCannotRewind, err)
+		ztesting.AssertEqualErr(t, zhttp.ErrCannotRewind, err)
 	})
 	t.Run("get body", func(t *testing.T) {
 		b := io.NopCloser(strings.NewReader("body"))
@@ -102,8 +102,8 @@ func TestRewindBody(t *testing.T) {
 			Body:    io.NopCloser(strings.NewReader("temp")),
 		}
 		err := zhttp.RewindBody(r)
-		ztesting.AssertEqual(t, "body not match", b, r.Body)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, b, r.Body)
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 }
 
@@ -114,27 +114,27 @@ func TestReadBody(t *testing.T) {
 			Body: nil,
 		}
 		body, err := zhttp.ReadBody(r)
-		ztesting.AssertEqual(t, "body length not match", 0, len(body))
-		ztesting.AssertEqual(t, "body not match", "", string(body))
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, 0, len(body))
+		ztesting.AssertEqual(t, "", string(body))
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("no body", func(t *testing.T) {
 		r := &http.Request{
 			Body: http.NoBody,
 		}
 		body, err := zhttp.ReadBody(r)
-		ztesting.AssertEqual(t, "body length not match", 0, len(body))
-		ztesting.AssertEqual(t, "body not match", "", string(body))
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, 0, len(body))
+		ztesting.AssertEqual(t, "", string(body))
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("no get body", func(t *testing.T) {
 		r := &http.Request{
 			Body: io.NopCloser(strings.NewReader("body")),
 		}
 		body, err := zhttp.ReadBody(r)
-		ztesting.AssertEqual(t, "body length not match", 4, len(body))
-		ztesting.AssertEqual(t, "body not match", "body", string(body))
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, 4, len(body))
+		ztesting.AssertEqual(t, "body", string(body))
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("get body", func(t *testing.T) {
 		r := &http.Request{
@@ -144,22 +144,22 @@ func TestReadBody(t *testing.T) {
 			Body: io.NopCloser(strings.NewReader("temp")),
 		}
 		body, err := zhttp.ReadBody(r)
-		ztesting.AssertEqual(t, "body length not match", 4, len(body))
-		ztesting.AssertEqual(t, "body not match", "body", string(body))
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, 4, len(body))
+		ztesting.AssertEqual(t, "body", string(body))
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("read multiple times", func(t *testing.T) {
 		r := &http.Request{
 			Body: io.NopCloser(strings.NewReader("body")),
 		}
 		body, err := zhttp.ReadBody(r)
-		ztesting.AssertEqual(t, "body length not match", 4, len(body))
-		ztesting.AssertEqual(t, "body not match", "body", string(body))
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, 4, len(body))
+		ztesting.AssertEqual(t, "body", string(body))
+		ztesting.AssertEqualErr(t, nil, err)
 		body, err = zhttp.ReadBody(r)
-		ztesting.AssertEqual(t, "body length not match", 4, len(body))
-		ztesting.AssertEqual(t, "body not match", "body", string(body))
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, 4, len(body))
+		ztesting.AssertEqual(t, "body", string(body))
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("get body error", func(t *testing.T) {
 		r := &http.Request{
@@ -169,17 +169,17 @@ func TestReadBody(t *testing.T) {
 			Body: io.NopCloser(strings.NewReader("temp")),
 		}
 		body, err := zhttp.ReadBody(r)
-		ztesting.AssertEqual(t, "body length not match", 0, len(body))
-		ztesting.AssertEqual(t, "body not match", "", string(body))
-		ztesting.AssertEqualErr(t, "error not match", io.ErrUnexpectedEOF, err)
+		ztesting.AssertEqual(t, 0, len(body))
+		ztesting.AssertEqual(t, "", string(body))
+		ztesting.AssertEqualErr(t, io.ErrUnexpectedEOF, err)
 	})
 	t.Run("read body error", func(t *testing.T) {
 		r := &http.Request{
 			Body: io.NopCloser(ziotest.ErrReader(strings.NewReader("body"), 4)),
 		}
 		body, err := zhttp.ReadBody(r)
-		ztesting.AssertEqual(t, "body length not match", 0, len(body))
-		ztesting.AssertEqual(t, "body not match", "", string(body))
-		ztesting.AssertEqualErr(t, "error not match", io.ErrClosedPipe, err)
+		ztesting.AssertEqual(t, 0, len(body))
+		ztesting.AssertEqual(t, "", string(body))
+		ztesting.AssertEqualErr(t, io.ErrClosedPipe, err)
 	})
 }

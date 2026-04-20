@@ -18,9 +18,9 @@ func TestBuildLog(t *testing.T) {
 	BuildLog(context.Background(), "test", "foo", "bar")
 	out := w.String()
 	if !buildlogEnabled {
-		ztesting.AssertEqual(t, "output not match", "", out)
+		ztesting.AssertEqual(t, "", out)
 	} else {
-		ztesting.AssertEqual(t, "message not output", true, strings.Contains(out, `"msg":"test"`))
-		ztesting.AssertEqual(t, "args not output", true, strings.Contains(out, `"foo":"bar"`))
+		ztesting.AssertEqual(t, true, strings.Contains(out, `"msg":"test"`))
+		ztesting.AssertEqual(t, true, strings.Contains(out, `"foo":"bar"`))
 	}
 }

@@ -14,27 +14,27 @@ func TestNewSlidingWindowLimiterWidth(t *testing.T) {
 		lim := NewSlidingWindowLimiter(-1)
 		for range 5 { // Token always should be false.
 			token := lim.Accept(context.Background())
-			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
+			ztesting.AssertEqual(t, false, token.OK())
 		}
 	})
 	t.Run("limit=0", func(t *testing.T) {
 		lim := NewSlidingWindowLimiter(0)
 		for range 5 { // Token always should be false.
 			token := lim.Accept(context.Background())
-			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
+			ztesting.AssertEqual(t, false, token.OK())
 		}
 	})
 	t.Run("limit=1", func(t *testing.T) {
 		lim := NewSlidingWindowLimiter(1)
 		token1, token2 := lim.Accept(context.Background()), lim.Accept(context.Background())
-		ztesting.AssertEqual(t, "incorrect token status", true, token1.OK())
-		ztesting.AssertEqual(t, "incorrect token status", false, token2.OK())
+		ztesting.AssertEqual(t, true, token1.OK())
+		ztesting.AssertEqual(t, false, token2.OK())
 	})
 	t.Run("width=0", func(t *testing.T) {
 		lim := NewSlidingWindowLimiterWidth(1, 0)
 		for range 5 { // Token always should be true.
 			token := lim.Accept(context.Background())
-			ztesting.AssertEqual(t, "incorrect token status", true, token.OK())
+			ztesting.AssertEqual(t, true, token.OK())
 		}
 	})
 }
@@ -51,7 +51,7 @@ func TestSlidingWindowLimiter(t *testing.T) {
 		}
 		for range 5 { // Token always should be false.
 			token := lim.AllowNow()
-			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
+			ztesting.AssertEqual(t, false, token.OK())
 		}
 	})
 	t.Run("AllowNow returns OK token", func(t *testing.T) {
@@ -62,7 +62,7 @@ func TestSlidingWindowLimiter(t *testing.T) {
 		}
 		for range 5 { // Token always should be true.
 			token := lim.AllowNow()
-			ztesting.AssertEqual(t, "incorrect token status", true, token.OK())
+			ztesting.AssertEqual(t, true, token.OK())
 		}
 	})
 	t.Run("WaitNow returns OK token", func(t *testing.T) {
@@ -75,12 +75,12 @@ func TestSlidingWindowLimiter(t *testing.T) {
 		for range 5 { // Token always should be true.
 			println(lim.limit, lim.sum)
 			token := lim.WaitNow(context.Background())
-			ztesting.AssertEqual(t, "incorrect token status", true, token.OK())
+			ztesting.AssertEqual(t, true, token.OK())
 		}
 		for range 5 { // Token always should be false.
 			println(lim.limit, lim.sum)
 			token := lim.AllowNow()
-			ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
+			ztesting.AssertEqual(t, false, token.OK())
 		}
 	})
 	t.Run("retry after worked", func(t *testing.T) {
@@ -94,12 +94,12 @@ func TestSlidingWindowLimiter(t *testing.T) {
 			timeNow:    func() time.Time { return *now },
 		}
 		token := lim.AllowNow() // Remove first token.
-		ztesting.AssertEqual(t, "incorrect token status", true, token.OK())
+		ztesting.AssertEqual(t, true, token.OK())
 		token = lim.AllowNow() // Now token should be false.
-		ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
+		ztesting.AssertEqual(t, false, token.OK())
 		time.AfterFunc(time.Second, func() { *now = (*now).Add(100 * 100 * time.Millisecond) }) // Forward time after 1sec.
 		token = lim.WaitNow(context.Background())
-		ztesting.AssertEqual(t, "incorrect token status", true, token.OK())
+		ztesting.AssertEqual(t, true, token.OK())
 	})
 	t.Run("context canceled", func(t *testing.T) {
 		now := time.Now()
@@ -111,11 +111,11 @@ func TestSlidingWindowLimiter(t *testing.T) {
 			timeNow:    func() time.Time { return now },
 		}
 		token := lim.AllowNow() // Remove first token.
-		ztesting.AssertEqual(t, "incorrect token status", true, token.OK())
+		ztesting.AssertEqual(t, true, token.OK())
 		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second))
 		defer cancel()
 		token = lim.WaitNow(ctx)
-		ztesting.AssertEqual(t, "incorrect token status", false, token.OK())
-		ztesting.AssertEqual(t, "incorrect error", context.DeadlineExceeded, token.Err())
+		ztesting.AssertEqual(t, false, token.OK())
+		ztesting.AssertEqual(t, context.DeadlineExceeded, token.Err())
 	})
 }

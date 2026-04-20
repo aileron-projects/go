@@ -15,21 +15,21 @@ func TestNewCron(t *testing.T) {
 	t.Parallel()
 	t.Run("nil config", func(t *testing.T) {
 		cron, err := NewCron(nil)
-		ztesting.AssertEqual(t, "non nil cron returned", nil, cron)
-		ztesting.AssertEqualErr(t, "error not match", ErrNilConfig, err)
+		ztesting.AssertEqual(t, nil, cron)
+		ztesting.AssertEqualErr(t, ErrNilConfig, err)
 	})
 	t.Run("nil job", func(t *testing.T) {
 		cron, err := NewCron(&Config{})
-		ztesting.AssertEqual(t, "non nil cron returned", nil, cron)
-		ztesting.AssertEqualErr(t, "error not match", ErrNilJob, err)
+		ztesting.AssertEqual(t, nil, cron)
+		ztesting.AssertEqualErr(t, ErrNilJob, err)
 	})
 	t.Run("cron parse error", func(t *testing.T) {
 		cron, err := NewCron(&Config{
 			Crontab: "INVALID",
 			JobFunc: func(ctx context.Context) error { return nil },
 		})
-		ztesting.AssertEqual(t, "non nil cron returned", nil, cron)
-		ztesting.AssertEqualErr(t, "error not match", &ParseError{What: "number of fields"}, err)
+		ztesting.AssertEqual(t, nil, cron)
+		ztesting.AssertEqualErr(t, &ParseError{What: "number of fields"}, err)
 	})
 }
 
@@ -50,7 +50,7 @@ func TestCron(t *testing.T) {
 		go cron.Start()
 		wg.Wait()
 		cron.Stop()
-		ztesting.AssertEqual(t, "call count mismatch", 1, count.Load())
+		ztesting.AssertEqual(t, 1, count.Load())
 	})
 	t.Run("already running", func(t *testing.T) {
 		var wg sync.WaitGroup
@@ -69,7 +69,7 @@ func TestCron(t *testing.T) {
 		go cron.Start()
 		wg.Wait()
 		cron.Stop()
-		ztesting.AssertEqual(t, "call count mismatch", 1, count.Load())
+		ztesting.AssertEqual(t, 1, count.Load())
 	})
 	t.Run("calibrate", func(t *testing.T) {
 		var wg sync.WaitGroup
@@ -97,9 +97,9 @@ func TestCron(t *testing.T) {
 		go cron.Start()
 		wg.Wait()
 		cron.Stop()
-		ztesting.AssertEqual(t, "call count mismatch", 1, count.Load())
-		ztesting.AssertEqual(t, "duration invalid", 9*time.Minute+30*time.Second, durations[0])
-		ztesting.AssertEqual(t, "duration invalid", time.Second, durations[1])
+		ztesting.AssertEqual(t, 1, count.Load())
+		ztesting.AssertEqual(t, 9*time.Minute+30*time.Second, durations[0])
+		ztesting.AssertEqual(t, time.Second, durations[1])
 	})
 }
 
@@ -126,7 +126,7 @@ func TestRunner(t *testing.T) {
 		r.Run() // Run 2. Should not run
 		r.Run() // Run 3. Should not run
 		wg.Wait()
-		ztesting.AssertEqual(t, "call count mismatch", 1, count.Load())
+		ztesting.AssertEqual(t, 1, count.Load())
 	})
 	t.Run("queue=2", func(t *testing.T) {
 		var wg sync.WaitGroup
@@ -149,7 +149,7 @@ func TestRunner(t *testing.T) {
 		r.Run() // Run 2. Should run
 		r.Run() // Run 3. Should not run
 		wg.Wait()
-		ztesting.AssertEqual(t, "call count mismatch", 2, count.Load())
+		ztesting.AssertEqual(t, 2, count.Load())
 	})
 	t.Run("queue=3", func(t *testing.T) {
 		var wg sync.WaitGroup
@@ -172,7 +172,7 @@ func TestRunner(t *testing.T) {
 		r.Run() // Run 2. Should run
 		r.Run() // Run 3. Should run
 		wg.Wait()
-		ztesting.AssertEqual(t, "call count mismatch", 3, count.Load())
+		ztesting.AssertEqual(t, 3, count.Load())
 	})
 	t.Run("job error", func(t *testing.T) {
 		var wg sync.WaitGroup
@@ -194,7 +194,7 @@ func TestRunner(t *testing.T) {
 		}
 		r.Run()
 		wg.Wait()
-		ztesting.AssertEqualErr(t, "unexpected error", io.EOF, err)
+		ztesting.AssertEqualErr(t, io.EOF, err)
 	})
 	t.Run("job panic", func(t *testing.T) {
 		var wg sync.WaitGroup
@@ -216,7 +216,7 @@ func TestRunner(t *testing.T) {
 		}
 		r.Run()
 		wg.Wait()
-		ztesting.AssertEqualErr(t, "unexpected error", io.EOF, err)
+		ztesting.AssertEqualErr(t, io.EOF, err)
 	})
 	t.Run("run with context", func(t *testing.T) {
 		var wg sync.WaitGroup
@@ -225,7 +225,7 @@ func TestRunner(t *testing.T) {
 			jobFunc: func(ctx context.Context) error {
 				defer wg.Done()
 				val := ctx.Value("foo")
-				ztesting.AssertEqual(t, "context value not match", any("bar"), val)
+				ztesting.AssertEqual(t, any("bar"), val)
 				return nil
 			},
 			withContext: func() context.Context {

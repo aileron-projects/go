@@ -63,7 +63,7 @@ func TestBadgerFish_Decode(t *testing.T) {
 			xmlBytes, _ := os.ReadFile("./testdata/xml/" + tc.file + ".xml")
 			jsonBytes, _ := os.ReadFile("./testdata/badgerfish/" + tc.file + ".json")
 			b, err := c.XMLtoJSON(xmlBytes)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqualErr(t, tc.err, err)
 			if tc.err != nil {
 				return
 			}
@@ -128,7 +128,7 @@ func TestBadgerFish_Encode(t *testing.T) {
 			xmlBytes, _ := os.ReadFile("./testdata/badgerfish/" + tc.file + ".xml")
 			jsonBytes, _ := os.ReadFile("./testdata/badgerfish/" + tc.file + ".json")
 			b, err := c.JSONtoXML(jsonBytes)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqualErr(t, tc.err, err)
 			if tc.err != nil {
 				return
 			}

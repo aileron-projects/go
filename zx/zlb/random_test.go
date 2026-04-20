@@ -75,11 +75,11 @@ func TestRandom_Get(t *testing.T) {
 			lb := zlb.NewRandom(tc.targets...)
 			lb.MaxRetry = 1
 			tt, found := lb.Get(0)
-			ztesting.AssertEqual(t, "found not match", tc.found, found)
+			ztesting.AssertEqual(t, tc.found, found)
 			if !tc.found {
 				return
 			}
-			ztesting.AssertEqual(t, "active status not match", true, tt.Active())
+			ztesting.AssertEqual(t, true, tt.Active())
 		})
 	}
 }
@@ -90,11 +90,11 @@ func TestRandomW_Get(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			lb := zlb.NewRandomW(tc.targets...)
 			tt, found := lb.Get(0)
-			ztesting.AssertEqual(t, "found not match", tc.found, found)
+			ztesting.AssertEqual(t, tc.found, found)
 			if !tc.found {
 				return
 			}
-			ztesting.AssertEqual(t, "active status not match", true, tt.Active())
+			ztesting.AssertEqual(t, true, tt.Active())
 		})
 	}
 }

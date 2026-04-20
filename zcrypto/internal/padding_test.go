@@ -93,12 +93,12 @@ func TestPadPKCS7(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			b, err := internal.PadPKCS7(tc.blockSize, tc.data)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqual(t, "data not match", tc.want, b)
+			ztesting.AssertEqualErr(t, tc.err, err)
+			ztesting.AssertEqual(t, tc.want, b)
 			if len(b) > 0 {
 				bb, err := internal.UnpadPKCS7(tc.blockSize, b)
-				ztesting.AssertEqualErr(t, "non nil error", nil, err)
-				ztesting.AssertEqual(t, "data not match", tc.data, bb)
+				ztesting.AssertEqualErr(t, nil, err)
+				ztesting.AssertEqual(t, tc.data, bb)
 			}
 		})
 	}
@@ -182,12 +182,12 @@ func TestUnpadPKCS7(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			b, err := internal.UnpadPKCS7(tc.blockSize, tc.data)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqual(t, "data not match", tc.want, b)
+			ztesting.AssertEqualErr(t, tc.err, err)
+			ztesting.AssertEqual(t, tc.want, b)
 			if tc.err == nil {
 				bb, err := internal.PadPKCS7(tc.blockSize, b)
-				ztesting.AssertEqualErr(t, "non nil error", nil, err)
-				ztesting.AssertEqual(t, "data not match", tc.data, bb)
+				ztesting.AssertEqualErr(t, nil, err)
+				ztesting.AssertEqual(t, tc.data, bb)
 			}
 		})
 	}
@@ -268,12 +268,12 @@ func TestPadISO7816(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			b, err := internal.PadISO7816(tc.blockSize, tc.data)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqual(t, "data not match", tc.want, b)
+			ztesting.AssertEqualErr(t, tc.err, err)
+			ztesting.AssertEqual(t, tc.want, b)
 			if len(b) > 0 {
 				bb, err := internal.UnpadISO7816(tc.blockSize, b)
-				ztesting.AssertEqualErr(t, "non nil error", nil, err)
-				ztesting.AssertEqual(t, "data not match", tc.data, bb)
+				ztesting.AssertEqualErr(t, nil, err)
+				ztesting.AssertEqual(t, tc.data, bb)
 			}
 		})
 	}
@@ -357,12 +357,12 @@ func TestUnpadISO7816(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			b, err := internal.UnpadISO7816(tc.blockSize, tc.data)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqual(t, "data not match", tc.want, b)
+			ztesting.AssertEqualErr(t, tc.err, err)
+			ztesting.AssertEqual(t, tc.want, b)
 			if tc.err == nil {
 				bb, err := internal.PadISO7816(tc.blockSize, b)
-				ztesting.AssertEqualErr(t, "non nil error", nil, err)
-				ztesting.AssertEqual(t, "data not match", tc.data, bb)
+				ztesting.AssertEqualErr(t, nil, err)
+				ztesting.AssertEqual(t, tc.data, bb)
 			}
 		})
 	}
@@ -444,12 +444,12 @@ func TestPadISO10126(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			b, err := internal.PadISO10126(tc.blockSize, tc.data)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqual(t, "data not match", tc.want, b)
+			ztesting.AssertEqualErr(t, tc.err, err)
+			ztesting.AssertEqual(t, tc.want, b)
 			if len(b) > 0 {
 				bb, err := internal.UnpadISO10126(tc.blockSize, b)
-				ztesting.AssertEqualErr(t, "non nil error", nil, err)
-				ztesting.AssertEqual(t, "data not match", tc.data, bb)
+				ztesting.AssertEqualErr(t, nil, err)
+				ztesting.AssertEqual(t, tc.data, bb)
 			}
 		})
 	}
@@ -459,8 +459,8 @@ func TestPadISO10126_ReadError(t *testing.T) {
 	done := ztesting.ReplaceRandReader(strings.NewReader("1"))
 	defer done()
 	b, err := internal.PadISO10126(10, []byte("12345"))
-	ztesting.AssertEqualErr(t, "error not match", io.ErrUnexpectedEOF, err)
-	ztesting.AssertEqual(t, "data not match", nil, b)
+	ztesting.AssertEqualErr(t, io.ErrUnexpectedEOF, err)
+	ztesting.AssertEqual(t, nil, b)
 }
 
 func TestUnpadISO10126(t *testing.T) {
@@ -541,12 +541,12 @@ func TestUnpadISO10126(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			b, err := internal.UnpadISO10126(tc.blockSize, tc.data)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqual(t, "data not match", tc.want, b)
+			ztesting.AssertEqualErr(t, tc.err, err)
+			ztesting.AssertEqual(t, tc.want, b)
 			if tc.err == nil {
 				bb, err := internal.PadISO10126(tc.blockSize, b)
-				ztesting.AssertEqualErr(t, "non nil error", nil, err)
-				ztesting.AssertEqual(t, "data not match", tc.data, bb)
+				ztesting.AssertEqualErr(t, nil, err)
+				ztesting.AssertEqual(t, tc.data, bb)
 			}
 		})
 	}

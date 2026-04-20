@@ -21,12 +21,12 @@ func TestReportErr(t *testing.T) {
 		var buf bytes.Buffer
 		reportTo = &buf
 		ReportErr(nil, "description")
-		ztesting.AssertEqual(t, "report is not empty", "", buf.String())
+		ztesting.AssertEqual(t, "", buf.String())
 	})
 	t.Run("report error", func(t *testing.T) {
 		var buf bytes.Buffer
 		reportTo = &buf
 		ReportErr(io.EOF, "description")
-		ztesting.AssertEqual(t, "report does not contain error", true, strings.Contains(buf.String(), ">> Error   : EOF"))
+		ztesting.AssertEqual(t, true, strings.Contains(buf.String(), ">> Error   : EOF"))
 	})
 }

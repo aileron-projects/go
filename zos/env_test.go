@@ -11,14 +11,14 @@ func TestEnvSubst(t *testing.T) {
 	t.Run("resolve all", func(t *testing.T) {
 		txt := `${TestEnvSubst}`
 		b, err := EnvSubst([]byte(txt))
-		ztesting.AssertEqual(t, "value not match", "test", string(b))
-		ztesting.AssertEqualErr(t, "error not nil", nil, err)
+		ztesting.AssertEqual(t, "test", string(b))
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("env error", func(t *testing.T) {
 		txt := `${!TestEnvSubst}`
 		b, err := EnvSubst([]byte(txt))
-		ztesting.AssertEqual(t, "value not match", "", string(b))
-		ztesting.AssertEqualErr(t, "error not match", &EnvError{Type: typeSyntax}, err)
+		ztesting.AssertEqual(t, "", string(b))
+		ztesting.AssertEqualErr(t, &EnvError{Type: typeSyntax}, err)
 	})
 }
 
@@ -28,20 +28,20 @@ func TestEnvSubst2(t *testing.T) {
 	t.Run("resolve all", func(t *testing.T) {
 		txt := `${${TestEnvSubst2_PTR}}`
 		b, err := EnvSubst2([]byte(txt))
-		ztesting.AssertEqual(t, "value not match", "test", string(b))
-		ztesting.AssertEqualErr(t, "error not nil", nil, err)
+		ztesting.AssertEqual(t, "test", string(b))
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("inner env error", func(t *testing.T) {
 		txt := `${${!TestEnvSubst2_PTR}}`
 		b, err := EnvSubst2([]byte(txt))
-		ztesting.AssertEqual(t, "value not match", "", string(b))
-		ztesting.AssertEqualErr(t, "error not match", &EnvError{Type: typeSyntax}, err)
+		ztesting.AssertEqual(t, "", string(b))
+		ztesting.AssertEqualErr(t, &EnvError{Type: typeSyntax}, err)
 	})
 	t.Run("outer env error", func(t *testing.T) {
 		txt := `${!${TestEnvSubst2_PTR}}`
 		b, err := EnvSubst2([]byte(txt))
-		ztesting.AssertEqual(t, "value not match", "", string(b))
-		ztesting.AssertEqualErr(t, "error not match", &EnvError{Type: typeSyntax}, err)
+		ztesting.AssertEqual(t, "", string(b))
+		ztesting.AssertEqualErr(t, &EnvError{Type: typeSyntax}, err)
 	})
 }
 
@@ -87,8 +87,8 @@ func TestResolveEnv(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			v, err := ResolveEnv([]byte(tc.in))
-			ztesting.AssertEqual(t, "value not match", tc.result, string(v))
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqual(t, tc.result, string(v))
+			ztesting.AssertEqualErr(t, tc.err, err)
 		})
 	}
 }
@@ -109,8 +109,8 @@ func TestResolveGroup1(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			v, err := resolveGroup1(tc.o)
-			ztesting.AssertEqual(t, "value not match", tc.result, v)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqual(t, tc.result, v)
+			ztesting.AssertEqualErr(t, tc.err, err)
 		})
 	}
 }
@@ -139,8 +139,8 @@ func TestResolveGroup2(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			v, err := resolveGroup2(tc.p, tc.o)
-			ztesting.AssertEqual(t, "value not match", tc.result, v)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqual(t, tc.result, v)
+			ztesting.AssertEqualErr(t, tc.err, err)
 		})
 	}
 }
@@ -162,8 +162,8 @@ func TestResolveGroup3(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			v, err := resolveGroup3(tc.p, tc.o)
-			ztesting.AssertEqual(t, "value not match", tc.result, v)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqual(t, tc.result, v)
+			ztesting.AssertEqualErr(t, tc.err, err)
 		})
 	}
 }
@@ -186,8 +186,8 @@ func TestResolveGroup4(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			v, err := resolveGroup4(tc.p, tc.o)
-			ztesting.AssertEqual(t, "value not match", tc.result, v)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqual(t, tc.result, v)
+			ztesting.AssertEqualErr(t, tc.err, err)
 		})
 	}
 }
@@ -210,8 +210,8 @@ func TestResolveGroup5(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			v, err := resolveGroup5(tc.p, tc.o)
-			ztesting.AssertEqual(t, "value not match", tc.result, v)
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqual(t, tc.result, v)
+			ztesting.AssertEqualErr(t, tc.err, err)
 		})
 	}
 }

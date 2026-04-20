@@ -17,15 +17,15 @@ func TestMustFNV1a64Hash(t *testing.T) {
 	t.Parallel()
 	t.Run("nil error", func(t *testing.T) {
 		b := mustFNV1a64Hash("test", nil)
-		ztesting.AssertEqual(t, "hash not match", "f9e6e6ef197c2b25", hex.EncodeToString(b))
+		ztesting.AssertEqual(t, "f9e6e6ef197c2b25", hex.EncodeToString(b))
 	})
 	t.Run("non-nil error", func(t *testing.T) {
 		defer func() {
 			err := recover().(error)
-			ztesting.AssertEqualErr(t, "panicked error not match", io.EOF, err)
+			ztesting.AssertEqualErr(t, io.EOF, err)
 		}()
 		b := mustFNV1a64Hash("test", io.EOF)
-		ztesting.AssertEqual(t, "hash not match", "", hex.EncodeToString(b))
+		ztesting.AssertEqual(t, "", hex.EncodeToString(b))
 	})
 }
 
@@ -39,8 +39,8 @@ func TestNewTime(t *testing.T) {
 	done := ztesting.ReplaceRandReader(rr)
 	defer done()
 	id := NewTime()
-	ztesting.AssertEqual(t, "id length not match", 30, len(id))
-	ztesting.AssertEqual(t, "time not match", 946684800_000_000, binary.BigEndian.Uint64(id[0:8]))
+	ztesting.AssertEqual(t, 30, len(id))
+	ztesting.AssertEqual(t, 946684800_000_000, binary.BigEndian.Uint64(id[0:8]))
 }
 
 func TestNewHost(t *testing.T) {
@@ -54,9 +54,9 @@ func TestNewHost(t *testing.T) {
 	done := ztesting.ReplaceRandReader(rr)
 	defer done()
 	id := NewHost()
-	ztesting.AssertEqual(t, "id length not match", 30, len(id))
-	ztesting.AssertEqual(t, "time not match", 946684800_000_000, binary.BigEndian.Uint64(id[0:8]))
-	ztesting.AssertEqual(t, "hostname not match", "host1234", string(id[8:16]))
+	ztesting.AssertEqual(t, 30, len(id))
+	ztesting.AssertEqual(t, 946684800_000_000, binary.BigEndian.Uint64(id[0:8]))
+	ztesting.AssertEqual(t, "host1234", string(id[8:16]))
 }
 
 func TestNewCount(t *testing.T) {
@@ -71,7 +71,7 @@ func TestNewCount(t *testing.T) {
 	counter = atomic.Uint64{}
 	counter.Store(math.MaxUint64 - 1)
 	id := NewCount()
-	ztesting.AssertEqual(t, "id length not match", 30, len(id))
-	ztesting.AssertEqual(t, "time not match", 946684800_000_000, binary.BigEndian.Uint64(id[0:8]))
-	ztesting.AssertEqual(t, "counter not match", uint64(math.MaxUint64), binary.BigEndian.Uint64(id[22:]))
+	ztesting.AssertEqual(t, 30, len(id))
+	ztesting.AssertEqual(t, 946684800_000_000, binary.BigEndian.Uint64(id[0:8]))
+	ztesting.AssertEqual(t, uint64(math.MaxUint64), binary.BigEndian.Uint64(id[22:]))
 }

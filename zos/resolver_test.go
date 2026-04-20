@@ -44,21 +44,21 @@ func TestEnvError(t *testing.T) {
 	t.Run("unwrap", func(t *testing.T) {
 		err := &EnvError{Err: io.EOF}
 		inner := err.Unwrap()
-		ztesting.AssertEqualErr(t, "unwrapped err not match", io.EOF, inner)
+		ztesting.AssertEqualErr(t, io.EOF, inner)
 	})
 	t.Run("message", func(t *testing.T) {
 		err := &EnvError{Err: io.EOF, Type: "err type", Info: "err info"}
 		msg := err.Error()
-		ztesting.AssertEqual(t, "err massage not match", "err type err info [EOF]", msg)
+		ztesting.AssertEqual(t, "err type err info [EOF]", msg)
 	})
 	t.Run("errors equal", func(t *testing.T) {
 		err1 := &EnvError{Err: io.EOF, Type: "err type"}
 		err2 := &EnvError{Err: io.EOF, Type: "err type"}
-		ztesting.AssertEqual(t, "errors not same", true, errors.Is(err1, err2))
+		ztesting.AssertEqual(t, true, errors.Is(err1, err2))
 	})
 	t.Run("errors not equal", func(t *testing.T) {
 		err := &EnvError{Type: "err type"}
-		ztesting.AssertEqual(t, "errors are same", false, errors.Is(err, io.EOF))
+		ztesting.AssertEqual(t, false, errors.Is(err, io.EOF))
 	})
 }
 
@@ -80,9 +80,9 @@ func TestEnv01(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv01", tc.preset)
 			got, err := env01(tc.p)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -106,9 +106,9 @@ func TestEnv02(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv02", tc.preset)
 			got, err := env02(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -132,9 +132,9 @@ func TestEnv03(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv03", tc.preset)
 			got, err := env03(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -158,9 +158,9 @@ func TestEnv04(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv04", tc.preset)
 			got, err := env04(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -184,9 +184,9 @@ func TestEnv05(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv05", tc.preset)
 			got, err := env05(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -210,9 +210,9 @@ func TestEnv06(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv06", tc.preset)
 			got, err := env06(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -236,9 +236,9 @@ func TestEnv07(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv07", tc.preset)
 			got, err := env07(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -262,9 +262,9 @@ func TestEnv08(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv08", tc.preset)
 			got, err := env08(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -288,9 +288,9 @@ func TestEnv09(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv09", tc.preset)
 			got, err := env09(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -322,9 +322,9 @@ func TestEnv10(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv10", tc.preset)
 			got, err := env10(tc.p, tc.o)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -376,9 +376,9 @@ func TestEnv11(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv11", tc.preset)
 			got, err := env11(tc.p, tc.o, tc.l)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -404,9 +404,9 @@ func TestEnv12(t *testing.T) {
 			t.Setenv("TestEnv12_var1", tc.preset)
 			t.Setenv("TestEnv12_var2", tc.preset)
 			got, err := env12(tc.p)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -432,9 +432,9 @@ func TestEnv13(t *testing.T) {
 			t.Setenv("TestEnv13_var1", tc.preset)
 			t.Setenv("TestEnv13_var2", tc.preset)
 			got, err := env13(tc.p)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -459,9 +459,9 @@ func TestEnv14(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv14", tc.preset)
 			got, err := env14(tc.p)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -484,9 +484,9 @@ func TestEnv15(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv15", tc.preset)
 			got, err := env15(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -523,9 +523,9 @@ func TestEnv16(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv16", tc.preset)
 			got, err := env16(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -548,9 +548,9 @@ func TestEnv17(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv17", tc.preset)
 			got, err := env17(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -588,9 +588,9 @@ func TestEnv18(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv18", tc.preset)
 			got, err := env18(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -627,9 +627,9 @@ func TestEnv19(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv19", tc.preset)
 			got, err := env19(tc.p, tc.w, tc.s)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -666,9 +666,9 @@ func TestEnv20(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv20", tc.preset)
 			got, err := env20(tc.p, tc.w, tc.s)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -705,9 +705,9 @@ func TestEnv21(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv21", tc.preset)
 			got, err := env21(tc.p, tc.w, tc.s)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -744,9 +744,9 @@ func TestEnv22(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv22", tc.preset)
 			got, err := env22(tc.p, tc.w, tc.s)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -785,9 +785,9 @@ func TestEnv23(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv23", tc.preset)
 			got, err := env23(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -824,9 +824,9 @@ func TestEnv24(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv24", tc.preset)
 			got, err := env24(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -865,9 +865,9 @@ func TestEnv25(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv25", tc.preset)
 			got, err := env25(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -904,9 +904,9 @@ func TestEnv26(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv26", tc.preset)
 			got, err := env26(tc.p, tc.w)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}
@@ -937,9 +937,9 @@ func TestEnv27(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Setenv("TestEnv27", tc.preset)
 			got, err := env27(tc.p, tc.o)
-			ztesting.AssertEqual(t, "invalid resolved value of env.", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "unexpected error.", tc.err.Error(), err.Error())
+				ztesting.AssertEqual(t, tc.err.Error(), err.Error())
 			}
 		})
 	}

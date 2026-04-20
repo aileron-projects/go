@@ -27,7 +27,7 @@ func TestSockSOOption_Controllers(t *testing.T) {
 		SendBufferForce:    18,
 	}
 	cs := opt.Controllers()
-	ztesting.AssertEqual(t, "number of controllers not match", 0, len(cs))
+	ztesting.AssertEqual(t, 0, len(cs))
 }
 
 func TestSockIPOption_Controllers(t *testing.T) {
@@ -41,7 +41,7 @@ func TestSockIPOption_Controllers(t *testing.T) {
 		TTL:                 12,
 	}
 	cs := opt.Controllers()
-	ztesting.AssertEqual(t, "number of controllers not match", 0, len(cs))
+	ztesting.AssertEqual(t, 0, len(cs))
 }
 
 func TestSockIPV6Option_Controllers(t *testing.T) {
@@ -50,7 +50,7 @@ func TestSockIPV6Option_Controllers(t *testing.T) {
 		V6Only: true,
 	}
 	cs := opt.Controllers()
-	ztesting.AssertEqual(t, "number of controllers not match", 0, len(cs))
+	ztesting.AssertEqual(t, 0, len(cs))
 }
 
 func TestSockTCPOption_Controllers(t *testing.T) {
@@ -72,7 +72,7 @@ func TestSockTCPOption_Controllers(t *testing.T) {
 		FastOpenConnect: true,
 	}
 	cs := opt.Controllers()
-	ztesting.AssertEqual(t, "number of controllers not match", 0, len(cs))
+	ztesting.AssertEqual(t, 0, len(cs))
 }
 
 func TestSockUDPOption_Controllers(t *testing.T) {
@@ -83,5 +83,5 @@ func TestSockUDPOption_Controllers(t *testing.T) {
 		GRO:     true,
 	}
 	cs := opt.Controllers()
-	ztesting.AssertEqual(t, "number of controllers not match", 0, len(cs))
+	ztesting.AssertEqual(t, 0, len(cs))
 }

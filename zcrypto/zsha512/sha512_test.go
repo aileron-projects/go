@@ -37,7 +37,7 @@ func TestSum(t *testing.T) {
 	for _, tc := range hashSum {
 		t.Run(tc.msg, func(t *testing.T) {
 			got := tc.sf([]byte(tc.msg))
-			ztesting.AssertEqual(t, "hash not match", tc.sum, hex.EncodeToString(got))
+			ztesting.AssertEqual(t, tc.sum, hex.EncodeToString(got))
 		})
 	}
 }
@@ -48,10 +48,10 @@ func TestEqualSum(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			sum, _ := hex.DecodeString(tc.sum)
 			equal := tc.eqf([]byte(tc.msg), sum)
-			ztesting.AssertEqual(t, "invalid compare result", true, equal)
+			ztesting.AssertEqual(t, true, equal)
 			slices.Reverse(sum) // Make the sum wrong.
 			equal = tc.eqf([]byte(tc.msg), sum)
-			ztesting.AssertEqual(t, "invalid compare result", false, equal)
+			ztesting.AssertEqual(t, false, equal)
 		})
 	}
 }
@@ -93,7 +93,7 @@ func TestHMACSum(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			sum := tc.sf([]byte(tc.msg), []byte(tc.key))
 			got := hex.EncodeToString(sum)
-			ztesting.AssertEqual(t, "invalid sum result", tc.sum, got)
+			ztesting.AssertEqual(t, tc.sum, got)
 		})
 	}
 }
@@ -104,10 +104,10 @@ func TestHMACEqualSum(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			sum, _ := hex.DecodeString(tc.sum)
 			equal := tc.eqf([]byte(tc.msg), []byte(tc.key), sum)
-			ztesting.AssertEqual(t, "invalid equal result", true, equal)
+			ztesting.AssertEqual(t, true, equal)
 			slices.Reverse(sum) // Make the sum wrong.
 			equal = tc.eqf([]byte(tc.msg), []byte(tc.key), sum)
-			ztesting.AssertEqual(t, "invalid equal result", false, equal)
+			ztesting.AssertEqual(t, false, equal)
 		})
 	}
 }

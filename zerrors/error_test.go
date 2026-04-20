@@ -14,12 +14,12 @@ func TestToMap(t *testing.T) {
 	t.Parallel()
 	t.Run("nil", func(t *testing.T) {
 		m := zerrors.ToMap(nil)
-		ztesting.AssertEqual(t, "returned map mismatch", nil, m)
+		ztesting.AssertEqual(t, nil, m)
 	})
 	t.Run("primitive error", func(t *testing.T) {
 		m := zerrors.ToMap(io.EOF)
 		want := map[string]any{"message": "EOF"}
-		ztesting.AssertEqual(t, "returned map mismatch", want, m)
+		ztesting.AssertEqual(t, want, m)
 	})
 	t.Run("wrapped error", func(t *testing.T) {
 		err := fmt.Errorf("outer error [%w]", io.EOF)
@@ -30,16 +30,16 @@ func TestToMap(t *testing.T) {
 				"message": "EOF",
 			},
 		}
-		ztesting.AssertEqual(t, "msg mismatch", want, m)
+		ztesting.AssertEqual(t, want, m)
 	})
 	t.Run("interface", func(t *testing.T) {
 		def := zerrors.NewDefinition("c", "k", "m", nil)
 		err := def.NewStack(nil)
 		m := zerrors.ToMap(err)
-		ztesting.AssertEqual(t, "code mismatch", "c", m["code"])
-		ztesting.AssertEqual(t, "kind mismatch", "k", m["kind"])
-		ztesting.AssertEqual(t, "message mismatch", "m", m["message"])
-		ztesting.AssertEqual(t, "empty frame", true, len(m["frames"].([]string)) > 0)
+		ztesting.AssertEqual(t, "c", m["code"])
+		ztesting.AssertEqual(t, "k", m["kind"])
+		ztesting.AssertEqual(t, "m", m["message"])
+		ztesting.AssertEqual(t, true, len(m["frames"].([]string)) > 0)
 	})
 }
 
@@ -47,12 +47,12 @@ func TestToSlogAttrs(t *testing.T) {
 	t.Parallel()
 	t.Run("nil", func(t *testing.T) {
 		m := zerrors.ToSlogAttrs(nil)
-		ztesting.AssertEqual(t, "attrs mismatch", nil, m)
+		ztesting.AssertEqual(t, nil, m)
 	})
 	t.Run("primitive error", func(t *testing.T) {
 		m := zerrors.ToSlogAttrs(io.EOF)
 		want := []slog.Attr{slog.String("message", "EOF")}
-		ztesting.AssertEqual(t, "attrs mismatch", want, m)
+		ztesting.AssertEqual(t, want, m)
 	})
 	t.Run("wrapped error", func(t *testing.T) {
 		err := fmt.Errorf("outer error [%w]", io.EOF)
@@ -61,7 +61,7 @@ func TestToSlogAttrs(t *testing.T) {
 			slog.String("message", "outer error [EOF]"),
 			slog.GroupAttrs("cause", slog.String("message", "EOF")),
 		}
-		ztesting.AssertEqual(t, "attrs mismatch", want, m)
+		ztesting.AssertEqual(t, want, m)
 	})
 	t.Run("interface", func(t *testing.T) {
 		def := zerrors.NewDefinition("c", "k", "m", nil)
@@ -72,7 +72,7 @@ func TestToSlogAttrs(t *testing.T) {
 			slog.String("kind", "k"),
 			slog.String("message", "m"),
 		}
-		ztesting.AssertEqual(t, "attrs mismatch", want, m)
+		ztesting.AssertEqual(t, want, m)
 	})
 }
 
@@ -80,7 +80,7 @@ func TestError_Unwrap(t *testing.T) {
 	t.Parallel()
 	e := &zerrors.Error{Cause: io.EOF}
 	u := e.Unwrap()
-	ztesting.AssertEqual(t, "unwrapped error is incorrect.", io.EOF, u)
+	ztesting.AssertEqual(t, io.EOF, u)
 }
 
 func TestError_Error(t *testing.T) {
@@ -121,7 +121,7 @@ func TestError_Error(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got := tc.err.Error()
-			ztesting.AssertEqual(t, "error string not match", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -187,7 +187,7 @@ func TestError_Is(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			is := tc.use.Is(tc.target)
-			ztesting.AssertEqual(t, "incorrect error identification.", tc.same, is)
+			ztesting.AssertEqual(t, tc.same, is)
 		})
 	}
 }
@@ -202,7 +202,7 @@ func TestError_Map(t *testing.T) {
 			"kind":    "k",
 			"message": "m",
 		}
-		ztesting.AssertEqual(t, "maps not matched", want, got)
+		ztesting.AssertEqual(t, want, got)
 	})
 	t.Run("cause", func(t *testing.T) {
 		e := &zerrors.Error{Cause: io.EOF}
@@ -210,7 +210,7 @@ func TestError_Map(t *testing.T) {
 		want := map[string]any{
 			"message": "EOF",
 		}
-		ztesting.AssertEqual(t, "maps not matched", want, got["cause"].(map[string]any))
+		ztesting.AssertEqual(t, want, got["cause"].(map[string]any))
 	})
 	t.Run("attrs", func(t *testing.T) {
 		e := &zerrors.Error{Attrs: map[string]string{"foo": "bar"}}
@@ -218,13 +218,13 @@ func TestError_Map(t *testing.T) {
 		want := map[string]string{
 			"foo": "bar",
 		}
-		ztesting.AssertEqual(t, "maps not matched", want, got["attrs"].(map[string]string))
+		ztesting.AssertEqual(t, want, got["attrs"].(map[string]string))
 	})
 	t.Run("frames", func(t *testing.T) {
 		def := zerrors.NewDefinition("c", "k", "m", nil)
 		e := def.NewStack(nil)
 		got := e.Map()
-		ztesting.AssertEqual(t, "empty frame", true, len(got["frames"].([]string)) > 0)
+		ztesting.AssertEqual(t, true, len(got["frames"].([]string)) > 0)
 	})
 }
 
@@ -238,7 +238,7 @@ func TestError_SlogAttrs(t *testing.T) {
 			slog.String("kind", "k"),
 			slog.String("message", "m"),
 		}
-		ztesting.AssertEqual(t, "attrs not matched", want, got)
+		ztesting.AssertEqual(t, want, got)
 	})
 	t.Run("cause", func(t *testing.T) {
 		e := &zerrors.Error{Cause: io.EOF}
@@ -249,7 +249,7 @@ func TestError_SlogAttrs(t *testing.T) {
 			slog.String("message", ""),
 			slog.GroupAttrs("cause", slog.String("message", "EOF")),
 		}
-		ztesting.AssertEqual(t, "attrs not matched", want, got)
+		ztesting.AssertEqual(t, want, got)
 	})
 	t.Run("attrs", func(t *testing.T) {
 		e := &zerrors.Error{Attrs: map[string]string{"foo": "bar"}}
@@ -260,7 +260,7 @@ func TestError_SlogAttrs(t *testing.T) {
 			slog.String("message", ""),
 			slog.GroupAttrs("attrs", slog.String("foo", "bar")),
 		}
-		ztesting.AssertEqual(t, "attrs not matched", want, got)
+		ztesting.AssertEqual(t, want, got)
 	})
 	t.Run("frames", func(t *testing.T) {
 		def := zerrors.NewDefinition("c", "k", "m", nil)
@@ -268,7 +268,7 @@ func TestError_SlogAttrs(t *testing.T) {
 		got := e.SlogAttrs()
 		for _, a := range got {
 			if a.Key == "frames" {
-				ztesting.AssertEqual(t, "empty frame", true, len(a.Value.Any().([]string)) > 0)
+				ztesting.AssertEqual(t, true, len(a.Value.Any().([]string)) > 0)
 				return
 			}
 		}
@@ -322,7 +322,7 @@ func TestDefinition_Is(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			is := tc.def.Is(tc.target)
-			ztesting.AssertEqual(t, "incorrect error identification.", tc.same, is)
+			ztesting.AssertEqual(t, tc.same, is)
 		})
 	}
 }
@@ -333,52 +333,52 @@ func TestDefinition_New(t *testing.T) {
 		var ed zerrors.Definition
 		e := ed.New(nil)
 		w := zerrors.Error{}
-		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
-		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
-		ztesting.AssertEqual(t, "attrs mismatch.", w.Attrs, e.Attrs)
-		ztesting.AssertEqual(t, "unexpected frame length.", 0, len(e.Frames))
-		ztesting.AssertEqual(t, "cause mismatch.", nil, e.Cause)
+		ztesting.AssertEqual(t, w.Code, e.Code)
+		ztesting.AssertEqual(t, w.Kind, e.Kind)
+		ztesting.AssertEqual(t, w.Message, e.Message)
+		ztesting.AssertEqual(t, w.Attrs, e.Attrs)
+		ztesting.AssertEqual(t, 0, len(e.Frames))
+		ztesting.AssertEqual(t, nil, e.Cause)
 	})
 	t.Run("non inner error", func(t *testing.T) {
 		e := (&zerrors.Definition{Code: "c", Kind: "k", Message: "m"}).New(nil)
 		w := zerrors.Error{Code: "c", Kind: "k", Message: "m"}
-		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
-		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
-		ztesting.AssertEqual(t, "attrs mismatch.", w.Attrs, e.Attrs)
-		ztesting.AssertEqual(t, "unexpected frame length.", 0, len(e.Frames))
-		ztesting.AssertEqual(t, "cause mismatch.", nil, e.Cause)
+		ztesting.AssertEqual(t, w.Code, e.Code)
+		ztesting.AssertEqual(t, w.Kind, e.Kind)
+		ztesting.AssertEqual(t, w.Message, e.Message)
+		ztesting.AssertEqual(t, w.Attrs, e.Attrs)
+		ztesting.AssertEqual(t, 0, len(e.Frames))
+		ztesting.AssertEqual(t, nil, e.Cause)
 	})
 	t.Run("inner error", func(t *testing.T) {
 		e := (&zerrors.Definition{Code: "c", Kind: "k", Message: "m"}).New(io.EOF)
 		w := zerrors.Error{Code: "c", Kind: "k", Message: "m"}
-		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
-		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
-		ztesting.AssertEqual(t, "attrs mismatch.", w.Attrs, e.Attrs)
-		ztesting.AssertEqual(t, "unexpected frame length.", 0, len(e.Frames))
-		ztesting.AssertEqual(t, "cause mismatch.", io.EOF, e.Cause)
+		ztesting.AssertEqual(t, w.Code, e.Code)
+		ztesting.AssertEqual(t, w.Kind, e.Kind)
+		ztesting.AssertEqual(t, w.Message, e.Message)
+		ztesting.AssertEqual(t, w.Attrs, e.Attrs)
+		ztesting.AssertEqual(t, 0, len(e.Frames))
+		ztesting.AssertEqual(t, io.EOF, e.Cause)
 	})
 	t.Run("attrs error", func(t *testing.T) {
 		e := (&zerrors.Definition{Code: "c", Kind: "k", Message: "m", Attrs: map[string]string{"foo": "bar"}}).New(nil)
 		w := zerrors.Error{Code: "c", Kind: "k", Message: "m", Attrs: map[string]string{"foo": "bar"}}
-		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
-		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
-		ztesting.AssertEqual(t, "attrs mismatch.", w.Attrs, e.Attrs)
-		ztesting.AssertEqual(t, "unexpected frame length.", 0, len(e.Frames))
-		ztesting.AssertEqual(t, "cause mismatch.", nil, e.Cause)
+		ztesting.AssertEqual(t, w.Code, e.Code)
+		ztesting.AssertEqual(t, w.Kind, e.Kind)
+		ztesting.AssertEqual(t, w.Message, e.Message)
+		ztesting.AssertEqual(t, w.Attrs, e.Attrs)
+		ztesting.AssertEqual(t, 0, len(e.Frames))
+		ztesting.AssertEqual(t, nil, e.Cause)
 	})
 	t.Run("format message", func(t *testing.T) {
 		e := (&zerrors.Definition{Code: "c", Kind: "k", Message: "foo=%s"}).New(nil, "xxx")
 		w := zerrors.Error{Code: "c", Kind: "k", Message: "foo=xxx"}
-		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
-		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
-		ztesting.AssertEqual(t, "attrs mismatch.", w.Attrs, e.Attrs)
-		ztesting.AssertEqual(t, "unexpected frame length.", 0, len(e.Frames))
-		ztesting.AssertEqual(t, "cause mismatch.", nil, e.Cause)
+		ztesting.AssertEqual(t, w.Code, e.Code)
+		ztesting.AssertEqual(t, w.Kind, e.Kind)
+		ztesting.AssertEqual(t, w.Message, e.Message)
+		ztesting.AssertEqual(t, w.Attrs, e.Attrs)
+		ztesting.AssertEqual(t, 0, len(e.Frames))
+		ztesting.AssertEqual(t, nil, e.Cause)
 	})
 }
 
@@ -388,32 +388,32 @@ func TestDefinition_NewStack(t *testing.T) {
 		var ed zerrors.Definition
 		e := ed.NewStack(nil)
 		w := zerrors.Error{}
-		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
-		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
-		ztesting.AssertEqual(t, "attrs mismatch.", w.Attrs, e.Attrs)
-		ztesting.AssertEqual(t, "unexpected frame length.", true, len(e.Frames) > 0)
-		ztesting.AssertEqual(t, "cause mismatch.", nil, e.Cause)
+		ztesting.AssertEqual(t, w.Code, e.Code)
+		ztesting.AssertEqual(t, w.Kind, e.Kind)
+		ztesting.AssertEqual(t, w.Message, e.Message)
+		ztesting.AssertEqual(t, w.Attrs, e.Attrs)
+		ztesting.AssertEqual(t, true, len(e.Frames) > 0)
+		ztesting.AssertEqual(t, nil, e.Cause)
 	})
 	t.Run("cause without stack", func(t *testing.T) {
 		e := (&zerrors.Definition{Code: "c", Kind: "k", Message: "m", Attrs: map[string]string{"foo": "bar"}}).NewStack(io.EOF)
 		w := zerrors.Error{Code: "c", Kind: "k", Message: "m", Attrs: map[string]string{"foo": "bar"}}
-		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
-		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
-		ztesting.AssertEqual(t, "attrs mismatch.", w.Attrs, e.Attrs)
-		ztesting.AssertEqual(t, "unexpected frame length.", true, len(e.Frames) > 0)
-		ztesting.AssertEqual(t, "cause mismatch.", io.EOF, e.Cause)
+		ztesting.AssertEqual(t, w.Code, e.Code)
+		ztesting.AssertEqual(t, w.Kind, e.Kind)
+		ztesting.AssertEqual(t, w.Message, e.Message)
+		ztesting.AssertEqual(t, w.Attrs, e.Attrs)
+		ztesting.AssertEqual(t, true, len(e.Frames) > 0)
+		ztesting.AssertEqual(t, io.EOF, e.Cause)
 	})
 	t.Run("inner error with stack", func(t *testing.T) {
 		inner := &zerrors.Error{Frames: []zerrors.Frame{{}, {}}}
 		e := (&zerrors.Definition{Code: "c", Kind: "k", Message: "m", Attrs: map[string]string{"foo": "bar"}}).NewStack(inner)
 		w := zerrors.Error{Code: "c", Kind: "k", Message: "m", Attrs: map[string]string{"foo": "bar"}}
-		ztesting.AssertEqual(t, "code mismatch.", w.Code, e.Code)
-		ztesting.AssertEqual(t, "kind mismatch.", w.Kind, e.Kind)
-		ztesting.AssertEqual(t, "message mismatch.", w.Message, e.Message)
-		ztesting.AssertEqual(t, "attrs mismatch.", w.Attrs, e.Attrs)
-		ztesting.AssertEqual(t, "unexpected frame length.", 0, len(e.Frames))
-		ztesting.AssertEqual(t, "cause mismatch.", error(inner), e.Cause)
+		ztesting.AssertEqual(t, w.Code, e.Code)
+		ztesting.AssertEqual(t, w.Kind, e.Kind)
+		ztesting.AssertEqual(t, w.Message, e.Message)
+		ztesting.AssertEqual(t, w.Attrs, e.Attrs)
+		ztesting.AssertEqual(t, 0, len(e.Frames))
+		ztesting.AssertEqual(t, error(inner), e.Cause)
 	})
 }

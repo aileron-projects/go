@@ -13,21 +13,21 @@ import (
 func TestErrCipherLength(t *testing.T) {
 	t.Parallel()
 	e := ErrCipherLength(1)
-	ztesting.AssertEqual(t, "message not match", "zdes: incorrect ciphertext length. got:1", e.Error())
+	ztesting.AssertEqual(t, "zdes: incorrect ciphertext length. got:1", e.Error())
 }
 
 func TestNewDES(t *testing.T) {
 	t.Parallel()
 	t.Run("invalid key", func(t *testing.T) {
 		cb, iv, err := newDES([]byte("short"))
-		ztesting.AssertEqualErr(t, "unexpected error", des.KeySizeError(5), err)
-		ztesting.AssertEqual(t, "non nil cipher block returned", nil, cb)
-		ztesting.AssertEqual(t, "non empty iv returned", nil, iv)
+		ztesting.AssertEqualErr(t, des.KeySizeError(5), err)
+		ztesting.AssertEqual(t, nil, cb)
+		ztesting.AssertEqual(t, nil, iv)
 	})
 	t.Run("valid key", func(t *testing.T) {
 		_, iv, err := newDES([]byte("12345678"))
-		ztesting.AssertEqualErr(t, "non nil error returned", nil, err)
-		ztesting.AssertEqual(t, "iv length invalid", 8, len(iv))
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, 8, len(iv))
 	})
 }
 
@@ -35,14 +35,14 @@ func TestNew3DES(t *testing.T) {
 	t.Parallel()
 	t.Run("invalid key", func(t *testing.T) {
 		cb, iv, err := new3DES([]byte("short"))
-		ztesting.AssertEqualErr(t, "unexpected error", des.KeySizeError(5), err)
-		ztesting.AssertEqual(t, "non nil cipher block returned", nil, cb)
-		ztesting.AssertEqual(t, "non empty iv returned", nil, iv)
+		ztesting.AssertEqualErr(t, des.KeySizeError(5), err)
+		ztesting.AssertEqual(t, nil, cb)
+		ztesting.AssertEqual(t, nil, iv)
 	})
 	t.Run("valid key", func(t *testing.T) {
 		_, iv, err := new3DES([]byte("123456781234567812345678"))
-		ztesting.AssertEqualErr(t, "non nil error returned", nil, err)
-		ztesting.AssertEqual(t, "iv length invalid", 8, len(iv))
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, 8, len(iv))
 	})
 }
 
@@ -95,14 +95,14 @@ func TestEncryptDecrypt(t *testing.T) {
 			done := ztesting.ReplaceRandReader(strings.NewReader("abcd1234"))
 			defer done()
 			ciphertext, err := tc.enc([]byte(tc.key), []byte(tc.plain))
-			ztesting.AssertEqualErr(t, "error is not nil", nil, err)
-			ztesting.AssertEqual(t, "ciphertext not match", tc.cipher, hex.EncodeToString(ciphertext))
+			ztesting.AssertEqualErr(t, nil, err)
+			ztesting.AssertEqual(t, tc.cipher, hex.EncodeToString(ciphertext))
 		})
 		t.Run(tc.name+"_decrypt", func(t *testing.T) {
 			cipher, _ := hex.DecodeString(tc.cipher)
 			plain, err := tc.dec([]byte(tc.key), cipher)
-			ztesting.AssertEqualErr(t, "error is not nil", nil, err)
-			ztesting.AssertEqual(t, "plaintext not match", tc.plain, string(plain))
+			ztesting.AssertEqualErr(t, nil, err)
+			ztesting.AssertEqual(t, tc.plain, string(plain))
 		})
 	}
 }

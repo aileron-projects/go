@@ -123,12 +123,12 @@ func TestJumpHash_Get(t *testing.T) {
 			lb := zlb.NewJumpHash(tc.targets...)
 			lb.MaxRetry = 1
 			tt, found := lb.Get(tc.key)
-			ztesting.AssertEqual(t, "found not match", tc.found, found)
+			ztesting.AssertEqual(t, tc.found, found)
 			if !tc.found {
 				return
 			}
-			ztesting.AssertEqual(t, "target not match", tc.name, tt.name)
-			ztesting.AssertEqual(t, "active status not match", true, tt.Active())
+			ztesting.AssertEqual(t, tc.name, tt.name)
+			ztesting.AssertEqual(t, true, tt.Active())
 		})
 	}
 }

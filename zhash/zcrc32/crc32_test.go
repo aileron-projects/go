@@ -11,9 +11,9 @@ import (
 
 func TestAvailable(t *testing.T) {
 	t.Parallel()
-	ztesting.AssertEqual(t, "hash not available", true, zhash.CRC32IEEE.Available())
-	ztesting.AssertEqual(t, "hash not available", true, zhash.CRC32Castagnoli.Available())
-	ztesting.AssertEqual(t, "hash not available", true, zhash.CRC32Koopman.Available())
+	ztesting.AssertEqual(t, true, zhash.CRC32IEEE.Available())
+	ztesting.AssertEqual(t, true, zhash.CRC32Castagnoli.Available())
+	ztesting.AssertEqual(t, true, zhash.CRC32Koopman.Available())
 }
 
 func TestSum(t *testing.T) {
@@ -38,7 +38,7 @@ func TestSum(t *testing.T) {
 	for name, tc := range testCase {
 		t.Run(name, func(t *testing.T) {
 			got := tc.hf([]byte(tc.data))
-			ztesting.AssertEqual(t, "hash not match", tc.want, hex.EncodeToString(got))
+			ztesting.AssertEqual(t, tc.want, hex.EncodeToString(got))
 		})
 	}
 }
@@ -65,7 +65,7 @@ func TestEqualSum(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			d, _ := hex.DecodeString(tc.sum)
 			got := tc.cf([]byte(tc.data), d)
-			ztesting.AssertEqual(t, "invalid compare result", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -84,7 +84,7 @@ func TestHashSum(t *testing.T) {
 	for name, tc := range testCase {
 		t.Run(name, func(t *testing.T) {
 			got := tc.h.Sum([]byte(tc.data))
-			ztesting.AssertEqual(t, "hash not match", tc.want, hex.EncodeToString(got))
+			ztesting.AssertEqual(t, tc.want, hex.EncodeToString(got))
 		})
 	}
 }
