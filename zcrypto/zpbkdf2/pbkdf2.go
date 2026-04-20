@@ -93,11 +93,13 @@ func (c *PBKDF2) Split(hashedPW []byte) (salt, hash []byte, err error) {
 // Use [PBKDF2.Split] to split salt and the sum of the password.
 // [PBKDF2.Sum] always returns nil as error.
 func (c *PBKDF2) Sum(password []byte) ([]byte, error) {
-	salt := make([]byte, c.saltLen)
+	sum := make([]byte, c.saltLen+c.keyLen)
+	salt := sum[:c.saltLen]
 	_, err := rand.Read(salt)
 	must.Nil(err)
 	hashed := pbkdf2.Key(password, salt, c.iter, c.keyLen, c.hashFunc)
-	return append(salt, hashed...), nil
+	copy(sum[c.saltLen:], hashed)
+	return sum, nil
 }
 
 // Equal reports if the given hashed password and the password

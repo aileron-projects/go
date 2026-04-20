@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"io"
+	"strings"
 )
 
 // Decode decodes XML document read by the decoder into Go values.
@@ -54,7 +55,7 @@ func (b *BadgerFish) decode(decoder *xml.Decoder, start xml.StartElement, end xm
 	// Convert attributes into map object.
 	attrs := b.attrsToMap(start.Attr)
 
-	var text string
+	var text strings.Builder
 	var keys []string
 	var children []any
 
@@ -71,9 +72,9 @@ Loop:
 				continue // Ignore text with only space characters.
 			}
 			if b.TrimSpace {
-				text += string(trimmed)
+				text.WriteString(string(trimmed))
 			} else {
-				text += string(t)
+				text.WriteString(string(t))
 			}
 		case xml.StartElement:
 			content, err := b.decode(decoder, t, t.End())
@@ -94,14 +95,14 @@ Loop:
 	// Convert XML text value to JSON value.
 	var val any
 	if b.JSONValue != nil {
-		v, err := b.JSONValue(text, start)
+		v, err := b.JSONValue(text.String(), start)
 		if err != nil {
 			return nil, err
 		}
 		val = v
 	} else {
-		if text != "" {
-			val = text
+		if text.String() != "" {
+			val = text.String()
 		}
 	}
 

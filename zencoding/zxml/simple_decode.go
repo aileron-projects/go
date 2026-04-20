@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"io"
 	"slices"
+	"strings"
 )
 
 // Decode decodes XML document read by the decoder into Go values.
@@ -58,7 +59,7 @@ func (s *Simple) parseContent(decoder *xml.Decoder, start xml.StartElement, end 
 		attrs[attrName(attr.Name, s.AttrPrefix, s.NamespaceSep)] = attr.Value
 	}
 
-	var text string
+	var text strings.Builder
 	var keys []string
 	var children []any
 
@@ -75,9 +76,9 @@ Loop:
 				continue // Ignore text with only space characters.
 			}
 			if s.TrimSpace {
-				text += string(trimmed)
+				text.WriteString(string(trimmed))
 			} else {
-				text += string(t)
+				text.WriteString(string(t))
 			}
 		case xml.StartElement:
 			content, err := s.parseContent(decoder, t, t.End())
@@ -103,14 +104,14 @@ Loop:
 	// Convert XML text value to JSON value.
 	var val any
 	if s.JSONValue != nil {
-		v, err := s.JSONValue(text, start)
+		v, err := s.JSONValue(text.String(), start)
 		if err != nil {
 			return nil, err
 		}
 		val = v
 	} else {
-		if text != "" {
-			val = text
+		if text.String() != "" {
+			val = text.String()
 		}
 	}
 

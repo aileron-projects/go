@@ -80,11 +80,13 @@ func (c *Argon2i) Split(hashedPW []byte) (salt, hash []byte, err error) {
 // Salt is joined at the left side of the returned sum.
 // Use [Argon2i.Split] to split salt and the sum of the password.
 func (c *Argon2i) Sum(password []byte) ([]byte, error) {
-	salt := make([]byte, c.saltLen)
+	sum := make([]byte, c.saltLen+int(c.keyLen))
+	salt := sum[:c.saltLen]
 	_, err := rand.Read(salt)
 	must.Nil(err)
 	hashed := argon2.Key(password, salt, c.time, c.memory, c.threads, c.keyLen)
-	return append(salt, hashed...), nil
+	copy(sum[c.saltLen:], hashed)
+	return sum, nil
 }
 
 // Equal reports if the given hashed password and the password
@@ -171,11 +173,13 @@ func (c *Argon2id) Split(hashedPW []byte) (salt, hash []byte, err error) {
 // Use [Argon2id.Split] to split salt and the sum of the password.
 // [Argon2id.Sum] always returns nil as error.
 func (c *Argon2id) Sum(password []byte) ([]byte, error) {
-	salt := make([]byte, c.saltLen)
+	sum := make([]byte, c.saltLen+int(c.keyLen))
+	salt := sum[:c.saltLen]
 	_, err := rand.Read(salt)
 	must.Nil(err)
 	hashed := argon2.IDKey(password, salt, c.time, c.memory, c.threads, c.keyLen)
-	return append(salt, hashed...), nil
+	copy(sum[c.saltLen:], hashed)
+	return sum, nil
 }
 
 // Equal reports if the given hashed password and the password
