@@ -68,7 +68,7 @@ func (r *ServerRunner) Run(sigCtx context.Context) error {
 		if r.ShutdownTimeout > 0 {
 			timeout = r.ShutdownTimeout
 		}
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), timeout)
+		shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), timeout)
 		defer cancel()
 		err := r.Shutdown(shutdownCtx) // Graceful shutdown.
 		if err == context.DeadlineExceeded {
