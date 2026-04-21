@@ -32,18 +32,14 @@ var hashSum = []struct {
 	{"case06", zsha3.Sum384, zsha3.EqualSum384, "test", "e516dabb23b6e30026863543282780a3ae0dccf05551cf0295178d7ff0f1b41eecb9db3ff219007c4e097260d58621bd"},
 	{"case07", zsha3.Sum512, zsha3.EqualSum512, "", "a69f73cca23a9ac5c8b567dc185a756e97c982164fe25859e0d1dcc1475c80a615b2123af1f5f94c11e3e9402c3ac558f500199d95b6d3e301758586281dcd26"},
 	{"case08", zsha3.Sum512, zsha3.EqualSum512, "test", "9ece086e9bac491fac5c1d1046ca11d737b92a2b2ebd93f005d7b710110c0a678288166e7fbe796883a4f2e9b3ca9f484f521d0ce464345cc1aec96779149c14"},
-	{"case09", zsha3.SumShake128, zsha3.EqualSumShake128, "", "7f9c2ba4e88f827d616045507605853ed73b8093f6efbc88eb1a6eacfa66ef26"},
-	{"case10", zsha3.SumShake128, zsha3.EqualSumShake128, "test", "d3b0aa9cd8b7255622cebc631e867d4093d6f6010191a53973c45fec9b07c774"},
-	{"case11", zsha3.SumShake256, zsha3.EqualSumShake256, "", "46b9dd2b0ba88d13233b3feb743eeb243fcd52ea62b81b82b50c27646ed5762fd75dc4ddd8c0f200cb05019d67b592f6fc821c49479ab48640292eacb3b7c4be"},
-	{"case12", zsha3.SumShake256, zsha3.EqualSumShake256, "test", "b54ff7255705a71ee2925e4a3e30e41aed489a579d5595e0df13e32e1e4dd202a7c7f68b31d6418d9845eb4d757adda6ab189e1bb340db818e5b3bc725d992fa"},
 }
 
 func TestSum(t *testing.T) {
 	t.Parallel()
 	for _, tc := range hashSum {
-		t.Run(tc.msg, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			got := tc.sf([]byte(tc.msg))
-			ztesting.AssertEqual(t, "hash not match", tc.sum, hex.EncodeToString(got))
+			ztesting.AssertEqual(t, tc.sum, hex.EncodeToString(got))
 		})
 	}
 }
@@ -54,10 +50,10 @@ func TestEqualSum(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			sum, _ := hex.DecodeString(tc.sum)
 			equal := tc.eqf([]byte(tc.msg), sum)
-			ztesting.AssertEqual(t, "invalid compare result", true, equal)
+			ztesting.AssertEqual(t, true, equal)
 			slices.Reverse(sum) // Make the sum wrong.
 			equal = tc.eqf([]byte(tc.msg), sum)
-			ztesting.AssertEqual(t, "invalid compare result", false, equal)
+			ztesting.AssertEqual(t, false, equal)
 		})
 	}
 }
@@ -99,7 +95,7 @@ func TestHMACSum(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			sum := tc.sf([]byte(tc.msg), []byte(tc.key))
 			got := hex.EncodeToString(sum)
-			ztesting.AssertEqual(t, "invalid sum result", tc.sum, got)
+			ztesting.AssertEqual(t, tc.sum, got)
 		})
 	}
 }
@@ -110,10 +106,10 @@ func TestHMACEqualSum(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			sum, _ := hex.DecodeString(tc.sum)
 			equal := tc.eqf([]byte(tc.msg), []byte(tc.key), sum)
-			ztesting.AssertEqual(t, "invalid equal result", true, equal)
+			ztesting.AssertEqual(t, true, equal)
 			slices.Reverse(sum) // Make the sum wrong.
 			equal = tc.eqf([]byte(tc.msg), []byte(tc.key), sum)
-			ztesting.AssertEqual(t, "invalid equal result", false, equal)
+			ztesting.AssertEqual(t, false, equal)
 		})
 	}
 }

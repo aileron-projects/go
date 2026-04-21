@@ -18,15 +18,15 @@ type test interface {
 var mocT test
 
 // AssertEqual checks if the given two values are the same.
-// AssertEqual compares want and got using [reflect.DeepEqual].
+// AssertEqual compares want and got with [reflect.DeepEqual].
 // See https://go.dev/wiki/TestComments
-func AssertEqual[T any](t *testing.T, msg string, want, got T) {
+func AssertEqual[T any](t *testing.T, want, got T) {
 	tt := cmp.Or(mocT, test(t)) // Use mocT to test this func.
 	tt.Helper()
 	if reflect.DeepEqual(want, got) {
 		return
 	}
-	msg += "\n"
+	msg := "Values not matched.\n"
 	msg += "-want: " + spew.Sdump(want)
 	msg += "+got: " + spew.Sdump(got)
 	tt.Error(msg)
@@ -36,17 +36,13 @@ func AssertEqual[T any](t *testing.T, msg string, want, got T) {
 // Errors are checked by following order and considered the same
 // when one of them returned true.
 //
-//   - Compare pointer: want == got
 //   - Compare error: errors.Is(got, want)
 //   - Compare message: want.Error() == got.Error()
 //
 // See https://go.dev/wiki/TestComments
-func AssertEqualErr(t *testing.T, errReason string, want, got error) {
+func AssertEqualErr(t *testing.T, want, got error) {
 	tt := cmp.Or(mocT, test(t)) // Use mocT to test this func itself.
 	tt.Helper()
-	if want == got {
-		return // nil == nil is also here.
-	}
 	if errors.Is(got, want) {
 		return
 	}
@@ -55,8 +51,8 @@ func AssertEqualErr(t *testing.T, errReason string, want, got error) {
 			return
 		}
 	}
-	errReason += "\n"
-	errReason += "-want: " + spew.Sdump(want)
-	errReason += "+got: " + spew.Sdump(got)
-	tt.Error(errReason)
+	msg := "Errors not matched.\n"
+	msg += "-want: " + spew.Sdump(want)
+	msg += "+got: " + spew.Sdump(got)
+	tt.Error(msg)
 }

@@ -1,7 +1,6 @@
 package zlb
 
 import (
-	"strconv"
 	"testing"
 
 	"github.com/aileron-projects/go/ztesting"
@@ -28,7 +27,7 @@ func TestGenPrimeEuler(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			prime := genPrimeEuler(tc.min)
-			ztesting.AssertEqual(t, "prime number not match", tc.want, prime)
+			ztesting.AssertEqual(t, tc.want, prime)
 
 		})
 	}
@@ -96,7 +95,7 @@ func TestIsPrime(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			for _, num := range tc.num {
 				prime := isPrime(num)
-				ztesting.AssertEqual(t, "isPrime not match: "+strconv.Itoa(num), tc.prime, prime)
+				ztesting.AssertEqual(t, tc.prime, prime)
 			}
 		})
 	}

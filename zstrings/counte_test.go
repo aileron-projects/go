@@ -28,7 +28,7 @@ func TestCountByteRight(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.s, func(t *testing.T) {
 			matched := zstrings.CountByteRight(tc.s, tc.b)
-			ztesting.AssertEqual(t, "wrong match count.", tc.n, matched)
+			ztesting.AssertEqual(t, tc.n, matched)
 		})
 	}
 }
@@ -54,7 +54,7 @@ func TestCountByteLeft(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.s, func(t *testing.T) {
 			matched := zstrings.CountByteLeft(tc.s, tc.b)
-			ztesting.AssertEqual(t, "wrong match count.", tc.n, matched)
+			ztesting.AssertEqual(t, tc.n, matched)
 		})
 	}
 }

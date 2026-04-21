@@ -51,8 +51,8 @@ func TestString(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got, err := ztransform.String(tc.t, tc.input)
-			ztesting.AssertEqual(t, "string not match", tc.want, got)
-			ztesting.AssertEqual(t, "error not match", tc.err, err)
+			ztesting.AssertEqual(t, tc.want, got)
+			ztesting.AssertEqual(t, tc.err, err)
 		})
 	}
 }
@@ -84,8 +84,8 @@ func TestBytes(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got, err := ztransform.Bytes(tc.t, []byte(tc.input))
-			ztesting.AssertEqual(t, "bytes not match", tc.want, string(got))
-			ztesting.AssertEqual(t, "error not match", tc.err, err)
+			ztesting.AssertEqual(t, tc.want, string(got))
+			ztesting.AssertEqual(t, tc.err, err)
 		})
 	}
 }
@@ -114,12 +114,12 @@ func TestStringSlice(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got, err := ztransform.StringSlice(tc.t, tc.input)
-			ztesting.AssertEqual(t, "error not match", tc.err, err)
+			ztesting.AssertEqual(t, tc.err, err)
 			if err != nil {
-				ztesting.AssertEqual(t, "non zeo length slice returned", 0, len(got))
+				ztesting.AssertEqual(t, 0, len(got))
 				return
 			}
-			ztesting.AssertEqual(t, "string slice not match", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -148,13 +148,13 @@ func TestBytesSlice(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got, err := ztransform.BytesSlice(tc.t, tc.input)
-			ztesting.AssertEqual(t, "error not match", tc.err, err)
+			ztesting.AssertEqual(t, tc.err, err)
 			if err != nil {
-				ztesting.AssertEqual(t, "non zeo length slice returned", 0, len(got))
+				ztesting.AssertEqual(t, 0, len(got))
 				return
 			}
 			for i := range tc.want {
-				ztesting.AssertEqual(t, "bytes slice not match", tc.want[i], got[i])
+				ztesting.AssertEqual(t, tc.want[i], got[i])
 			}
 		})
 	}

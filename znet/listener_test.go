@@ -44,11 +44,11 @@ func TestNewWhiteListListener(t *testing.T) {
 	t.Parallel()
 	t.Run("error", func(t *testing.T) {
 		_, err := znet.NewWhiteListListener(nil, "127.0.0.1")
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 	t.Run("no error", func(t *testing.T) {
 		_, err := znet.NewWhiteListListener(nil, "127.0.0.1/32")
-		ztesting.AssertEqual(t, "error should be nil", true, err == nil)
+		ztesting.AssertEqual(t, true, err == nil)
 	})
 }
 
@@ -56,11 +56,11 @@ func TestNewBlackListListener(t *testing.T) {
 	t.Parallel()
 	t.Run("error", func(t *testing.T) {
 		_, err := znet.NewBlackListListener(nil, "127.0.0.1")
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 	t.Run("no error", func(t *testing.T) {
 		_, err := znet.NewBlackListListener(nil, "127.0.0.1/32")
-		ztesting.AssertEqual(t, "error should be nil", true, err == nil)
+		ztesting.AssertEqual(t, true, err == nil)
 	})
 }
 
@@ -95,8 +95,8 @@ func TestWhiteListListener(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			ln, _ := znet.NewWhiteListListener(tc.ln, tc.allow...)
 			conn, err := ln.Accept()
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqual(t, "closed not match", tc.closed, conn.(*testConn).closed)
+			ztesting.AssertEqualErr(t, tc.err, err)
+			ztesting.AssertEqual(t, tc.closed, conn.(*testConn).closed)
 		})
 	}
 }
@@ -132,8 +132,8 @@ func TestBlackListListener(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			ln, _ := znet.NewBlackListListener(tc.ln, tc.disallow...)
 			conn, err := ln.Accept()
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
-			ztesting.AssertEqual(t, "closed not match", tc.closed, conn.(*testConn).closed)
+			ztesting.AssertEqualErr(t, tc.err, err)
+			ztesting.AssertEqual(t, tc.closed, conn.(*testConn).closed)
 		})
 	}
 }
@@ -144,23 +144,23 @@ func TestLimitListener(t *testing.T) {
 		inner := &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}}
 		ln := znet.NewLimitListener(inner, 0)
 		conn, err := ln.Accept()
-		ztesting.AssertEqualErr(t, "error should be nil", nil, err)
-		ztesting.AssertEqual(t, "closed count not match", "1", conn.Close().Error())
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, "1", conn.Close().Error())
 	})
 	t.Run("limit 1", func(t *testing.T) {
 		inner := &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}}
 		ln := znet.NewLimitListener(inner, 1)
 		conn, err := ln.Accept()
-		ztesting.AssertEqualErr(t, "error should be nil", nil, err)
-		ztesting.AssertEqual(t, "closed count not match", "1", conn.Close().Error())
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, "1", conn.Close().Error())
 	})
 	t.Run("limit 2", func(t *testing.T) {
 		inner := &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}}
 		ln := znet.NewLimitListener(inner, 2)
 		_, _ = ln.Accept() // Discard first
 		conn, err := ln.Accept()
-		ztesting.AssertEqualErr(t, "error should be nil", nil, err)
-		ztesting.AssertEqual(t, "closed count not match", "1", conn.Close().Error())
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, "1", conn.Close().Error())
 	})
 	t.Run("wait", func(t *testing.T) {
 		inner := &testListener{remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}}
@@ -168,15 +168,15 @@ func TestLimitListener(t *testing.T) {
 		conn, _ := ln.Accept()
 		time.AfterFunc(100*time.Millisecond, func() { conn.Close() })
 		conn, err := ln.Accept()
-		ztesting.AssertEqualErr(t, "error should be nil", nil, err)
-		ztesting.AssertEqual(t, "closed count not match", "1", conn.Close().Error())
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, "1", conn.Close().Error())
 	})
 	t.Run("inner error", func(t *testing.T) {
 		inner := &testListener{err: io.EOF, remote: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}}
 		ln := znet.NewLimitListener(inner, 1)
 		conn, err := ln.Accept()
-		ztesting.AssertEqualErr(t, "error not match", io.EOF, err)
-		ztesting.AssertEqual(t, "closed count not match", "1", conn.Close().Error())
+		ztesting.AssertEqualErr(t, io.EOF, err)
+		ztesting.AssertEqual(t, "1", conn.Close().Error())
 	})
 }
 
@@ -184,11 +184,11 @@ func TestNewTLSListener(t *testing.T) {
 	t.Parallel()
 	t.Run("error", func(t *testing.T) {
 		_, err := znet.NewTLSListener(nil, &tls.Config{}, "127.0.0.1")
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 	t.Run("no error", func(t *testing.T) {
 		_, err := znet.NewTLSListener(nil, &tls.Config{}, "127.0.0.1/32")
-		ztesting.AssertEqual(t, "error should be nil", true, err == nil)
+		ztesting.AssertEqual(t, true, err == nil)
 	})
 }
 
@@ -224,9 +224,9 @@ func TestTLSListener(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			ln, _ := znet.NewTLSListener(tc.ln, &tls.Config{}, tc.nonTLS...)
 			conn, err := ln.Accept()
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqualErr(t, tc.err, err)
 			_, isTLS := conn.(*tls.Conn)
-			ztesting.AssertEqual(t, "connection is not TLS", tc.shouldTLS, isTLS)
+			ztesting.AssertEqual(t, tc.shouldTLS, isTLS)
 		})
 	}
 }
@@ -261,16 +261,16 @@ func TestACMEListener(t *testing.T) {
 			ln := znet.NewACMEListener(tc.ln, tc.domains...)
 			if tc.modify {
 				ln.Modifier = func(c *tls.Config) {
-					ztesting.AssertEqual(t, "TLS config is nil", true, c != nil)
+					ztesting.AssertEqual(t, true, c != nil)
 				}
 			}
 			conn, err := ln.Accept()
-			ztesting.AssertEqualErr(t, "error not match", tc.err, err)
+			ztesting.AssertEqualErr(t, tc.err, err)
 			if err != nil {
 				return
 			}
 			_, isTLS := conn.(*tls.Conn)
-			ztesting.AssertEqual(t, "connection is not TLS", true, isTLS)
+			ztesting.AssertEqual(t, true, isTLS)
 		})
 	}
 }

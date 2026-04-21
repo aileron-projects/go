@@ -54,7 +54,7 @@ func TestInitTrace(t *testing.T) {
 			initTrace(tc.writeTo, func(dir, pattern string) (*os.File, error) {
 				return os.Stdin, nil
 			})
-			ztesting.AssertEqual(t, "writer not matched.", tc.wants, writer)
+			ztesting.AssertEqual(t, tc.wants, writer)
 		})
 	}
 }
@@ -146,7 +146,7 @@ func TestWriteWithPrefix(t *testing.T) {
 				writeWithPrefix(&buf, v)
 			}
 			result := buf.String()
-			ztesting.AssertEqual(t, "written string does not match.", tc.wants, result)
+			ztesting.AssertEqual(t, tc.wants, result)
 		})
 	}
 }

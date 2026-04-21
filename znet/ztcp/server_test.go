@@ -21,13 +21,13 @@ func TestServer_ListenAndServe(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
 		err := s.ListenAndServe()
-		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
+		ztesting.AssertEqualErr(t, ErrServerClosed, err)
 	})
 	t.Run("create listener error", func(t *testing.T) {
 		s := &Server{Addr: "tcp4://1234567890"}
 		err := s.ListenAndServe()
 		_, ok := err.(*net.AddrError)
-		ztesting.AssertEqual(t, "addr error should be returned", true, ok)
+		ztesting.AssertEqual(t, true, ok)
 	})
 	t.Run("listen success", func(t *testing.T) {
 		served := make(chan struct{})
@@ -42,9 +42,9 @@ func TestServer_ListenAndServe(t *testing.T) {
 			shutdown <- s.Shutdown(context.Background())
 		}()
 		err := s.ListenAndServe()
-		ztesting.AssertEqualErr(t, "serve error not match", ErrServerClosed, err)
+		ztesting.AssertEqualErr(t, ErrServerClosed, err)
 		err = <-shutdown
-		ztesting.AssertEqualErr(t, "shutdown error not match", nil, err)
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 }
 
@@ -54,13 +54,13 @@ func TestServer_ListenAndServeTLS(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
 		err := s.ListenAndServeTLS("", "")
-		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
+		ztesting.AssertEqualErr(t, ErrServerClosed, err)
 	})
 	t.Run("create listener error", func(t *testing.T) {
 		s := &Server{Addr: "tcp4://1234567890"}
 		err := s.ListenAndServeTLS("", "")
 		_, ok := err.(*net.AddrError)
-		ztesting.AssertEqual(t, "addr error should be returned", true, ok)
+		ztesting.AssertEqual(t, true, ok)
 	})
 	t.Run("listen success", func(t *testing.T) {
 		// Obtain available address.
@@ -75,12 +75,12 @@ func TestServer_ListenAndServeTLS(t *testing.T) {
 		go func() {
 			<-served
 			cn, err := net.Dial("tcp4", ln.Addr().String())
-			ztesting.AssertEqual(t, "dial failed", nil, err)
+			ztesting.AssertEqual(t, nil, err)
 			cn.Close()
 			s.Close()
 		}()
 		err := s.ListenAndServeTLS("./testdata/cert.pem", "./testdata/key.pem")
-		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
+		ztesting.AssertEqualErr(t, ErrServerClosed, err)
 	})
 }
 
@@ -90,13 +90,13 @@ func TestServer_ServeTLS(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
 		err := s.ServeTLS(nil, "", "")
-		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
+		ztesting.AssertEqualErr(t, ErrServerClosed, err)
 	})
 	t.Run("read cert error", func(t *testing.T) {
 		s := &Server{}
 		err := s.ServeTLS(nil, "./testdata/not-found.pem", "./testdata/key.pem")
 		_, ok := err.(*fs.PathError)
-		ztesting.AssertEqual(t, "path error should be returned", true, ok)
+		ztesting.AssertEqual(t, true, ok)
 	})
 	t.Run("non-nil config", func(t *testing.T) {
 		ln, _ := net.Listen("tcp4", ":0") // Obtain available address.
@@ -109,12 +109,12 @@ func TestServer_ServeTLS(t *testing.T) {
 		go func() {
 			<-served
 			conn, err := net.Dial("tcp4", ln.Addr().String())
-			ztesting.AssertEqual(t, "dial failed", nil, err)
+			ztesting.AssertEqual(t, nil, err)
 			conn.Close()
 			s.Close()
 		}()
 		err := s.ServeTLS(ln, "./testdata/cert.pem", "./testdata/key.pem")
-		ztesting.AssertEqual(t, "error not match", ErrServerClosed, err)
+		ztesting.AssertEqual(t, ErrServerClosed, err)
 	})
 }
 
@@ -174,13 +174,13 @@ func TestServer_Serve(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
 		err := s.Serve(nil)
-		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
+		ztesting.AssertEqualErr(t, ErrServerClosed, err)
 	})
 	t.Run("create listener error", func(t *testing.T) {
 		s := &Server{Addr: "tcp4://1234567890"}
 		err := s.ListenAndServe()
 		_, ok := err.(*net.AddrError)
-		ztesting.AssertEqual(t, "addr error should be returned", true, ok)
+		ztesting.AssertEqual(t, true, ok)
 	})
 	t.Run("serve success", func(t *testing.T) {
 		baseCtx := context.Background()
@@ -190,9 +190,9 @@ func TestServer_Serve(t *testing.T) {
 		s := &Server{
 			BaseContext: func(l net.Listener) context.Context { return baseCtx },
 			Handler: HandlerFunc(func(ctx context.Context, conn net.Conn) {
-				ztesting.AssertEqual(t, "context not match", baseCtx, ctx)
+				ztesting.AssertEqual(t, baseCtx, ctx)
 				got := conn.(*ocConn).Conn
-				ztesting.AssertEqual(t, "connection not match", net.Conn(cn), got)
+				ztesting.AssertEqual(t, net.Conn(cn), got)
 				checked <- struct{}{}
 			}),
 		}
@@ -201,7 +201,7 @@ func TestServer_Serve(t *testing.T) {
 			s.Close()
 		}()
 		err := s.Serve(ln)
-		ztesting.AssertEqual(t, "error not match", ErrServerClosed, err)
+		ztesting.AssertEqual(t, ErrServerClosed, err)
 	})
 	t.Run("skip serving", func(t *testing.T) {
 		cn := &testConn{Conn: &net.TCPConn{}}
@@ -214,11 +214,11 @@ func TestServer_Serve(t *testing.T) {
 			for cn.closed == 0 {
 				time.Sleep(10 * time.Millisecond)
 			}
-			ztesting.AssertEqual(t, "handler should not be called", 0, count)
+			ztesting.AssertEqual(t, 0, count)
 			s.Close()
 		}()
 		err := s.Serve(ln)
-		ztesting.AssertEqual(t, "error not match", ErrServerClosed, err)
+		ztesting.AssertEqual(t, ErrServerClosed, err)
 	})
 	t.Run("timeout error", func(t *testing.T) {
 		cn := &testConn{Conn: &net.TCPConn{}}
@@ -231,11 +231,11 @@ func TestServer_Serve(t *testing.T) {
 			for ln.accept <= 2 {
 				time.Sleep(10 * time.Millisecond)
 			}
-			ztesting.AssertEqual(t, "handler should not be called", 0, count)
+			ztesting.AssertEqual(t, 0, count)
 			s.Close()
 		}()
 		err := s.Serve(ln)
-		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
+		ztesting.AssertEqualErr(t, ErrServerClosed, err)
 	})
 	t.Run("non-timeout error", func(t *testing.T) {
 		cn := &testConn{Conn: &net.TCPConn{}}
@@ -248,11 +248,11 @@ func TestServer_Serve(t *testing.T) {
 			for ln.accept <= 2 {
 				time.Sleep(10 * time.Millisecond)
 			}
-			ztesting.AssertEqual(t, "handler should not be called", 0, count)
+			ztesting.AssertEqual(t, 0, count)
 			s.Close()
 		}()
 		err := s.Serve(ln)
-		ztesting.AssertEqualErr(t, "error not match", timeoutError(false), err)
+		ztesting.AssertEqualErr(t, timeoutError(false), err)
 	})
 	t.Run("panic error", func(t *testing.T) {
 		cn := &testConn{Conn: &net.TCPConn{}}
@@ -269,8 +269,8 @@ func TestServer_Serve(t *testing.T) {
 			s.Close()
 		}()
 		err := s.Serve(ln)
-		ztesting.AssertEqualErr(t, "serve error not match", ErrServerClosed, err)
-		ztesting.AssertEqual(t, "listener not closed", 1, ln.closed)
+		ztesting.AssertEqualErr(t, ErrServerClosed, err)
+		ztesting.AssertEqual(t, 1, ln.closed)
 	})
 	t.Run("panic with handler", func(t *testing.T) {
 		cn := &testConn{Conn: &net.TCPConn{}}
@@ -286,12 +286,12 @@ func TestServer_Serve(t *testing.T) {
 		}
 		go func() {
 			err := <-panicked
-			ztesting.AssertEqualErr(t, "error not match", net.ErrWriteToConnected, err)
+			ztesting.AssertEqualErr(t, net.ErrWriteToConnected, err)
 			s.Close()
 		}()
 		err := s.Serve(ln)
-		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
-		ztesting.AssertEqual(t, "listener not closed", 1, ln.closed)
+		ztesting.AssertEqualErr(t, ErrServerClosed, err)
+		ztesting.AssertEqual(t, 1, ln.closed)
 	})
 }
 
@@ -307,11 +307,11 @@ func TestServer_Close(t *testing.T) {
 	s.listeners.Store(&ocListener{Listener: ln})
 	s.conns.Store(&ocConn{Conn: &net.TCPConn{}})
 
-	ztesting.AssertEqual(t, "listeners length not match", 1, s.listeners.Length())
-	ztesting.AssertEqual(t, "conns length not match", 1, s.conns.Length())
+	ztesting.AssertEqual(t, 1, s.listeners.Length())
+	ztesting.AssertEqual(t, 1, s.conns.Length())
 	s.Close()
-	ztesting.AssertEqual(t, "listeners length not match", 0, s.listeners.Length())
-	ztesting.AssertEqual(t, "conns length not match", 0, s.conns.Length())
+	ztesting.AssertEqual(t, 0, s.listeners.Length())
+	ztesting.AssertEqual(t, 0, s.conns.Length())
 }
 
 func TestServer_Shutdown(t *testing.T) {
@@ -320,7 +320,7 @@ func TestServer_Shutdown(t *testing.T) {
 		s := &Server{}
 		s.Shutdown(context.Background())
 		err := s.Shutdown(context.Background())
-		ztesting.AssertEqualErr(t, "error not match", ErrServerClosed, err)
+		ztesting.AssertEqualErr(t, ErrServerClosed, err)
 	})
 	t.Run("shutdown success", func(t *testing.T) {
 		served := make(chan struct{})
@@ -331,13 +331,13 @@ func TestServer_Shutdown(t *testing.T) {
 		go func() {
 			<-served
 			err := s.Shutdown(context.Background())
-			ztesting.AssertEqual(t, "error not match", nil, err)
+			ztesting.AssertEqual(t, nil, err)
 		}()
 		err := s.ListenAndServe()
-		ztesting.AssertEqual(t, "error not match", ErrServerClosed, err)
-		ztesting.AssertEqual(t, "listeners length not match", 0, s.listeners.Length())
-		ztesting.AssertEqual(t, "conns length not match", 0, s.conns.Length())
-		ztesting.AssertEqual(t, "error not match", ErrServerClosed, err)
+		ztesting.AssertEqual(t, ErrServerClosed, err)
+		ztesting.AssertEqual(t, 0, s.listeners.Length())
+		ztesting.AssertEqual(t, 0, s.conns.Length())
+		ztesting.AssertEqual(t, ErrServerClosed, err)
 	})
 	t.Run("shutdown context done", func(t *testing.T) {
 		served := make(chan struct{})
@@ -359,14 +359,14 @@ func TestServer_Shutdown(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
 			err := s.Shutdown(ctx)
-			ztesting.AssertEqual(t, "error not match", context.DeadlineExceeded, err)
+			ztesting.AssertEqual(t, context.DeadlineExceeded, err)
 			shutdown <- struct{}{}
 		}()
 		err := s.Serve(ln)
 		<-shutdown
-		ztesting.AssertEqual(t, "listeners length not match", 0, s.listeners.Length())
-		ztesting.AssertEqual(t, "conns length not match", 1, s.conns.Length()) // Conn is yet alive.
-		ztesting.AssertEqual(t, "error not match", ErrServerClosed, err)
+		ztesting.AssertEqual(t, 0, s.listeners.Length())
+		ztesting.AssertEqual(t, 1, s.conns.Length()) // Conn is yet alive.
+		ztesting.AssertEqual(t, ErrServerClosed, err)
 	})
 }
 
@@ -374,41 +374,41 @@ func TestNewListener(t *testing.T) {
 	t.Parallel()
 	t.Run("listen tcp without prefix", func(t *testing.T) {
 		ln, err := newListener(":0")
-		ztesting.AssertEqual(t, "non nil error returned", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		defer ln.Close()
 		cn, err := net.Dial("tcp", ln.Addr().String())
-		ztesting.AssertEqual(t, "dial failed", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		cn.Close()
 	})
 	t.Run("listen tcp4 success", func(t *testing.T) {
 		ln, err := newListener("tcp4://:0")
-		ztesting.AssertEqual(t, "non nil error returned", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		defer ln.Close()
 		cn, err := net.Dial("tcp4", ln.Addr().String())
-		ztesting.AssertEqual(t, "dial failed", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		cn.Close()
 	})
 	t.Run("listen tcp4 failed", func(t *testing.T) {
 		_, err := newListener("tcp4://1234567890")
 		_, ok := err.(*net.AddrError)
-		ztesting.AssertEqual(t, "addr error should be returned", true, ok)
+		ztesting.AssertEqual(t, true, ok)
 	})
 	t.Run("listen unix success", func(t *testing.T) {
 		s := filepath.Join(os.TempDir(), "TestNewListener_test.sock") // Socket path must not be too long.
 		ln, err := newListener("unix://" + s)
-		ztesting.AssertEqual(t, "non nil error returned", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		cn, err := net.Dial("unix", s)
-		ztesting.AssertEqual(t, "dial failed", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		cn.Close()
 		ln.Close()          // Socket file should be removed.
 		_, err = os.Stat(s) // Check socket file removed
-		ztesting.AssertEqual(t, "socket not removed", true, os.IsNotExist(err))
+		ztesting.AssertEqual(t, true, os.IsNotExist(err))
 	})
 	t.Run("fallback to tcp", func(t *testing.T) {
 		_, err := newListener("udp://1234567890")
 		_, ok := err.(*net.OpError)
 		t.Logf("%#v\n", err)
-		ztesting.AssertEqual(t, "net op error should be returned", true, ok)
+		ztesting.AssertEqual(t, true, ok)
 	})
 }
 
@@ -445,30 +445,30 @@ func TestOCListener(t *testing.T) {
 		ncl := &nopCloseListener{addr: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 12345}}
 		ln := &ocListener{Listener: ncl}
 		err := ln.Close()
-		ztesting.AssertEqualErr(t, "close error not match", nil, err)
-		ztesting.AssertEqual(t, "close count not match", 1, ncl.count)
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, 1, ncl.count)
 	})
 	t.Run("close multiple", func(t *testing.T) {
 		ncl := &nopCloseListener{addr: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 12345}}
 		ln := &ocListener{Listener: ncl}
 		_ = ln.Close()    // close once
 		err := ln.Close() // close twice
-		ztesting.AssertEqualErr(t, "close error not match", nil, err)
-		ztesting.AssertEqual(t, "close count not match", 1, ncl.count)
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, 1, ncl.count)
 	})
 	t.Run("close error", func(t *testing.T) {
 		ncl := &nopCloseListener{addr: &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 12345}, err: io.EOF}
 		ln := &ocListener{Listener: ncl}
 		err := ln.Close()
-		ztesting.AssertEqualErr(t, "close error not match", io.EOF, err)
-		ztesting.AssertEqual(t, "close count not match", 1, ncl.count)
+		ztesting.AssertEqualErr(t, io.EOF, err)
+		ztesting.AssertEqual(t, 1, ncl.count)
 	})
 	t.Run("close abstract socket", func(t *testing.T) {
 		ncl := &nopCloseListener{addr: &net.UnixAddr{Net: "unix", Name: "@test"}}
 		ln := &ocListener{Listener: ncl}
 		err := ln.Close()
-		ztesting.AssertEqualErr(t, "close error not match", nil, err)
-		ztesting.AssertEqual(t, "close count not match", 1, ncl.count)
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, 1, ncl.count)
 	})
 	t.Run("close path name socket", func(t *testing.T) {
 		sock := t.TempDir() + "/test.sock"
@@ -477,10 +477,10 @@ func TestOCListener(t *testing.T) {
 		ncl := &nopCloseListener{addr: &net.UnixAddr{Net: "unix", Name: sock}}
 		ln := &ocListener{Listener: ncl}
 		err := ln.Close()
-		ztesting.AssertEqualErr(t, "close error not match", nil, err)
-		ztesting.AssertEqual(t, "close count not match", 1, ncl.count)
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, 1, ncl.count)
 		_, err = os.Stat(sock) // Socket must be removed.
-		ztesting.AssertEqual(t, "socket not removed", true, os.IsNotExist(err))
+		ztesting.AssertEqual(t, true, os.IsNotExist(err))
 	})
 }
 
@@ -490,22 +490,22 @@ func TestOCConn(t *testing.T) {
 		nc := &nopCloseConn{}
 		conn := &ocConn{Conn: nc}
 		err := conn.Close()
-		ztesting.AssertEqualErr(t, "close error not match", nil, err)
-		ztesting.AssertEqual(t, "close count not match", 1, nc.count)
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, 1, nc.count)
 	})
 	t.Run("close multiple", func(t *testing.T) {
 		nc := &nopCloseConn{}
 		conn := &ocConn{Conn: nc}
 		_ = conn.Close()    // close once
 		err := conn.Close() // close twice
-		ztesting.AssertEqualErr(t, "close error not match", nil, err)
-		ztesting.AssertEqual(t, "close called more than once", 1, nc.count)
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, 1, nc.count)
 	})
 	t.Run("close error", func(t *testing.T) {
 		nc := &nopCloseConn{err: io.EOF}
 		conn := &ocConn{Conn: nc}
 		err := conn.Close()
-		ztesting.AssertEqualErr(t, "close error not match", io.EOF, err)
-		ztesting.AssertEqual(t, "close count not match", 1, nc.count)
+		ztesting.AssertEqualErr(t, io.EOF, err)
+		ztesting.AssertEqual(t, 1, nc.count)
 	})
 }

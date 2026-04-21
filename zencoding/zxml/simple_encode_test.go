@@ -24,9 +24,9 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqual(t, "error is not nil", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		want := `<alice charlie="david">bob</alice>`
-		ztesting.AssertEqual(t, "xml not match", want, buf.String())
+		ztesting.AssertEqual(t, want, buf.String())
 	})
 	t.Run("attr prefix", func(t *testing.T) {
 		s := base
@@ -35,9 +35,9 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqual(t, "error is not nil", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		want := `<alice charlie="david">bob</alice>`
-		ztesting.AssertEqual(t, "xml not match", want, buf.String())
+		ztesting.AssertEqual(t, want, buf.String())
 	})
 	t.Run("namespace sep", func(t *testing.T) {
 		s := base
@@ -46,9 +46,9 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqual(t, "error is not nil", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		want := `<alice foo:charlie="david">bob</alice>`
-		ztesting.AssertEqual(t, "xml not match", want, buf.String())
+		ztesting.AssertEqual(t, want, buf.String())
 	})
 	t.Run("xml value", func(t *testing.T) {
 		s := base
@@ -59,9 +59,9 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqual(t, "error is not nil", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		want := `<alice charlie="david">value</alice>`
-		ztesting.AssertEqual(t, "xml not match", want, buf.String())
+		ztesting.AssertEqual(t, want, buf.String())
 	})
 	t.Run("xml value error", func(t *testing.T) {
 		s := base
@@ -73,7 +73,7 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqualErr(t, "error not match", e, err)
+		ztesting.AssertEqualErr(t, e, err)
 	})
 
 	t.Run("slice value error", func(t *testing.T) {
@@ -82,7 +82,7 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqualErr(t, "error not match", &XMLError{Cause: CauseDataType}, err)
+		ztesting.AssertEqualErr(t, &XMLError{Cause: CauseDataType}, err)
 	})
 	t.Run("invalid text", func(t *testing.T) {
 		s := base
@@ -90,7 +90,7 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqualErr(t, "error not match", &XMLError{Cause: CauseDataType}, err)
+		ztesting.AssertEqualErr(t, &XMLError{Cause: CauseDataType}, err)
 	})
 	t.Run("array value invalid", func(t *testing.T) {
 		s := base
@@ -98,7 +98,7 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqualErr(t, "error not match", &XMLError{Cause: CauseDataType}, err)
+		ztesting.AssertEqualErr(t, &XMLError{Cause: CauseDataType}, err)
 	})
 	t.Run("invalid attribute", func(t *testing.T) {
 		s := base
@@ -106,7 +106,7 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqualErr(t, "error not match", &XMLError{Cause: CauseDataType}, err)
+		ztesting.AssertEqualErr(t, &XMLError{Cause: CauseDataType}, err)
 	})
 	t.Run("nil attribute", func(t *testing.T) {
 		s := base
@@ -114,9 +114,9 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqual(t, "error is not nil", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		want := `<alice charlie="">bob</alice>`
-		ztesting.AssertEqual(t, "xml not match", want, buf.String())
+		ztesting.AssertEqual(t, want, buf.String())
 	})
 	t.Run("empty start elem", func(t *testing.T) {
 		s := base
@@ -124,7 +124,7 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqualErr(t, "error not match", &XMLError{Cause: CauseXMLEncoder}, err)
+		ztesting.AssertEqualErr(t, &XMLError{Cause: CauseXMLEncoder}, err)
 	})
 	t.Run("token encode error", func(t *testing.T) {
 		s := base
@@ -133,7 +133,7 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqualErr(t, "error not match", &XMLError{Cause: CauseXMLEncoder}, err)
+		ztesting.AssertEqualErr(t, &XMLError{Cause: CauseXMLEncoder}, err)
 	})
 	t.Run("end token encode error", func(t *testing.T) {
 		s := base
@@ -144,7 +144,7 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqualErr(t, "error not match", &XMLError{Cause: CauseXMLEncoder}, err)
+		ztesting.AssertEqualErr(t, &XMLError{Cause: CauseXMLEncoder}, err)
 	})
 	t.Run("child encode error", func(t *testing.T) {
 		s := base
@@ -153,6 +153,6 @@ func TestSimple_Encode(t *testing.T) {
 		var buf bytes.Buffer
 		enc := xml.NewEncoder(&buf)
 		err := s.Encode(enc, input)
-		ztesting.AssertEqualErr(t, "error not match", &XMLError{Cause: CauseXMLEncoder}, err)
+		ztesting.AssertEqualErr(t, &XMLError{Cause: CauseXMLEncoder}, err)
 	})
 }

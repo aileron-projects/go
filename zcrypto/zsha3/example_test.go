@@ -71,41 +71,6 @@ func ExampleSum512() {
 	// `Bye Go!` match? false
 }
 
-func ExampleSumShake128() {
-	// Calculate SHAKE128 hash.
-	// Validation data can be generated with(-oflen option requires openssl v3):
-	// 	- echo -n "Hello Go!" | openssl dgst -shake128 -xoflen 32
-	// 	- https://www.cryptool.org/en/cto/openssl/
-
-	sum := zsha3.SumShake128([]byte("Hello Go!"))
-	encoded := hex.EncodeToString(sum)
-	fmt.Println(len(sum), encoded)
-	fmt.Println("`Hello Go!` match?", zsha3.EqualSumShake128([]byte("Hello Go!"), sum))
-	fmt.Println("`Bye Go!` match?", zsha3.EqualSumShake128([]byte("Bye Go!"), sum))
-	// Output:
-	// 32 d52544db366d156a3ed524fc3d928d489d49a85c10cd268c64c6f0055dce4a5b
-	// `Hello Go!` match? true
-	// `Bye Go!` match? false
-}
-
-func ExampleSumShake256() {
-	// Calculate SHAKE256 hash.
-	// Validation data can be generated with:
-	// Validation data can be generated with(-oflen option requires openssl v3):
-	// 	- echo -n "Hello Go!" | openssl dgst -shake256 -xoflen 64
-	// 	- https://www.cryptool.org/en/cto/openssl/
-
-	sum := zsha3.SumShake256([]byte("Hello Go!"))
-	encoded := hex.EncodeToString(sum)
-	fmt.Println(len(sum), encoded)
-	fmt.Println("`Hello Go!` match?", zsha3.EqualSumShake256([]byte("Hello Go!"), sum))
-	fmt.Println("`Bye Go!` match?", zsha3.EqualSumShake256([]byte("Bye Go!"), sum))
-	// Output:
-	// 64 755bb7002e7cbd7282cd87f4a702ba9d98573de35378fd78451bcb6a41ebf138c4035ab9b92e4d6f1041c604d0348d6d0009f1db3419560b745f3c31e6bfc463
-	// `Hello Go!` match? true
-	// `Bye Go!` match? false
-}
-
 func ExampleHMACSum224() {
 	// Calculate HMAC-SHA3/224 hash.
 	// Validation data can be generated with:

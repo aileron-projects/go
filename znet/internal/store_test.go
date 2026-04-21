@@ -25,21 +25,21 @@ func TestCloserStore(t *testing.T) {
 		s := internal.CloserStore[*testCloser]{}
 		foo := &testCloser{name: "foo"}
 		s.Store(foo)
-		ztesting.AssertEqual(t, "length not match", 1, s.Length())
+		ztesting.AssertEqual(t, 1, s.Length())
 		s.Delete(foo)
-		ztesting.AssertEqual(t, "length not match", 0, s.Length())
+		ztesting.AssertEqual(t, 0, s.Length())
 	})
 	t.Run("store different value", func(t *testing.T) {
 		s := internal.CloserStore[*testCloser]{}
 		foo := &testCloser{name: "foo"}
 		bar := &testCloser{name: "bar"}
 		s.Store(foo)
-		ztesting.AssertEqual(t, "length not match", 1, s.Length())
+		ztesting.AssertEqual(t, 1, s.Length())
 		s.Store(bar)
-		ztesting.AssertEqual(t, "length not match", 2, s.Length())
+		ztesting.AssertEqual(t, 2, s.Length())
 		s.Delete(foo)
 		s.Delete(bar)
-		ztesting.AssertEqual(t, "length not match", 0, s.Length())
+		ztesting.AssertEqual(t, 0, s.Length())
 	})
 	t.Run("close", func(t *testing.T) {
 		s := internal.CloserStore[*testCloser]{}
@@ -47,12 +47,12 @@ func TestCloserStore(t *testing.T) {
 		bar := &testCloser{name: "bar"}
 		s.Store(foo)
 		s.Store(bar)
-		ztesting.AssertEqual(t, "length not match", 2, s.Length())
+		ztesting.AssertEqual(t, 2, s.Length())
 		err := s.CloseAll()
-		ztesting.AssertEqualErr(t, "close error not match", nil, err)
-		ztesting.AssertEqual(t, "length not match", 0, s.Length())
-		ztesting.AssertEqual(t, "foo is not closed", 1, foo.closed)
-		ztesting.AssertEqual(t, "bar is not closed", 1, bar.closed)
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, 0, s.Length())
+		ztesting.AssertEqual(t, 1, foo.closed)
+		ztesting.AssertEqual(t, 1, bar.closed)
 	})
 	t.Run("close error", func(t *testing.T) {
 		s := internal.CloserStore[*testCloser]{}
@@ -62,8 +62,8 @@ func TestCloserStore(t *testing.T) {
 		s.Store(bar)
 		err := s.CloseAll()
 		errs := err.(interface{ Unwrap() []error }).Unwrap()
-		ztesting.AssertEqual(t, "length of errors not match", 2, len(errs))
-		ztesting.AssertEqual(t, "foo is not closed", 1, foo.closed)
-		ztesting.AssertEqual(t, "bar is not closed", 1, bar.closed)
+		ztesting.AssertEqual(t, 2, len(errs))
+		ztesting.AssertEqual(t, 1, foo.closed)
+		ztesting.AssertEqual(t, 1, bar.closed)
 	})
 }

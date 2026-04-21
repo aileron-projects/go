@@ -76,14 +76,16 @@ func (c *SCrypt) Split(hashedPW []byte) (salt, hash []byte, err error) {
 // Salt is joined at the left side of the returned sum.
 // Use [SCrypt.Split] to split salt and the sum of the password.
 func (c *SCrypt) Sum(password []byte) ([]byte, error) {
-	salt := make([]byte, c.saltLen)
+	sum := make([]byte, c.saltLen+c.keyLen)
+	salt := sum[:c.saltLen]
 	_, err := rand.Read(salt)
 	must.Nil(err)
 	hashed, err := scrypt.Key(password, salt, c.n, c.r, c.p, c.keyLen)
 	if err != nil {
 		return nil, err
 	}
-	return append(salt, hashed...), nil
+	copy(sum[c.saltLen:], hashed)
+	return sum, nil
 }
 
 // Equal reports if the given hashed password and the password

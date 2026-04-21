@@ -31,7 +31,7 @@ func main() {
 			fmt.Fprintln(w, "Hello Go!!")
 			fmt.Fprintln(w, "It's", time.Now())
 			fmt.Fprintln(w, strings.Repeat("-", 50))
-			fmt.Fprintln(w, spew.Sdump(r))
+			fmt.Fprintln(w, spew.Sdump(r)) // #nosec G705: XSS via taint analysis (gosec)
 		}),
 		ReadTimeout: 30 * time.Second,
 	}

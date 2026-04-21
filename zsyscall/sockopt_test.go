@@ -13,42 +13,42 @@ func TestSockOption_ControlFunc(t *testing.T) {
 	t.Run("nil option", func(t *testing.T) {
 		var o *SockOption
 		f := o.ControlFunc(0)
-		ztesting.AssertEqual(t, "control func is not nil", true, f == nil)
+		ztesting.AssertEqual(t, true, f == nil)
 	})
 	t.Run("non-nil option", func(t *testing.T) {
 		o := &SockOption{}
 		f := o.ControlFunc(0)
-		ztesting.AssertEqual(t, "control func is not nil", true, f == nil)
+		ztesting.AssertEqual(t, true, f == nil)
 	})
 	t.Run("non-nil option", func(t *testing.T) {
 		o := &SockOption{}
 		f := o.ControlFunc(0)
-		ztesting.AssertEqual(t, "control func is not nil", true, f == nil)
+		ztesting.AssertEqual(t, true, f == nil)
 	})
 	t.Run("so option", func(t *testing.T) {
 		o := &SockOption{SO: &SockSOOption{}}
 		f := o.ControlFunc(SockOptSO)
-		ztesting.AssertEqual(t, "control func is not nil", true, f == nil)
+		ztesting.AssertEqual(t, true, f == nil)
 	})
 	t.Run("ip option", func(t *testing.T) {
 		o := &SockOption{IP: &SockIPOption{}}
 		f := o.ControlFunc(SockOptIP)
-		ztesting.AssertEqual(t, "control func is not nil", true, f == nil)
+		ztesting.AssertEqual(t, true, f == nil)
 	})
 	t.Run("ipv6 option", func(t *testing.T) {
 		o := &SockOption{IPV6: &SockIPV6Option{}}
 		f := o.ControlFunc(SockOptIPV6)
-		ztesting.AssertEqual(t, "control func is not nil", true, f == nil)
+		ztesting.AssertEqual(t, true, f == nil)
 	})
 	t.Run("tcp option", func(t *testing.T) {
 		o := &SockOption{TCP: &SockTCPOption{}}
 		f := o.ControlFunc(SockOptTCP)
-		ztesting.AssertEqual(t, "control func is not nil", true, f == nil)
+		ztesting.AssertEqual(t, true, f == nil)
 	})
 	t.Run("udp option", func(t *testing.T) {
 		o := &SockOption{UDP: &SockUDPOption{}}
 		f := o.ControlFunc(SockOptUDP)
-		ztesting.AssertEqual(t, "control func is not nil", true, f == nil)
+		ztesting.AssertEqual(t, true, f == nil)
 	})
 }
 
@@ -68,7 +68,7 @@ func TestControllers(t *testing.T) {
 	t.Run("nil", func(t *testing.T) {
 		cs := controllers([]Controller{})
 		err := cs.control("network", "address", &testRawConn{})
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("1 control func", func(t *testing.T) {
 		count := 0
@@ -76,8 +76,8 @@ func TestControllers(t *testing.T) {
 			func(fd uintptr) error { count++; return nil },
 		})
 		err := cs.control("network", "address", &testRawConn{})
-		ztesting.AssertEqual(t, "count not match", 1, count)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, 1, count)
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("2 control func", func(t *testing.T) {
 		count := 0
@@ -86,8 +86,8 @@ func TestControllers(t *testing.T) {
 			func(fd uintptr) error { count++; return nil },
 		})
 		err := cs.control("network", "address", &testRawConn{})
-		ztesting.AssertEqual(t, "count not match", 2, count)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, 2, count)
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("control func error", func(t *testing.T) {
 		count := 0
@@ -96,8 +96,8 @@ func TestControllers(t *testing.T) {
 			func(fd uintptr) error { count++; return nil },
 		})
 		err := cs.control("network", "address", &testRawConn{})
-		ztesting.AssertEqual(t, "count not match", 1, count)
-		ztesting.AssertEqualErr(t, "error not match", io.EOF, err)
+		ztesting.AssertEqual(t, 1, count)
+		ztesting.AssertEqualErr(t, io.EOF, err)
 	})
 	t.Run("conn error", func(t *testing.T) {
 		count := 0
@@ -106,8 +106,8 @@ func TestControllers(t *testing.T) {
 			func(fd uintptr) error { count++; return nil },
 		})
 		err := cs.control("network", "address", &testRawConn{err: io.EOF}) // Return dummy error.
-		ztesting.AssertEqual(t, "count not match", 2, count)
-		ztesting.AssertEqualErr(t, "error not match", io.EOF, err)
+		ztesting.AssertEqual(t, 2, count)
+		ztesting.AssertEqualErr(t, io.EOF, err)
 	})
 }
 
@@ -115,9 +115,9 @@ func TestAppendNonNil(t *testing.T) {
 	t.Parallel()
 	arr := []Controller{}
 	arr = appendNonNil(arr, nil)
-	ztesting.AssertEqual(t, "nil should not be appended", 0, len(arr))
+	ztesting.AssertEqual(t, 0, len(arr))
 	arr = appendNonNil(arr, func(fd uintptr) error { return nil })
-	ztesting.AssertEqual(t, "non-nil should be appended", 1, len(arr))
+	ztesting.AssertEqual(t, 1, len(arr))
 }
 
 func TestSocketError(t *testing.T) {
@@ -126,29 +126,29 @@ func TestSocketError(t *testing.T) {
 		err := &SocketError{Err: io.EOF, Opts: "FOO.BAR"}
 		msg := err.Error()
 		want := "zsyscall: fail to apply socket option FOO.BAR [EOF]"
-		ztesting.AssertEqual(t, "error message not match", want, msg)
+		ztesting.AssertEqual(t, want, msg)
 	})
 	t.Run("same error", func(t *testing.T) {
 		err1 := &SocketError{Opts: "FOO.BAR"}
 		err2 := &SocketError{Opts: "FOO.BAR"}
 		is := err1.Is(err2)
-		ztesting.AssertEqual(t, "error not match", true, is)
+		ztesting.AssertEqual(t, true, is)
 	})
 	t.Run("different error", func(t *testing.T) {
 		err1 := &SocketError{Opts: "FOO.BAR"}
 		err2 := &SocketError{Opts: "FOO.BAZ"}
 		is := err1.Is(err2)
-		ztesting.AssertEqual(t, "error not match", false, is)
+		ztesting.AssertEqual(t, false, is)
 	})
 	t.Run("non socket error", func(t *testing.T) {
 		err1 := &SocketError{Opts: "FOO.BAR"}
 		is := err1.Is(io.EOF)
-		ztesting.AssertEqual(t, "error not match", false, is)
+		ztesting.AssertEqual(t, false, is)
 	})
 	t.Run("nil error", func(t *testing.T) {
 		err1 := &SocketError{Opts: "FOO.BAR"}
 		is := err1.Is(nil)
-		ztesting.AssertEqual(t, "error not match", false, is)
+		ztesting.AssertEqual(t, false, is)
 	})
 }
 

@@ -25,11 +25,11 @@ func TestUniqueIterator(t *testing.T) {
 			iter := uniqueIterator(tc.set)
 			for _, v := range tc.elems {
 				next, found := iter()
-				ztesting.AssertEqual(t, "value not match", v, next)
-				ztesting.AssertEqual(t, "value not found", true, found)
+				ztesting.AssertEqual(t, v, next)
+				ztesting.AssertEqual(t, true, found)
 			}
 			_, found := iter()
-			ztesting.AssertEqual(t, "value found", false, found)
+			ztesting.AssertEqual(t, false, found)
 		})
 	}
 }

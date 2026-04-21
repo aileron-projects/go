@@ -12,27 +12,27 @@ func TestNewSet(t *testing.T) {
 	t.Run("empty slice", func(t *testing.T) {
 		s := []string{}
 		ss := zmath.NewSet(s)
-		ztesting.AssertEqual(t, "set not matched", []string{}, ss)
+		ztesting.AssertEqual(t, []string{}, ss)
 	})
 	t.Run("1 elem slice", func(t *testing.T) {
 		s := []string{"a"}
 		ss := zmath.NewSet(s)
-		ztesting.AssertEqual(t, "set not matched", []string{"a"}, ss)
+		ztesting.AssertEqual(t, []string{"a"}, ss)
 	})
 	t.Run("2 elems slice", func(t *testing.T) {
 		s := []string{"a", "b"}
 		ss := zmath.NewSet(s)
-		ztesting.AssertEqual(t, "set not matched", []string{"a", "b"}, ss)
+		ztesting.AssertEqual(t, []string{"a", "b"}, ss)
 	})
 	t.Run("string slice", func(t *testing.T) {
 		s := []string{"c", "a", "b"}
 		ss := zmath.NewSet(s)
-		ztesting.AssertEqual(t, "set not matched", []string{"a", "b", "c"}, ss)
+		ztesting.AssertEqual(t, []string{"a", "b", "c"}, ss)
 	})
 	t.Run("int slice", func(t *testing.T) {
 		s := []int{3, -1, 2, 0, 1}
 		ss := zmath.NewSet(s)
-		ztesting.AssertEqual(t, "set not matched", []int{-1, 0, 1, 2, 3}, ss)
+		ztesting.AssertEqual(t, []int{-1, 0, 1, 2, 3}, ss)
 	})
 }
 
@@ -55,7 +55,7 @@ func TestSet_Has(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got := tc.set.Has(tc.elem)
-			ztesting.AssertEqual(t, "has not matched", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -79,7 +79,7 @@ func TestSet_Add(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			tc.set.Add(tc.elem)
-			ztesting.AssertEqual(t, "has not matched", tc.want, tc.set)
+			ztesting.AssertEqual(t, tc.want, tc.set)
 		})
 	}
 }
@@ -108,7 +108,7 @@ func TestSet_AddElems(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			tc.set.AddElems(tc.elems...)
-			ztesting.AssertEqual(t, "has not matched", tc.want, tc.set)
+			ztesting.AssertEqual(t, tc.want, tc.set)
 		})
 	}
 }
@@ -132,7 +132,7 @@ func TestSet_Remove(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			tc.set.Remove(tc.elem)
-			ztesting.AssertEqual(t, "has not matched", tc.want, tc.set)
+			ztesting.AssertEqual(t, tc.want, tc.set)
 		})
 	}
 }
@@ -161,7 +161,7 @@ func TestSet_RemoveElems(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			tc.set.RemoveElems(tc.elems...)
-			ztesting.AssertEqual(t, "has not matched", tc.want, tc.set)
+			ztesting.AssertEqual(t, tc.want, tc.set)
 		})
 	}
 }
@@ -189,7 +189,7 @@ func TestEqual(t *testing.T) {
 			a := zmath.NewSet(tc.setA)
 			b := zmath.NewSet(tc.setB)
 			equal := zmath.Equal(a, b)
-			ztesting.AssertEqual(t, "equal result not match", tc.equal, equal)
+			ztesting.AssertEqual(t, tc.equal, equal)
 		})
 	}
 }
@@ -237,8 +237,8 @@ func Test_Subset_SuperSet(t *testing.T) {
 			b := zmath.NewSet(tc.setB)
 			subSet := zmath.Subset(a, b)
 			superSet := zmath.Superset(b, a)
-			ztesting.AssertEqual(t, "subset result not match", tc.subset, subSet)
-			ztesting.AssertEqual(t, "superset result not match", tc.subset, superSet)
+			ztesting.AssertEqual(t, tc.subset, subSet)
+			ztesting.AssertEqual(t, tc.subset, superSet)
 		})
 	}
 }
@@ -286,8 +286,8 @@ func Test_ProperSubset_ProperSuperset(t *testing.T) {
 			b := zmath.NewSet(tc.setB)
 			subset := zmath.ProperSubset(a, b)
 			superset := zmath.ProperSuperset(b, a)
-			ztesting.AssertEqual(t, "proper subset result not match", tc.subset, subset)
-			ztesting.AssertEqual(t, "proper superset result not match", tc.subset, superset)
+			ztesting.AssertEqual(t, tc.subset, subset)
+			ztesting.AssertEqual(t, tc.subset, superset)
 		})
 	}
 }
@@ -324,7 +324,7 @@ func TestUnion(t *testing.T) {
 			a := zmath.NewSet(tc.setA)
 			b := zmath.NewSet(tc.setB)
 			union := zmath.Union(a, b)
-			ztesting.AssertEqual(t, "unexpected union", tc.union, union)
+			ztesting.AssertEqual(t, tc.union, union)
 		})
 	}
 }
@@ -363,7 +363,7 @@ func TestIntersection(t *testing.T) {
 			a := zmath.NewSet(tc.setA)
 			b := zmath.NewSet(tc.setB)
 			intersection := zmath.Intersection(a, b)
-			ztesting.AssertEqual(t, "unexpected intersection", tc.intersection, intersection)
+			ztesting.AssertEqual(t, tc.intersection, intersection)
 		})
 	}
 }
@@ -402,7 +402,7 @@ func TestDifference(t *testing.T) {
 			a := zmath.NewSet(tc.setA)
 			b := zmath.NewSet(tc.setB)
 			difference := zmath.Difference(a, b)
-			ztesting.AssertEqual(t, "unexpected difference", tc.difference, difference)
+			ztesting.AssertEqual(t, tc.difference, difference)
 		})
 	}
 }

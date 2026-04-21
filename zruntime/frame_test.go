@@ -37,10 +37,10 @@ func TestConvertFrame(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			f := zruntime.ConvertFrame(tc.frame)
-			ztesting.AssertEqual(t, "pkg value does not match.", tc.want.Pkg, f.Pkg)
-			ztesting.AssertEqual(t, "file value does not match.", tc.want.File, f.File)
-			ztesting.AssertEqual(t, "func value does not match.", tc.want.Func, f.Func)
-			ztesting.AssertEqual(t, "line value does not match.", tc.want.Line, f.Line)
+			ztesting.AssertEqual(t, tc.want.Pkg, f.Pkg)
+			ztesting.AssertEqual(t, tc.want.File, f.File)
+			ztesting.AssertEqual(t, tc.want.Func, f.Func)
+			ztesting.AssertEqual(t, tc.want.Line, f.Line)
 		})
 	}
 }
@@ -76,10 +76,10 @@ func TestConvertFrames(t *testing.T) {
 			}
 			for i, f := range fs {
 				w := tc.want[i]
-				ztesting.AssertEqual(t, "pkg value does not match.", w.Pkg, f.Pkg)
-				ztesting.AssertEqual(t, "file value does not match.", w.File, f.File)
-				ztesting.AssertEqual(t, "func value does not match.", w.Func, f.Func)
-				ztesting.AssertEqual(t, "line value does not match.", w.Line, f.Line)
+				ztesting.AssertEqual(t, w.Pkg, f.Pkg)
+				ztesting.AssertEqual(t, w.File, f.File)
+				ztesting.AssertEqual(t, w.Func, f.Func)
+				ztesting.AssertEqual(t, w.Line, f.Line)
 			}
 		})
 	}
@@ -90,23 +90,23 @@ func TestCallerFrame(t *testing.T) {
 
 	t.Run("skip=0", func(t *testing.T) {
 		f := zruntime.CallerFrame(0)
-		ztesting.AssertEqual(t, "file does not have appropriate suffix.", true, strings.HasSuffix(f.File, "frame_test.go"))
-		ztesting.AssertEqual(t, "func does not have appropriate suffix.", true, strings.HasSuffix(f.Function, "TestCallerFrame.func1"))
-		ztesting.AssertEqual(t, "line number is not positive.", true, f.Line > 0)
+		ztesting.AssertEqual(t, true, strings.HasSuffix(f.File, "frame_test.go"))
+		ztesting.AssertEqual(t, true, strings.HasSuffix(f.Function, "TestCallerFrame.func1"))
+		ztesting.AssertEqual(t, true, f.Line > 0)
 	})
 
 	t.Run("skip=9999", func(t *testing.T) {
 		f := zruntime.CallerFrame(9999)
-		ztesting.AssertEqual(t, "file has value.", "", f.File)
-		ztesting.AssertEqual(t, "func has value.", "", f.Function)
-		ztesting.AssertEqual(t, "line number is not 0.", 0, f.Line)
+		ztesting.AssertEqual(t, "", f.File)
+		ztesting.AssertEqual(t, "", f.Function)
+		ztesting.AssertEqual(t, 0, f.Line)
 	})
 
 	t.Run("skip=-9999", func(t *testing.T) {
 		f := zruntime.CallerFrame(-9999)
-		ztesting.AssertEqual(t, "file does not have appropriate suffix.", true, strings.HasSuffix(f.File, "runtime/extern.go"))
-		ztesting.AssertEqual(t, "func does not have appropriate suffix.", true, strings.HasSuffix(f.Function, "runtime.Callers"))
-		ztesting.AssertEqual(t, "line number is not positive.", true, f.Line > 0)
+		ztesting.AssertEqual(t, true, strings.HasSuffix(f.File, "runtime/extern.go"))
+		ztesting.AssertEqual(t, true, strings.HasSuffix(f.Function, "runtime.Callers"))
+		ztesting.AssertEqual(t, true, f.Line > 0)
 	})
 }
 
@@ -115,24 +115,24 @@ func TestCallerFrames(t *testing.T) {
 
 	t.Run("skip=0", func(t *testing.T) {
 		fs := zruntime.CallerFrames(0)
-		ztesting.AssertEqual(t, "no frames found.", true, len(fs) > 1)
+		ztesting.AssertEqual(t, true, len(fs) > 1)
 		f := fs[0]
-		ztesting.AssertEqual(t, "file does not have appropriate suffix.", true, strings.HasSuffix(f.File, "frame_test.go"))
-		ztesting.AssertEqual(t, "func does not have appropriate suffix.", true, strings.HasSuffix(f.Function, "TestCallerFrames.func1"))
-		ztesting.AssertEqual(t, "line number is not positive.", true, f.Line > 0)
+		ztesting.AssertEqual(t, true, strings.HasSuffix(f.File, "frame_test.go"))
+		ztesting.AssertEqual(t, true, strings.HasSuffix(f.Function, "TestCallerFrames.func1"))
+		ztesting.AssertEqual(t, true, f.Line > 0)
 	})
 
 	t.Run("skip=9999", func(t *testing.T) {
 		fs := zruntime.CallerFrames(9999)
-		ztesting.AssertEqual(t, "frames found.", 0, len(fs))
+		ztesting.AssertEqual(t, 0, len(fs))
 	})
 
 	t.Run("skip=-9999", func(t *testing.T) {
 		fs := zruntime.CallerFrames(-9999)
-		ztesting.AssertEqual(t, "no frames found.", true, len(fs) > 1)
+		ztesting.AssertEqual(t, true, len(fs) > 1)
 		f := fs[0]
-		ztesting.AssertEqual(t, "file does not have appropriate suffix.", true, strings.HasSuffix(f.File, "runtime/extern.go"))
-		ztesting.AssertEqual(t, "func does not have appropriate suffix.", true, strings.HasSuffix(f.Function, "runtime.Callers"))
-		ztesting.AssertEqual(t, "line number is not positive.", true, f.Line > 0)
+		ztesting.AssertEqual(t, true, strings.HasSuffix(f.File, "runtime/extern.go"))
+		ztesting.AssertEqual(t, true, strings.HasSuffix(f.Function, "runtime.Callers"))
+		ztesting.AssertEqual(t, true, f.Line > 0)
 	})
 }

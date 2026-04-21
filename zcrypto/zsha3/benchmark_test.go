@@ -39,20 +39,6 @@ func BenchmarkSum512(b *testing.B) {
 	}
 }
 
-func BenchmarkSumShake128(b *testing.B) {
-	b.ResetTimer()
-	for b.Loop() {
-		zsha3.SumShake128(msg)
-	}
-}
-
-func BenchmarkSumShake256(b *testing.B) {
-	b.ResetTimer()
-	for b.Loop() {
-		zsha3.SumShake256(msg)
-	}
-}
-
 func BenchmarkHMACSum224(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {

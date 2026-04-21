@@ -23,11 +23,11 @@ func TestCopy(t *testing.T) {
 		s := cipher.NewCTR(c, iv)
 		var w, ww bytes.Buffer
 		err := internal.Copy(s, &w, strings.NewReader("test"))
-		ztesting.AssertEqualErr(t, "error is not nil", nil, err)
-		ztesting.AssertEqual(t, "message unexpectedly match", false, w.String() == "test")
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, false, w.String() == "test")
 		err = zaes.CopyOFB(key, iv, &ww, strings.NewReader(w.String()))
-		ztesting.AssertEqualErr(t, "error is not nil", nil, err)
-		ztesting.AssertEqual(t, "message not match", "test", ww.String())
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, "test", ww.String())
 	})
 	t.Run("read error", func(t *testing.T) {
 		key := []byte("1234567890123456")
@@ -36,7 +36,7 @@ func TestCopy(t *testing.T) {
 		s := cipher.NewCTR(c, iv)
 		var w bytes.Buffer
 		err := internal.Copy(s, &w, ziotest.ErrReader(strings.NewReader("test"), 3))
-		ztesting.AssertEqualErr(t, "error not match", io.ErrClosedPipe, err)
+		ztesting.AssertEqualErr(t, io.ErrClosedPipe, err)
 	})
 	t.Run("write error", func(t *testing.T) {
 		key := []byte("1234567890123456")
@@ -45,7 +45,7 @@ func TestCopy(t *testing.T) {
 		s := cipher.NewCTR(c, iv)
 		var w bytes.Buffer
 		err := internal.Copy(s, ziotest.ErrWriter(&w, 3), strings.NewReader("test"))
-		ztesting.AssertEqualErr(t, "error not match", io.ErrClosedPipe, err)
+		ztesting.AssertEqualErr(t, io.ErrClosedPipe, err)
 	})
 	t.Run("short write error", func(t *testing.T) {
 		key := []byte("1234567890123456")
@@ -54,6 +54,6 @@ func TestCopy(t *testing.T) {
 		s := cipher.NewCTR(c, iv)
 		var w bytes.Buffer
 		err := internal.Copy(s, ziotest.ShortWriter(&w, 3), strings.NewReader("test"))
-		ztesting.AssertEqualErr(t, "error not match", io.ErrShortWrite, err)
+		ztesting.AssertEqualErr(t, io.ErrShortWrite, err)
 	})
 }

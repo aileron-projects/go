@@ -19,16 +19,16 @@ func TestConn_Read(t *testing.T) {
 			pc:      pc,
 			packets: packets,
 		}
-		ztesting.AssertEqual(t, "local addr not match", pc.LocalAddr(), c.LocalAddr())
+		ztesting.AssertEqual(t, pc.LocalAddr(), c.LocalAddr())
 
 		go func() {
 			packets <- []byte("test")
 		}()
 		buf := make([]byte, 10)
 		n, err := c.Read(buf)
-		ztesting.AssertEqual(t, "num packet not match", 4, n)
-		ztesting.AssertEqual(t, "packet content not match", "test", string(buf[:n]))
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, 4, n)
+		ztesting.AssertEqual(t, "test", string(buf[:n]))
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("read from closed conn", func(t *testing.T) {
 		packets := make(chan []byte, 1)
@@ -39,7 +39,7 @@ func TestConn_Read(t *testing.T) {
 			channels: &sync.Map{},
 			raddr:    raddr,
 		}
-		ztesting.AssertEqual(t, "local addr not match", pc.LocalAddr(), c.LocalAddr())
+		ztesting.AssertEqual(t, pc.LocalAddr(), c.LocalAddr())
 
 		c.Close()
 		go func() {
@@ -47,9 +47,9 @@ func TestConn_Read(t *testing.T) {
 		}()
 		buf := make([]byte, 10)
 		n, err := c.Read(buf)
-		ztesting.AssertEqual(t, "num packet not match", 0, n)
-		ztesting.AssertEqual(t, "packet content not match", "", string(buf[:n]))
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqual(t, 0, n)
+		ztesting.AssertEqual(t, "", string(buf[:n]))
+		ztesting.AssertEqualErr(t, net.ErrClosed, err)
 	})
 }
 
@@ -80,13 +80,13 @@ func TestConn_Write(t *testing.T) {
 			packets: packets,
 			raddr:   raddr,
 		}
-		ztesting.AssertEqual(t, "remote addr not match", raddr.String(), c.RemoteAddr().String())
+		ztesting.AssertEqual(t, raddr.String(), c.RemoteAddr().String())
 
 		n, err := c.Write([]byte("test"))
-		ztesting.AssertEqual(t, "num packet not match", 4, n)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
-		ztesting.AssertEqual(t, "packet content not match", "test", string(rpc.written))
-		ztesting.AssertEqual(t, "written address not match", raddr.String(), rpc.raddr.String())
+		ztesting.AssertEqual(t, 4, n)
+		ztesting.AssertEqualErr(t, nil, err)
+		ztesting.AssertEqual(t, "test", string(rpc.written))
+		ztesting.AssertEqual(t, raddr.String(), rpc.raddr.String())
 	})
 	t.Run("write to closed conn", func(t *testing.T) {
 		packets := make(chan []byte, 1)
@@ -98,16 +98,16 @@ func TestConn_Write(t *testing.T) {
 			channels: &sync.Map{},
 			raddr:    raddr,
 		}
-		ztesting.AssertEqual(t, "remote addr not match", raddr.String(), c.RemoteAddr().String())
+		ztesting.AssertEqual(t, raddr.String(), c.RemoteAddr().String())
 
 		c.Close()
 		go func() {
 			packets <- []byte("test")
 		}()
 		n, err := c.Write([]byte("test"))
-		ztesting.AssertEqual(t, "num packet not match", 0, n)
-		ztesting.AssertEqual(t, "packet content not match", "", string(rpc.written))
-		ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+		ztesting.AssertEqual(t, 0, n)
+		ztesting.AssertEqual(t, "", string(rpc.written))
+		ztesting.AssertEqualErr(t, net.ErrClosed, err)
 	})
 }
 
@@ -122,10 +122,10 @@ func TestConn_Close(t *testing.T) {
 		}
 		channels.Store(addr.String(), "test")
 		_, ok := channels.Load(addr.String())
-		ztesting.AssertEqual(t, "value not found", true, ok)
+		ztesting.AssertEqual(t, true, ok)
 		c.Close()
 		_, ok = channels.Load(addr.String())
-		ztesting.AssertEqual(t, "value unexpectedly found", false, ok)
+		ztesting.AssertEqual(t, false, ok)
 	})
 	t.Run("close multiple times", func(t *testing.T) {
 		channels := &sync.Map{}
@@ -136,14 +136,14 @@ func TestConn_Close(t *testing.T) {
 		}
 		channels.Store(addr.String(), "test")
 		_, ok := channels.Load(addr.String())
-		ztesting.AssertEqual(t, "value not found", true, ok)
+		ztesting.AssertEqual(t, true, ok)
 		c.Close()
 		_, ok = channels.Load(addr.String())
-		ztesting.AssertEqual(t, "key found", false, ok)
+		ztesting.AssertEqual(t, false, ok)
 
 		channels.Store(addr.String(), "test") // Store value again.
 		c.Close()                             // Value should not be removed.
 		_, ok = channels.Load(addr.String())
-		ztesting.AssertEqual(t, "value not found", true, ok)
+		ztesting.AssertEqual(t, true, ok)
 	})
 }

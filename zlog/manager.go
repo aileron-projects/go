@@ -348,21 +348,21 @@ func formatFileName(format string, t time.Time, index int) (str string, ok bool)
 		}
 		switch char {
 		case 'Y':
-			_, _ = builder.WriteString(fmt.Sprintf("%04d", year))
+			_, _ = fmt.Fprintf(&builder, "%04d", year)
 		case 'M':
-			_, _ = builder.WriteString(fmt.Sprintf("%02d", month))
+			_, _ = fmt.Fprintf(&builder, "%02d", month)
 		case 'D':
-			_, _ = builder.WriteString(fmt.Sprintf("%02d", day))
+			_, _ = fmt.Fprintf(&builder, "%02d", day)
 		case 'h':
-			_, _ = builder.WriteString(fmt.Sprintf("%02d", t.Hour()))
+			_, _ = fmt.Fprintf(&builder, "%02d", t.Hour())
 		case 'm':
-			_, _ = builder.WriteString(fmt.Sprintf("%02d", t.Minute()))
+			_, _ = fmt.Fprintf(&builder, "%02d", t.Minute())
 		case 's':
-			_, _ = builder.WriteString(fmt.Sprintf("%02d", t.Second()))
+			_, _ = fmt.Fprintf(&builder, "%02d", t.Second())
 		case 'u':
-			_, _ = builder.WriteString(strconv.FormatInt(t.Unix(), 10))
+			_, _ = fmt.Fprint(&builder, strconv.FormatInt(t.Unix(), 10))
 		case 'i':
-			_, _ = builder.WriteString(strconv.Itoa(index))
+			_, _ = fmt.Fprint(&builder, strconv.Itoa(index))
 		default:
 			return "", false // Invalid '%'.
 		}

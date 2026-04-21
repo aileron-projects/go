@@ -22,8 +22,8 @@ func TestDefaultLogger(t *testing.T) {
 	dlg := zslog.Default()
 	dlg.InfoContext(context.Background(), "test", "foo", "bar")
 	out := w.String()
-	ztesting.AssertEqual(t, "message not found", true, strings.Contains(out, `"msg":"test"`))
-	ztesting.AssertEqual(t, "message not found", true, strings.Contains(out, `"foo":"bar"`))
+	ztesting.AssertEqual(t, true, strings.Contains(out, `"msg":"test"`))
+	ztesting.AssertEqual(t, true, strings.Contains(out, `"foo":"bar"`))
 }
 
 func TestNew(t *testing.T) {
@@ -31,20 +31,20 @@ func TestNew(t *testing.T) {
 	t.Run("json handler", func(t *testing.T) {
 		var w bytes.Buffer
 		lg := zslog.New(slog.NewJSONHandler(&w, &slog.HandlerOptions{Level: slog.LevelDebug}))
-		ztesting.AssertEqual(t, "log level is not enabled.", true, lg.DebugEnabled(context.Background()))
+		ztesting.AssertEqual(t, true, lg.DebugEnabled(context.Background()))
 		lg.InfoContext(context.Background(), "test", "foo", "bar")
 		out := w.String()
-		ztesting.AssertEqual(t, "message not found", true, strings.Contains(out, `"msg":"test"`))
-		ztesting.AssertEqual(t, "message not found", true, strings.Contains(out, `"foo":"bar"`))
+		ztesting.AssertEqual(t, true, strings.Contains(out, `"msg":"test"`))
+		ztesting.AssertEqual(t, true, strings.Contains(out, `"foo":"bar"`))
 	})
 	t.Run("text handler", func(t *testing.T) {
 		var w bytes.Buffer
 		lg := zslog.New(slog.NewTextHandler(&w, &slog.HandlerOptions{Level: slog.LevelDebug}))
-		ztesting.AssertEqual(t, "log level is not enabled.", true, lg.DebugEnabled(context.Background()))
+		ztesting.AssertEqual(t, true, lg.DebugEnabled(context.Background()))
 		lg.InfoContext(context.Background(), "test", "foo", "bar")
 		out := w.String()
-		ztesting.AssertEqual(t, "message not found", true, strings.Contains(out, `msg=test`))
-		ztesting.AssertEqual(t, "message not found", true, strings.Contains(out, `foo=bar`))
+		ztesting.AssertEqual(t, true, strings.Contains(out, `msg=test`))
+		ztesting.AssertEqual(t, true, strings.Contains(out, `foo=bar`))
 	})
 }
 
@@ -107,12 +107,12 @@ func TestLogger_Enabled(t *testing.T) {
 				ctx = zslog.ContextWithLevel(ctx, tc.ctxLv)
 			}
 			lg := zslog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: tc.setLv}))
-			ztesting.AssertEqual(t, "debug enabled not match.", slog.LevelDebug >= threshold, lg.DebugEnabled(ctx))
-			ztesting.AssertEqual(t, "info enabled not match.", slog.LevelInfo >= threshold, lg.InfoEnabled(ctx))
-			ztesting.AssertEqual(t, "warn enabled not match.", slog.LevelWarn >= threshold, lg.WarnEnabled(ctx))
-			ztesting.AssertEqual(t, "error enabled not match.", slog.LevelError >= threshold, lg.ErrorEnabled(ctx))
+			ztesting.AssertEqual(t, slog.LevelDebug >= threshold, lg.DebugEnabled(ctx))
+			ztesting.AssertEqual(t, slog.LevelInfo >= threshold, lg.InfoEnabled(ctx))
+			ztesting.AssertEqual(t, slog.LevelWarn >= threshold, lg.WarnEnabled(ctx))
+			ztesting.AssertEqual(t, slog.LevelError >= threshold, lg.ErrorEnabled(ctx))
 			for i := -10; i < 10; i++ {
-				ztesting.AssertEqual(t, "enabled not match.", i >= int(threshold), lg.Enabled(ctx, slog.Level(i)))
+				ztesting.AssertEqual(t, i >= int(threshold), lg.Enabled(ctx, slog.Level(i)))
 			}
 		})
 	}
@@ -133,9 +133,9 @@ func TestLogger_Debug(t *testing.T) {
 			lg.DebugContext(ctx, "test message", "arg1", "arg2")
 			result := buf.String()
 			if threshold > slog.LevelDebug {
-				ztesting.AssertEqual(t, "log line is written.", "", buf.String())
+				ztesting.AssertEqual(t, "", buf.String())
 			} else {
-				ztesting.AssertEqual(t, "log line is not written.", true, strings.Contains(result, "test message"))
+				ztesting.AssertEqual(t, true, strings.Contains(result, "test message"))
 			}
 		})
 	}
@@ -144,14 +144,14 @@ func TestLogger_Debug(t *testing.T) {
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelDebug}))
 		lg.AddCaller = zslog.RangeDebug
 		lg.DebugContext(context.Background(), "test message")
-		ztesting.AssertEqual(t, "log line does not contain caller.", true, strings.Contains(buf.String(), `"caller"`))
+		ztesting.AssertEqual(t, true, strings.Contains(buf.String(), `"caller"`))
 	})
 	t.Run("add frames", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelDebug}))
 		lg.AddFrames = zslog.RangeDebug
 		lg.DebugContext(context.Background(), "test message")
-		ztesting.AssertEqual(t, "log line does not contain frames.", true, strings.Contains(buf.String(), `"frames"`))
+		ztesting.AssertEqual(t, true, strings.Contains(buf.String(), `"frames"`))
 	})
 }
 
@@ -170,9 +170,9 @@ func TestLogger_Info(t *testing.T) {
 			lg.InfoContext(ctx, "test message", "arg1", "arg2")
 			result := buf.String()
 			if threshold > slog.LevelInfo {
-				ztesting.AssertEqual(t, "log line is written.", "", buf.String())
+				ztesting.AssertEqual(t, "", buf.String())
 			} else {
-				ztesting.AssertEqual(t, "log line is not written.", true, strings.Contains(result, "test message"))
+				ztesting.AssertEqual(t, true, strings.Contains(result, "test message"))
 			}
 		})
 	}
@@ -181,14 +181,14 @@ func TestLogger_Info(t *testing.T) {
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelInfo}))
 		lg.AddCaller = zslog.RangeInfo
 		lg.InfoContext(context.Background(), "test message")
-		ztesting.AssertEqual(t, "log line does not contain caller.", true, strings.Contains(buf.String(), `"caller"`))
+		ztesting.AssertEqual(t, true, strings.Contains(buf.String(), `"caller"`))
 	})
 	t.Run("add frames", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelInfo}))
 		lg.AddFrames = zslog.RangeInfo
 		lg.InfoContext(context.Background(), "test message")
-		ztesting.AssertEqual(t, "log line does not contain frames.", true, strings.Contains(buf.String(), `"frames"`))
+		ztesting.AssertEqual(t, true, strings.Contains(buf.String(), `"frames"`))
 	})
 }
 
@@ -207,9 +207,9 @@ func TestLogger_Warn(t *testing.T) {
 			lg.WarnContext(ctx, "test message", "arg1", "arg2")
 			result := buf.String()
 			if threshold > slog.LevelWarn {
-				ztesting.AssertEqual(t, "log line is written.", "", buf.String())
+				ztesting.AssertEqual(t, "", buf.String())
 			} else {
-				ztesting.AssertEqual(t, "log line is not written.", true, strings.Contains(result, "test message"))
+				ztesting.AssertEqual(t, true, strings.Contains(result, "test message"))
 			}
 		})
 	}
@@ -218,14 +218,14 @@ func TestLogger_Warn(t *testing.T) {
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelWarn}))
 		lg.AddCaller = zslog.RangeWarn
 		lg.WarnContext(context.Background(), "test message")
-		ztesting.AssertEqual(t, "log line does not contain caller.", true, strings.Contains(buf.String(), `"caller"`))
+		ztesting.AssertEqual(t, true, strings.Contains(buf.String(), `"caller"`))
 	})
 	t.Run("add frames", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelWarn}))
 		lg.AddFrames = zslog.RangeWarn
 		lg.WarnContext(context.Background(), "test message")
-		ztesting.AssertEqual(t, "log line does not contain frames.", true, strings.Contains(buf.String(), `"frames"`))
+		ztesting.AssertEqual(t, true, strings.Contains(buf.String(), `"frames"`))
 	})
 }
 
@@ -244,9 +244,9 @@ func TestLogger_Error(t *testing.T) {
 			lg.ErrorContext(ctx, "test message", "arg1", "arg2")
 			result := buf.String()
 			if threshold > slog.LevelError {
-				ztesting.AssertEqual(t, "log line is written.", "", buf.String())
+				ztesting.AssertEqual(t, "", buf.String())
 			} else {
-				ztesting.AssertEqual(t, "log line is not written.", true, strings.Contains(result, "test message"))
+				ztesting.AssertEqual(t, true, strings.Contains(result, "test message"))
 			}
 		})
 	}
@@ -255,14 +255,14 @@ func TestLogger_Error(t *testing.T) {
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelError}))
 		lg.AddCaller = zslog.RangeError
 		lg.ErrorContext(context.Background(), "test message")
-		ztesting.AssertEqual(t, "log line does not contain caller.", true, strings.Contains(buf.String(), `"caller"`))
+		ztesting.AssertEqual(t, true, strings.Contains(buf.String(), `"caller"`))
 	})
 	t.Run("add frames", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelError}))
 		lg.AddFrames = zslog.RangeError
 		lg.ErrorContext(context.Background(), "test message")
-		ztesting.AssertEqual(t, "log line does not contain frames.", true, strings.Contains(buf.String(), `"frames"`))
+		ztesting.AssertEqual(t, true, strings.Contains(buf.String(), `"frames"`))
 	})
 }
 
@@ -272,32 +272,32 @@ func TestLogger_nilContext(t *testing.T) {
 	t.Run("enabled", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelInfo}))
-		ztesting.AssertEqual(t, "log level is unexpectedly enabled.", false, lg.Enabled(ctx, slog.LevelDebug))
-		ztesting.AssertEqual(t, "log level is unexpectedly disabled.", true, lg.Enabled(ctx, slog.LevelInfo))
-		ztesting.AssertEqual(t, "log level is unexpectedly disabled.", true, lg.Enabled(ctx, slog.LevelWarn))
+		ztesting.AssertEqual(t, false, lg.Enabled(ctx, slog.LevelDebug))
+		ztesting.AssertEqual(t, true, lg.Enabled(ctx, slog.LevelInfo))
+		ztesting.AssertEqual(t, true, lg.Enabled(ctx, slog.LevelWarn))
 	})
 	t.Run("debug", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelDebug}))
 		lg.DebugContext(ctx, "test message")
-		ztesting.AssertEqual(t, "log line should be written", false, buf.String() == "")
+		ztesting.AssertEqual(t, false, buf.String() == "")
 	})
 	t.Run("info", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelDebug}))
 		lg.InfoContext(ctx, "test message")
-		ztesting.AssertEqual(t, "log line should be written", false, buf.String() == "")
+		ztesting.AssertEqual(t, false, buf.String() == "")
 	})
 	t.Run("warn", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelDebug}))
 		lg.WarnContext(ctx, "test message")
-		ztesting.AssertEqual(t, "log line should be written", false, buf.String() == "")
+		ztesting.AssertEqual(t, false, buf.String() == "")
 	})
 	t.Run("error", func(t *testing.T) {
 		var buf bytes.Buffer
 		lg := zslog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{Level: slog.LevelDebug}))
 		lg.ErrorContext(ctx, "test message")
-		ztesting.AssertEqual(t, "log line should be written", false, buf.String() == "")
+		ztesting.AssertEqual(t, false, buf.String() == "")
 	})
 }

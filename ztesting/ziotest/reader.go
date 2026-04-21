@@ -12,12 +12,12 @@ var (
 		92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
 		112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
 	}
-	CharsetAscii   = string(ASCII)
-	CharsetDigit   = "0123456789"
-	CharsetLetter1 = "abcdefghijklmnopqrstuvwxyz"
-	CharsetLetter2 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	CharsetLetter  = CharsetLetter1 + CharsetLetter2
-	CharsetSymbol  = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+	CharsetAscii       = string(ASCII)
+	CharsetDigit       = "0123456789"
+	CharsetLetterLower = "abcdefghijklmnopqrstuvwxyz"
+	CharsetLetterUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	CharsetLetter      = CharsetLetterLower + CharsetLetterUpper
+	CharsetSymbol      = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
 )
 
 // CharsetReader returns [io.Reader] that reads from the given charset.

@@ -21,26 +21,26 @@ func TestNewFileManager(t *testing.T) {
 		_, err := NewFileManager(&FileManagerConfig{
 			Pattern: "foo/bar.txt",
 		})
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 	t.Run("pattern contains '\\'", func(t *testing.T) {
 		_, err := NewFileManager(&FileManagerConfig{
 			Pattern: "foo\\bar.txt",
 		})
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 	t.Run("invalid pattern", func(t *testing.T) {
 		_, err := NewFileManager(&FileManagerConfig{
 			Pattern: "bar.%x.%y.%z.txt",
 		})
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 	t.Run("%i added", func(t *testing.T) {
 		dir := t.TempDir()
 		c := &FileManagerConfig{SrcDir: dir, DstDir: dir, Pattern: "test.txt"} // ".%i" should be added.
 		_, err := NewFileManager(c)
-		ztesting.AssertEqual(t, "error should be nil", nil, err)
-		ztesting.AssertEqual(t, "pattern not match", "test.%i.txt", c.Pattern)
+		ztesting.AssertEqual(t, nil, err)
+		ztesting.AssertEqual(t, "test.%i.txt", c.Pattern)
 	})
 	t.Run("pattern contains specifier", func(t *testing.T) {
 		dir := t.TempDir()
@@ -48,31 +48,31 @@ func TestNewFileManager(t *testing.T) {
 		for _, s := range specs {
 			c := &FileManagerConfig{SrcDir: dir, DstDir: dir, Pattern: s + ".%i"}
 			_, err := NewFileManager(c)
-			ztesting.AssertEqual(t, "error should be nil", nil, err)
-			ztesting.AssertEqual(t, "pattern should have length", true, len(c.Pattern) > 0)
-			ztesting.AssertEqual(t, "invalid pattern replace", true, c.Pattern[:len(c.Pattern)-3] != s)
+			ztesting.AssertEqual(t, nil, err)
+			ztesting.AssertEqual(t, true, len(c.Pattern) > 0)
+			ztesting.AssertEqual(t, true, c.Pattern[:len(c.Pattern)-3] != s)
 		}
 	})
 	t.Run("srcDir create failed", func(t *testing.T) {
 		dir := t.TempDir()
 		c := &FileManagerConfig{SrcDir: dir + "/ng-\x00", DstDir: dir + "/ok"}
 		_, err := NewFileManager(c)
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 	t.Run("dstDir create failed", func(t *testing.T) {
 		dir := t.TempDir()
 		c := &FileManagerConfig{SrcDir: dir + "/ok", DstDir: dir + "/ng-\x00"}
 		_, err := NewFileManager(c)
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 }
 
 func TestFileManager_NewFile(t *testing.T) {
 	t.Parallel()
 	m := &FileManager{srcDir: "testdata/", pattern: "test.%i.txt"}
-	ztesting.AssertEqual(t, "file path not match", filepath.Join("testdata", "test.1.txt"), m.NewFile())
-	ztesting.AssertEqual(t, "file path not match", filepath.Join("testdata", "test.2.txt"), m.NewFile())
-	ztesting.AssertEqual(t, "file path not match", filepath.Join("testdata", "test.3.txt"), m.NewFile())
+	ztesting.AssertEqual(t, filepath.Join("testdata", "test.1.txt"), m.NewFile())
+	ztesting.AssertEqual(t, filepath.Join("testdata", "test.2.txt"), m.NewFile())
+	ztesting.AssertEqual(t, filepath.Join("testdata", "test.3.txt"), m.NewFile())
 }
 
 func TestFileManager_Manager(t *testing.T) {
@@ -80,7 +80,7 @@ func TestFileManager_Manager(t *testing.T) {
 	t.Run("failed to list srcDir", func(t *testing.T) {
 		m := &FileManager{srcDir: "not-found"}
 		err := m.Manage()
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 	t.Run("failed to archive", func(t *testing.T) {
 		dir := t.TempDir()
@@ -88,31 +88,31 @@ func TestFileManager_Manager(t *testing.T) {
 		os.WriteFile(path, []byte("testdata"), os.ModePerm)
 		m := &FileManager{srcDir: dir, dstDir: "not-found", pattern: "test.txt"}
 		err := m.Manage()
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 	t.Run("failed to list dstDir", func(t *testing.T) {
 		dir := t.TempDir()
 		m := &FileManager{srcDir: dir, dstDir: "not-found", pattern: "test.txt"}
 		err := m.Manage()
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 	t.Run("limit max history", func(t *testing.T) {
 		dir := t.TempDir()
 		copyDir("./testdata/manage/max-history", dir)
 		m := &FileManager{srcDir: dir, dstDir: dir, pattern: "test.%i.txt", maxHistory: 3}
 		err := m.Manage()
-		ztesting.AssertEqual(t, "error should be nil", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		want := []string{"test.5.txt", "test.6.txt", "test.9.txt"}
-		ztesting.AssertEqual(t, "files not match", want, listDirFiles(dir))
+		ztesting.AssertEqual(t, want, listDirFiles(dir))
 	})
 	t.Run("limit max history gzip", func(t *testing.T) {
 		dir := t.TempDir()
 		copyDir("./testdata/manage/max-history-gz", dir)
 		m := &FileManager{srcDir: dir, dstDir: dir, pattern: "test.%i.txt", maxHistory: 3, gzipLv: gzip.BestSpeed}
 		err := m.Manage()
-		ztesting.AssertEqual(t, "error should be nil", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		want := []string{"test.5.txt.gz", "test.6.txt.gz", "test.9.txt.gz"}
-		ztesting.AssertEqual(t, "files not match", want, listDirFiles(dir))
+		ztesting.AssertEqual(t, want, listDirFiles(dir))
 	})
 	t.Run("limit max age", func(t *testing.T) {
 		dir := t.TempDir()
@@ -125,27 +125,27 @@ func TestFileManager_Manager(t *testing.T) {
 		os.WriteFile(dir+"/test."+time4+".txt", []byte("testdata"), os.ModePerm)
 		m := &FileManager{srcDir: dir, dstDir: dir, pattern: "test.%u.txt", maxAge: 250 * time.Second}
 		err := m.Manage()
-		ztesting.AssertEqual(t, "error should be nil", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		want := []string{"test." + time2 + ".txt", "test." + time1 + ".txt"}
-		ztesting.AssertEqual(t, "files not match", want, listDirFiles(dir))
+		ztesting.AssertEqual(t, want, listDirFiles(dir))
 	})
 	t.Run("limit total size", func(t *testing.T) {
 		dir := t.TempDir()
 		copyDir("./testdata/manage/total-size", dir)
 		m := &FileManager{srcDir: dir, dstDir: dir, pattern: "test.%i.txt", maxTotal: 25}
 		err := m.Manage()
-		ztesting.AssertEqual(t, "error should be nil", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		want := []string{"test.4.txt", "test.5.txt"}
-		ztesting.AssertEqual(t, "files not match", want, listDirFiles(dir))
+		ztesting.AssertEqual(t, want, listDirFiles(dir))
 	})
 	t.Run("limit total size", func(t *testing.T) {
 		dir := t.TempDir()
 		copyDir("./testdata/manage/total-size-gz", dir)
 		m := &FileManager{srcDir: dir, dstDir: dir, pattern: "test.%i.txt", maxTotal: 25, gzipLv: gzip.BestSpeed}
 		err := m.Manage()
-		ztesting.AssertEqual(t, "error should be nil", nil, err)
+		ztesting.AssertEqual(t, nil, err)
 		want := []string{"test.4.txt.gz", "test.5.txt.gz"}
-		ztesting.AssertEqual(t, "files not match", want, listDirFiles(dir))
+		ztesting.AssertEqual(t, want, listDirFiles(dir))
 	})
 }
 
@@ -185,9 +185,9 @@ func TestFileManager_archive(t *testing.T) {
 			os.WriteFile(path, []byte("testdata"), os.ModePerm)
 			m := &FileManager{srcDir: dir, dstDir: dir, gzipLv: gzip.NoCompression}
 			err := m.archive([]*fileInfo{{name: "test.txt", path: path}})
-			ztesting.AssertEqual(t, "error not match", nil, err)
+			ztesting.AssertEqual(t, nil, err)
 			info, _ := os.Stat(path)
-			ztesting.AssertEqual(t, "file type not match", true, info.Mode().IsRegular())
+			ztesting.AssertEqual(t, true, info.Mode().IsRegular())
 		})
 		t.Run("with compression", func(t *testing.T) {
 			dir := t.TempDir()
@@ -195,16 +195,16 @@ func TestFileManager_archive(t *testing.T) {
 			os.WriteFile(path, []byte("testdata"), os.ModePerm)
 			m := &FileManager{srcDir: dir, dstDir: dir, gzipLv: gzip.BestSpeed}
 			err := m.archive([]*fileInfo{{name: "test.txt", path: path}})
-			ztesting.AssertEqual(t, "error not match", nil, err)
+			ztesting.AssertEqual(t, nil, err)
 			info, _ := os.Stat(path + ".gz")
-			ztesting.AssertEqual(t, "file type not match", true, info.Mode().IsRegular())
+			ztesting.AssertEqual(t, true, info.Mode().IsRegular())
 		})
 		t.Run("compression failed", func(t *testing.T) {
 			dir := t.TempDir()
 			path := dir + "/test.txt" // Not exist.
 			m := &FileManager{srcDir: dir, dstDir: dir, gzipLv: gzip.BestSpeed}
 			err := m.archive([]*fileInfo{{name: "test.txt", path: path}})
-			ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+			ztesting.AssertEqual(t, true, err != nil)
 		})
 	})
 	t.Run("different dir", func(t *testing.T) {
@@ -215,9 +215,9 @@ func TestFileManager_archive(t *testing.T) {
 			os.WriteFile(path, []byte("testdata"), os.ModePerm)
 			m := &FileManager{srcDir: srcDir, dstDir: dstDir, gzipLv: gzip.NoCompression}
 			err := m.archive([]*fileInfo{{name: "test.txt", path: path}})
-			ztesting.AssertEqual(t, "error not match", nil, err)
+			ztesting.AssertEqual(t, nil, err)
 			info, _ := os.Stat(dstDir + "/test.txt")
-			ztesting.AssertEqual(t, "file type not match", true, info.Mode().IsRegular())
+			ztesting.AssertEqual(t, true, info.Mode().IsRegular())
 		})
 		t.Run("with compression", func(t *testing.T) {
 			srcDir := t.TempDir()
@@ -226,9 +226,9 @@ func TestFileManager_archive(t *testing.T) {
 			os.WriteFile(path, []byte("testdata"), os.ModePerm)
 			m := &FileManager{srcDir: srcDir, dstDir: dstDir, gzipLv: gzip.BestSpeed}
 			err := m.archive([]*fileInfo{{name: "test.txt", path: path}})
-			ztesting.AssertEqual(t, "error not match", nil, err)
+			ztesting.AssertEqual(t, nil, err)
 			info, _ := os.Stat(dstDir + "/test.txt.gz")
-			ztesting.AssertEqual(t, "file type not match", true, info.Mode().IsRegular())
+			ztesting.AssertEqual(t, true, info.Mode().IsRegular())
 		})
 	})
 }
@@ -259,15 +259,15 @@ func TestGzipCompressFile(t *testing.T) {
 			if tc.err != nil {
 				// Currently we only check if the error is nil or not because the PathError
 				// contains platform dependent errors.
-				ztesting.AssertEqual(t, "error not match", true, err != nil)
+				ztesting.AssertEqual(t, true, err != nil)
 				return
 			}
-			ztesting.AssertEqual(t, "error not match", nil, err)
+			ztesting.AssertEqual(t, nil, err)
 			b, err := os.ReadFile(dstFile)
 			r, _ := gzip.NewReader(bytes.NewReader(b))
 			bb, _ := io.ReadAll(r)
-			ztesting.AssertEqual(t, "error not match", nil, err)
-			ztesting.AssertEqual(t, "content not match", "testdata", string(bb))
+			ztesting.AssertEqual(t, nil, err)
+			ztesting.AssertEqual(t, "testdata", string(bb))
 		})
 	}
 }
@@ -315,15 +315,15 @@ func TestListFiles(t *testing.T) {
 			if tc.err != nil {
 				// Currently we only check if the error is nil or not because the PathError
 				// contains platform dependent errors.
-				ztesting.AssertEqual(t, "error not match", true, err != nil)
+				ztesting.AssertEqual(t, true, err != nil)
 				return
 			}
-			ztesting.AssertEqual(t, "error not match", nil, err)
-			ztesting.AssertEqual(t, "file length not match", len(tc.files), len(files))
+			ztesting.AssertEqual(t, nil, err)
+			ztesting.AssertEqual(t, len(tc.files), len(files))
 			for i := range tc.files {
-				ztesting.AssertEqual(t, "file name not match", tc.files[i].name, files[i].name)
-				ztesting.AssertEqual(t, "index not match", tc.files[i].index, files[i].index)
-				ztesting.AssertEqual(t, "created time not match", tc.files[i].created, files[i].created)
+				ztesting.AssertEqual(t, tc.files[i].name, files[i].name)
+				ztesting.AssertEqual(t, tc.files[i].index, files[i].index)
+				ztesting.AssertEqual(t, tc.files[i].created, files[i].created)
 			}
 		})
 	}
@@ -361,8 +361,8 @@ func TestFormatFileName(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			str, ok := formatFileName(tc.format, tc.t, tc.index)
-			ztesting.AssertEqual(t, "string not match", tc.str, str)
-			ztesting.AssertEqual(t, "ok not match", tc.ok, ok)
+			ztesting.AssertEqual(t, tc.str, str)
+			ztesting.AssertEqual(t, tc.ok, ok)
 		})
 	}
 }
@@ -409,9 +409,9 @@ func TestScanFileName(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			tm, index, ok := scanFileName(tc.format, tc.str)
-			ztesting.AssertEqual(t, "time not match", tc.t, tm)
-			ztesting.AssertEqual(t, "index not match", tc.index, index)
-			ztesting.AssertEqual(t, "char not match", tc.ok, ok)
+			ztesting.AssertEqual(t, tc.t, tm)
+			ztesting.AssertEqual(t, tc.index, index)
+			ztesting.AssertEqual(t, tc.ok, ok)
 		})
 	}
 }
@@ -432,9 +432,9 @@ func TestScanFormat(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			prefix, rest, char := scanFormat(tc.format)
-			ztesting.AssertEqual(t, "prefix not match", tc.prefix, prefix)
-			ztesting.AssertEqual(t, "rest string not match", tc.rest, rest)
-			ztesting.AssertEqual(t, "char not match", tc.char, char)
+			ztesting.AssertEqual(t, tc.prefix, prefix)
+			ztesting.AssertEqual(t, tc.rest, rest)
+			ztesting.AssertEqual(t, tc.char, char)
 		})
 	}
 }
@@ -464,9 +464,9 @@ func TestScanNumber(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			num, rest, ok := scanNumber(tc.str, tc.digit)
-			ztesting.AssertEqual(t, "parsed num not match", tc.num, num)
-			ztesting.AssertEqual(t, "rest string not match", tc.rest, rest)
-			ztesting.AssertEqual(t, "ok not match", tc.ok, ok)
+			ztesting.AssertEqual(t, tc.num, num)
+			ztesting.AssertEqual(t, tc.rest, rest)
+			ztesting.AssertEqual(t, tc.ok, ok)
 		})
 	}
 }

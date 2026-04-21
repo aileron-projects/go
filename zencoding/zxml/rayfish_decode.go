@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"io"
+	"strings"
 )
 
 // Decode decodes XML document read by the decoder into Go values.
@@ -61,7 +62,7 @@ func (r *RayFish) decode(decoder *xml.Decoder, start xml.StartElement, end xml.E
 		})
 	}
 
-	var text string
+	var text strings.Builder
 Loop:
 	for {
 		token, err := decoder.RawToken()
@@ -81,9 +82,9 @@ Loop:
 				continue // Ignore text with only space characters.
 			}
 			if r.TrimSpace {
-				text += string(trimmed)
+				text.WriteString(string(trimmed))
 			} else {
-				text += string(t)
+				text.WriteString(string(t))
 			}
 		case xml.EndElement:
 			if t == end {
@@ -93,15 +94,15 @@ Loop:
 	}
 
 	// Convert XML text value to JSON value.
-	var val any = text
+	var val any = text.String()
 	if r.JSONValue != nil {
-		v, err := r.JSONValue(text, start)
+		v, err := r.JSONValue(text.String(), start)
 		if err != nil {
 			return nil, err
 		}
 		val = v
 	} else {
-		if text == "" {
+		if text.String() == "" {
 			val = r.emptyVal
 		}
 	}

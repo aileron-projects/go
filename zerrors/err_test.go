@@ -14,7 +14,7 @@ func TestErr_Unwrap(t *testing.T) {
 	t.Parallel()
 	e := &zerrors.Err{Cause: io.EOF}
 	u := e.Unwrap()
-	ztesting.AssertEqual(t, "unwrapped error is incorrect.", io.EOF, u)
+	ztesting.AssertEqual(t, io.EOF, u)
 }
 
 func TestErr_Error(t *testing.T) {
@@ -51,7 +51,7 @@ func TestErr_Error(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got := tc.err.Error()
-			ztesting.AssertEqual(t, "error string not match", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -107,7 +107,7 @@ func TestErr_Is(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			is := tc.use.Is(tc.target)
-			ztesting.AssertEqual(t, "incorrect error identification.", tc.same, is)
+			ztesting.AssertEqual(t, tc.same, is)
 		})
 	}
 }
@@ -121,7 +121,7 @@ func TestErr_Map(t *testing.T) {
 			"message": "m",
 			"detail":  "d",
 		}
-		ztesting.AssertEqual(t, "maps not matched", want, got)
+		ztesting.AssertEqual(t, want, got)
 	})
 	t.Run("cause", func(t *testing.T) {
 		e := &zerrors.Err{Cause: io.EOF}
@@ -129,7 +129,7 @@ func TestErr_Map(t *testing.T) {
 		want := map[string]any{
 			"message": "EOF",
 		}
-		ztesting.AssertEqual(t, "maps not matched", want, got["cause"].(map[string]any))
+		ztesting.AssertEqual(t, want, got["cause"].(map[string]any))
 	})
 }
 
@@ -142,7 +142,7 @@ func TestErr_SlogAttrs(t *testing.T) {
 			slog.String("message", "m"),
 			slog.String("detail", "d"),
 		}
-		ztesting.AssertEqual(t, "attrs not matched", want, got)
+		ztesting.AssertEqual(t, want, got)
 	})
 	t.Run("cause", func(t *testing.T) {
 		e := &zerrors.Err{Cause: io.EOF}
@@ -152,6 +152,6 @@ func TestErr_SlogAttrs(t *testing.T) {
 			slog.String("detail", ""),
 			slog.GroupAttrs("cause", slog.String("message", "EOF")),
 		}
-		ztesting.AssertEqual(t, "attrs not matched", want, got)
+		ztesting.AssertEqual(t, want, got)
 	})
 }

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"strconv"
 	"testing"
 	"time"
 
@@ -17,18 +16,18 @@ func TestBackoffError(t *testing.T) {
 		e1 := &BackoffError{Type: "foo", Info: "bar"}
 		e2 := &BackoffError{Type: "foo", Info: "bar"}
 		e3 := &BackoffError{Type: "bar", Info: "foo"}
-		ztesting.AssertEqual(t, "error is not the same", true, errors.Is(e1, e2))
-		ztesting.AssertEqual(t, "error is the same", false, errors.Is(e1, e3))
-		ztesting.AssertEqual(t, "error is the same", false, errors.Is(e1, nil))
+		ztesting.AssertEqual(t, true, errors.Is(e1, e2))
+		ztesting.AssertEqual(t, false, errors.Is(e1, e3))
+		ztesting.AssertEqual(t, false, errors.Is(e1, nil))
 	})
 	t.Run("wrapped error equality", func(t *testing.T) {
 		e1 := &BackoffError{Type: "foo", Info: "bar"}
 		e2 := fmt.Errorf("this is e2 [%w]", &BackoffError{Type: "foo", Info: "bar"})
 		e3 := fmt.Errorf("this is e3 [%w]", &BackoffError{Type: "bar", Info: "foo"})
 		e4 := fmt.Errorf("this is e4 [%w]", nil)
-		ztesting.AssertEqual(t, "error is not the same", true, errors.Is(e1, e2))
-		ztesting.AssertEqual(t, "error is the same", false, errors.Is(e1, e3))
-		ztesting.AssertEqual(t, "error is the same", false, errors.Is(e1, e4))
+		ztesting.AssertEqual(t, true, errors.Is(e1, e2))
+		ztesting.AssertEqual(t, false, errors.Is(e1, e3))
+		ztesting.AssertEqual(t, false, errors.Is(e1, e4))
 	})
 }
 
@@ -38,7 +37,7 @@ func TestFixedBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "value must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewFixedBackoff(-1)
 	})
@@ -68,7 +67,7 @@ func TestFixedBackoff(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			backoff := NewFixedBackoff(tc.value)
 			got := backoff.Attempt(tc.attempt)
-			ztesting.AssertEqual(t, "wrong backoff duration for attempt="+strconv.Itoa(tc.attempt), tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -79,7 +78,7 @@ func TestRandomBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewRandomBackoff(-1, 1)
 	})
@@ -87,7 +86,7 @@ func TestRandomBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "fluctuation must be positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewRandomBackoff(1, 0)
 	})
@@ -95,7 +94,7 @@ func TestRandomBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "fluctuation must be positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewRandomBackoff(1, 0)
 	})
@@ -103,7 +102,7 @@ func TestRandomBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset+fluctuation must be under MaxInt64 (9,223,372,036,854,775,807)"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewRandomBackoff(math.MaxInt64, 1)
 	})
@@ -133,7 +132,7 @@ func TestRandomBackoff(t *testing.T) {
 			backoff := NewRandomBackoff(tc.offset, tc.fluctuation)
 			got := backoff.Attempt(tc.attempt)
 			inRange := (got - tc.offset) <= tc.fluctuation
-			ztesting.AssertEqual(t, "wrong backoff duration range for attempt="+strconv.Itoa(tc.attempt), true, inRange)
+			ztesting.AssertEqual(t, true, inRange)
 		})
 	}
 }
@@ -144,7 +143,7 @@ func TestLinearBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewLinearBackoff(-1, 1, 1)
 	})
@@ -152,7 +151,7 @@ func TestLinearBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "fluctuation must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewLinearBackoff(1, -1, 1)
 	})
@@ -160,7 +159,7 @@ func TestLinearBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "coeff must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewLinearBackoff(1, 1, -1)
 	})
@@ -168,7 +167,7 @@ func TestLinearBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset+fluctuation must be under MaxInt64 (9,223,372,036,854,775,807)"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewLinearBackoff(math.MaxInt64, 1, 1)
 	})
@@ -198,7 +197,7 @@ func TestLinearBackoff(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			backoff := NewLinearBackoff(tc.offset, tc.fluctuation, tc.coeff)
 			got := backoff.Attempt(tc.attempt)
-			ztesting.AssertEqual(t, "wrong backoff duration for attempt="+strconv.Itoa(tc.attempt), tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -209,7 +208,7 @@ func TestPolynomialBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewPolynomialBackoff(-1, 1, 1, 1)
 	})
@@ -217,7 +216,7 @@ func TestPolynomialBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "fluctuation must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewPolynomialBackoff(1, -1, 1, 1)
 	})
@@ -225,7 +224,7 @@ func TestPolynomialBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "coeff must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewPolynomialBackoff(1, 1, -1, 1)
 	})
@@ -233,7 +232,7 @@ func TestPolynomialBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset+fluctuation must be under MaxInt64 (9,223,372,036,854,775,807)"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewPolynomialBackoff(math.MaxInt64, 1, 1, 1)
 	})
@@ -273,7 +272,7 @@ func TestPolynomialBackoff(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			backoff := NewPolynomialBackoff(tc.offset, tc.fluctuation, tc.coeff, tc.exponent)
 			got := backoff.Attempt(tc.attempt)
-			ztesting.AssertEqual(t, "wrong backoff duration for attempt="+strconv.Itoa(tc.attempt), tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -284,7 +283,7 @@ func TestExponentialBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewExponentialBackoff(-1, 1, 1)
 	})
@@ -292,7 +291,7 @@ func TestExponentialBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "fluctuation must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewExponentialBackoff(1, -1, 1)
 	})
@@ -300,7 +299,7 @@ func TestExponentialBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "coeff must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewExponentialBackoff(1, 1, -1)
 	})
@@ -308,7 +307,7 @@ func TestExponentialBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset+fluctuation must be under MaxInt64 (9,223,372,036,854,775,807)"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewExponentialBackoff(math.MaxInt64, 1, 1)
 	})
@@ -341,7 +340,7 @@ func TestExponentialBackoff(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			backoff := NewExponentialBackoff(tc.offset, tc.fluctuation, tc.coeff)
 			got := backoff.Attempt(tc.attempt)
-			ztesting.AssertEqual(t, "wrong backoff duration for attempt="+strconv.Itoa(tc.attempt), tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -352,7 +351,7 @@ func TestExponentialBackoffFullJitter(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewExponentialBackoffFullJitter(-1, 1, 1)
 	})
@@ -360,7 +359,7 @@ func TestExponentialBackoffFullJitter(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "fluctuation must be positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewExponentialBackoffFullJitter(1, -1, 1)
 	})
@@ -368,7 +367,7 @@ func TestExponentialBackoffFullJitter(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "coeff must be positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewExponentialBackoffFullJitter(1, 1, -1)
 	})
@@ -376,7 +375,7 @@ func TestExponentialBackoffFullJitter(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset+fluctuation must be under MaxInt64 (9,223,372,036,854,775,807)"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewExponentialBackoffFullJitter(math.MaxInt64, 1, 1)
 	})
@@ -415,7 +414,7 @@ func TestExponentialBackoffFullJitter(t *testing.T) {
 			backoff := NewExponentialBackoffFullJitter(tc.offset, tc.fluctuation, tc.coeff)
 			got := backoff.Attempt(tc.attempt)
 			inRange := (got - tc.offset) <= tc.fluctuation
-			ztesting.AssertEqual(t, "wrong backoff duration range for attempt="+strconv.Itoa(tc.attempt), true, inRange)
+			ztesting.AssertEqual(t, true, inRange)
 		})
 	}
 }
@@ -426,7 +425,7 @@ func TestExponentialBackoffEqualJitter(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewExponentialBackoffEqualJitter(-1, 1, 1)
 	})
@@ -434,7 +433,7 @@ func TestExponentialBackoffEqualJitter(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "fluctuation must be positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewExponentialBackoffEqualJitter(1, -1, 1)
 	})
@@ -442,7 +441,7 @@ func TestExponentialBackoffEqualJitter(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "coeff must be positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewExponentialBackoffEqualJitter(1, 1, -1)
 	})
@@ -450,7 +449,7 @@ func TestExponentialBackoffEqualJitter(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset+fluctuation must be under MaxInt64 (9,223,372,036,854,775,807)"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewExponentialBackoffEqualJitter(math.MaxInt64, 1, 1)
 	})
@@ -489,7 +488,7 @@ func TestExponentialBackoffEqualJitter(t *testing.T) {
 			backoff := NewExponentialBackoffEqualJitter(tc.offset, tc.fluctuation, tc.coeff)
 			got := backoff.Attempt(tc.attempt)
 			inRange := (got - tc.offset - tc.fluctuation/2) <= tc.fluctuation
-			ztesting.AssertEqual(t, "wrong backoff duration range for attempt="+strconv.Itoa(tc.attempt), true, inRange)
+			ztesting.AssertEqual(t, true, inRange)
 		})
 	}
 }
@@ -500,7 +499,7 @@ func TestFibonacciBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewFibonacciBackoff(-1, 1, 1)
 	})
@@ -508,7 +507,7 @@ func TestFibonacciBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "fluctuation must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewFibonacciBackoff(1, -1, 1)
 	})
@@ -516,7 +515,7 @@ func TestFibonacciBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "coeff must be zero or positive"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewFibonacciBackoff(1, 1, -1)
 	})
@@ -524,7 +523,7 @@ func TestFibonacciBackoff(t *testing.T) {
 		defer func() {
 			got, _ := recover().(error)
 			want := &BackoffError{Type: errPram, Info: "offset+fluctuation must be under MaxInt64 (9,223,372,036,854,775,807)"}
-			ztesting.AssertEqualErr(t, "error not matched", want, got)
+			ztesting.AssertEqualErr(t, want, got)
 		}()
 		NewFibonacciBackoff(math.MaxInt64, 1, 1)
 	})
@@ -563,7 +562,7 @@ func TestFibonacciBackoff(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			backoff := NewFibonacciBackoff(tc.offset, tc.fluctuation, tc.coeff)
 			got := backoff.Attempt(tc.attempt)
-			ztesting.AssertEqual(t, "wrong backoff duration for attempt="+strconv.Itoa(tc.attempt), tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -591,7 +590,7 @@ func TestFibonacci(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got := fibonacci(tc.input)
-			ztesting.AssertEqual(t, "wrong fibonacci for "+strconv.Itoa(tc.input), tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }

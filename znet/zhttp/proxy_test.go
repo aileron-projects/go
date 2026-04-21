@@ -45,7 +45,7 @@ func TestRewriteProxyURL(t *testing.T) {
 			matched := reflect.DeepEqual(tc.want, tc.dst)
 			t.Logf("dst: %#v\n", tc.dst)
 			t.Logf("want: %#v\n", tc.want)
-			ztesting.AssertEqual(t, "url not match", true, matched)
+			ztesting.AssertEqual(t, true, matched)
 		})
 	}
 }
@@ -82,7 +82,7 @@ func TestJoinWithByte(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			got := joinWithByte(tc.left, tc.right, '/')
-			ztesting.AssertEqual(t, "join not match", tc.want, got)
+			ztesting.AssertEqual(t, tc.want, got)
 		})
 	}
 }
@@ -110,10 +110,10 @@ func TestNewProxy(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			proxy, err := NewProxy(tc.targets...)
 			if tc.err != nil {
-				ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+				ztesting.AssertEqual(t, true, err != nil)
 				return
 			}
-			ztesting.AssertEqualErr(t, "error should be nil", nil, err)
+			ztesting.AssertEqualErr(t, nil, err)
 			nt := &nopTransport{}
 			proxy.Transport = nt
 			r := httptest.NewRequest(http.MethodGet, "http://example.com", nil)
@@ -121,7 +121,7 @@ func TestNewProxy(t *testing.T) {
 			for i := range 2 * len(tc.targets) {
 				target := tc.targets[i%len(tc.targets)]
 				proxy.ServeHTTP(w, r)
-				ztesting.AssertEqual(t, "url not match", target, nt.r.URL.String())
+				ztesting.AssertEqual(t, target, nt.r.URL.String())
 			}
 		})
 	}
@@ -154,11 +154,11 @@ func TestProxy(t *testing.T) {
 		}
 		resp := httptest.NewRecorder()
 		proxy.ServeHTTP(resp, req)
-		ztesting.AssertEqual(t, "method not match", http.MethodGet, tp.req.Method)
-		ztesting.AssertEqual(t, "target not match", "http://test.com", tp.req.URL.String())
-		ztesting.AssertEqual(t, "response status not match", http.StatusBadRequest, resp.Result().StatusCode)
-		ztesting.AssertEqual(t, "response header not match", "foo", resp.Header().Get("Test"))
-		ztesting.AssertEqual(t, "response body not match", "resp body", resp.Body.String())
+		ztesting.AssertEqual(t, http.MethodGet, tp.req.Method)
+		ztesting.AssertEqual(t, "http://test.com", tp.req.URL.String())
+		ztesting.AssertEqual(t, http.StatusBadRequest, resp.Result().StatusCode)
+		ztesting.AssertEqual(t, "foo", resp.Header().Get("Test"))
+		ztesting.AssertEqual(t, "resp body", resp.Body.String())
 	})
 	t.Run("simple request with body", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", strings.NewReader("req body"))
@@ -175,12 +175,12 @@ func TestProxy(t *testing.T) {
 		resp := httptest.NewRecorder()
 		proxy.ServeHTTP(resp, req)
 		body, _ := io.ReadAll(tp.req.Body)
-		ztesting.AssertEqual(t, "method not match", http.MethodGet, tp.req.Method)
-		ztesting.AssertEqual(t, "target not match", "http://test.com", tp.req.URL.String())
-		ztesting.AssertEqual(t, "request body not match", "req body", string(body))
-		ztesting.AssertEqual(t, "response status not match", http.StatusBadRequest, resp.Result().StatusCode)
-		ztesting.AssertEqual(t, "response header not match", "foo", resp.Header().Get("Test"))
-		ztesting.AssertEqual(t, "response body not match", "resp body", resp.Body.String())
+		ztesting.AssertEqual(t, http.MethodGet, tp.req.Method)
+		ztesting.AssertEqual(t, "http://test.com", tp.req.URL.String())
+		ztesting.AssertEqual(t, "req body", string(body))
+		ztesting.AssertEqual(t, http.StatusBadRequest, resp.Result().StatusCode)
+		ztesting.AssertEqual(t, "foo", resp.Header().Get("Test"))
+		ztesting.AssertEqual(t, "resp body", resp.Body.String())
 	})
 	t.Run("nil request header", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
@@ -194,7 +194,7 @@ func TestProxy(t *testing.T) {
 		resp := httptest.NewRecorder()
 		proxy.ServeHTTP(resp, req)
 		t.Log(tp.req.Header)
-		ztesting.AssertEqual(t, "header not match", true, reflect.DeepEqual(http.Header{"User-Agent": []string{""}}, tp.req.Header))
+		ztesting.AssertEqual(t, true, reflect.DeepEqual(http.Header{"User-Agent": []string{""}}, tp.req.Header))
 	})
 	t.Run("request with trailer", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
@@ -207,7 +207,7 @@ func TestProxy(t *testing.T) {
 		}
 		resp := httptest.NewRecorder()
 		proxy.ServeHTTP(resp, req)
-		ztesting.AssertEqual(t, "trailers not found", "trailers", tp.req.Header.Get("Te"))
+		ztesting.AssertEqual(t, "trailers", tp.req.Header.Get("Te"))
 	})
 	t.Run("response with trailer", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
@@ -219,8 +219,8 @@ func TestProxy(t *testing.T) {
 		rec := httptest.NewRecorder()
 		resp := &testFlushResponse{ResponseWriter: rec}
 		proxy.ServeHTTP(resp, req)
-		ztesting.AssertEqual(t, "trailers not match", "foo", rec.Result().Trailer.Get("Test"))
-		ztesting.AssertEqual(t, "response not flushed", true, resp.flushed)
+		ztesting.AssertEqual(t, "foo", rec.Result().Trailer.Get("Test"))
+		ztesting.AssertEqual(t, true, resp.flushed)
 	})
 	t.Run("protocol switch", func(t *testing.T) {
 		respRW := bufio.NewReadWriter(nil, bufio.NewWriter(&bytes.Buffer{}))
@@ -241,8 +241,8 @@ func TestProxy(t *testing.T) {
 			Transport: &testTransport{resp: res},
 		}
 		proxy.ServeHTTP(rw, req)
-		ztesting.AssertEqual(t, "copied content not match", "foo", buf.String())
-		ztesting.AssertEqual(t, "copied content not match", "bar", conn.content.String())
+		ztesting.AssertEqual(t, "foo", buf.String())
+		ztesting.AssertEqual(t, "bar", conn.content.String())
 	})
 	t.Run("pre roundtrip error", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
@@ -256,7 +256,7 @@ func TestProxy(t *testing.T) {
 		}
 		resp := httptest.NewRecorder()
 		proxy.ServeHTTP(resp, req)
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CausePreRoundTrip, Code: http.StatusInternalServerError}, gotErr)
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CausePreRoundTrip, Code: http.StatusInternalServerError}, gotErr)
 	})
 	t.Run("post roundtrip error", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
@@ -270,7 +270,7 @@ func TestProxy(t *testing.T) {
 		}
 		resp := httptest.NewRecorder()
 		proxy.ServeHTTP(resp, req)
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CausePostRoundTrip, Code: http.StatusInternalServerError}, gotErr)
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CausePostRoundTrip, Code: http.StatusInternalServerError}, gotErr)
 	})
 	t.Run("upgrade error", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
@@ -283,7 +283,7 @@ func TestProxy(t *testing.T) {
 		}
 		resp := httptest.NewRecorder()
 		proxy.ServeHTTP(resp, req)
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CauseUpgrade, Code: http.StatusInternalServerError}, gotErr)
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CauseUpgrade, Code: http.StatusInternalServerError}, gotErr)
 	})
 	t.Run("copy response body error", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
@@ -297,8 +297,8 @@ func TestProxy(t *testing.T) {
 		}
 		resp := httptest.NewRecorder()
 		proxy.ServeHTTP(resp, req)
-		ztesting.AssertEqual(t, "copied body not match", "test", resp.Body.String())
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CauseCopyResponse, Code: -1}, gotErr)
+		ztesting.AssertEqual(t, "test", resp.Body.String())
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CauseCopyResponse, Code: -1}, gotErr)
 	})
 	t.Run("copy trailer error", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://test.com", nil)
@@ -311,7 +311,7 @@ func TestProxy(t *testing.T) {
 		}
 		resp := struct{ http.ResponseWriter }{httptest.NewRecorder()} // Resp does not implement flusher.
 		proxy.ServeHTTP(resp, req)
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CauseFlushBody, Code: -1}, gotErr)
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CauseFlushBody, Code: -1}, gotErr)
 	})
 }
 
@@ -370,9 +370,9 @@ func TestHandleUpgradeResponse(t *testing.T) {
 		res := &http.Response{Header: http.Header{"Connection": {"Upgrade"}, "Upgrade": {"test"}}, Body: body}
 
 		err := handleUpgradeResponse(rw, req, res)
-		ztesting.AssertEqualErr(t, "error not match", (*HTTPError)(nil), err)
-		ztesting.AssertEqual(t, "copied content not match", "foo", buf.String())
-		ztesting.AssertEqual(t, "copied content not match", "bar", conn.content.String())
+		ztesting.AssertEqualErr(t, (*HTTPError)(nil), err)
+		ztesting.AssertEqual(t, "foo", buf.String())
+		ztesting.AssertEqual(t, "bar", conn.content.String())
 	})
 	t.Run("upgrade not match", func(t *testing.T) {
 		respRW := bufio.NewReadWriter(nil, bufio.NewWriter(&bytes.Buffer{}))
@@ -385,9 +385,9 @@ func TestHandleUpgradeResponse(t *testing.T) {
 		res := &http.Response{Header: http.Header{"Connection": {"Upgrade"}, "Upgrade": {"test2"}}, Body: body}
 
 		err := handleUpgradeResponse(rw, req, res)
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CauseUpgradeMismatch, Code: http.StatusBadRequest}, err)
-		ztesting.AssertEqual(t, "copied content not match", "", buf.String())
-		ztesting.AssertEqual(t, "copied content not match", "", conn.content.String())
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CauseUpgradeMismatch, Code: http.StatusBadRequest}, err)
+		ztesting.AssertEqual(t, "", buf.String())
+		ztesting.AssertEqual(t, "", conn.content.String())
 	})
 	t.Run("no connection header", func(t *testing.T) {
 		respRW := bufio.NewReadWriter(nil, bufio.NewWriter(&bytes.Buffer{}))
@@ -400,9 +400,9 @@ func TestHandleUpgradeResponse(t *testing.T) {
 		res := &http.Response{Header: http.Header{"Connection": {""}, "Upgrade": {"test2"}}, Body: body} // No connection header.
 
 		err := handleUpgradeResponse(rw, req, res)
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CauseUpgradeMismatch, Code: http.StatusBadRequest}, err)
-		ztesting.AssertEqual(t, "copied content not match", "", buf.String())
-		ztesting.AssertEqual(t, "copied content not match", "", conn.content.String())
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CauseUpgradeMismatch, Code: http.StatusBadRequest}, err)
+		ztesting.AssertEqual(t, "", buf.String())
+		ztesting.AssertEqual(t, "", conn.content.String())
 	})
 	t.Run("non ReadWriteCloser body", func(t *testing.T) {
 		respRW := bufio.NewReadWriter(nil, bufio.NewWriter(&bytes.Buffer{}))
@@ -414,9 +414,9 @@ func TestHandleUpgradeResponse(t *testing.T) {
 		res := &http.Response{Header: http.Header{"Connection": {"Upgrade"}, "Upgrade": {"test"}}, Body: nil} // Body is nil.
 
 		err := handleUpgradeResponse(rw, req, res)
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CauseUpgrade, Code: http.StatusInternalServerError}, err)
-		ztesting.AssertEqual(t, "copied content not match", "", buf.String())
-		ztesting.AssertEqual(t, "copied content not match", "", conn.content.String())
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CauseUpgrade, Code: http.StatusInternalServerError}, err)
+		ztesting.AssertEqual(t, "", buf.String())
+		ztesting.AssertEqual(t, "", conn.content.String())
 	})
 	t.Run("hijack failed", func(t *testing.T) {
 		respRW := bufio.NewReadWriter(nil, bufio.NewWriter(&bytes.Buffer{}))
@@ -430,9 +430,9 @@ func TestHandleUpgradeResponse(t *testing.T) {
 		res := &http.Response{Header: http.Header{"Connection": {"Upgrade"}, "Upgrade": {"test"}}, Body: body}
 
 		err := handleUpgradeResponse(rw, req, res)
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CauseHijack, Code: http.StatusInternalServerError}, err)
-		ztesting.AssertEqual(t, "copied content not match", "", buf.String())
-		ztesting.AssertEqual(t, "copied content not match", "", conn.content.String())
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CauseHijack, Code: http.StatusInternalServerError}, err)
+		ztesting.AssertEqual(t, "", buf.String())
+		ztesting.AssertEqual(t, "", conn.content.String())
 	})
 	t.Run("flush error", func(t *testing.T) {
 		ew := ziotest.ErrWriter(&bytes.Buffer{}, 0) // Error writer results in flush error.
@@ -446,9 +446,9 @@ func TestHandleUpgradeResponse(t *testing.T) {
 		res := &http.Response{Header: http.Header{"Connection": {"Upgrade"}, "Upgrade": {"test"}}, Body: body}
 
 		err := handleUpgradeResponse(rw, req, res)
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CauseFlushBody, Code: -1}, err)
-		ztesting.AssertEqual(t, "copied content not match", "", buf.String())
-		ztesting.AssertEqual(t, "copied content not match", "", conn.content.String())
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CauseFlushBody, Code: -1}, err)
+		ztesting.AssertEqual(t, "", buf.String())
+		ztesting.AssertEqual(t, "", conn.content.String())
 	})
 	t.Run("response header write error", func(t *testing.T) {
 		respRW := bufio.NewReadWriter(nil, bufio.NewWriterSize(ziotest.ErrWriter(&bytes.Buffer{}, 0), 1)) // Error writer.
@@ -461,9 +461,9 @@ func TestHandleUpgradeResponse(t *testing.T) {
 		res := &http.Response{Header: http.Header{"Connection": {"Upgrade"}, "Upgrade": {"test"}}, Body: body}
 
 		err := handleUpgradeResponse(rw, req, res)
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CauseCopyResponse, Code: -1}, err)
-		ztesting.AssertEqual(t, "copied content not match", "", buf.String())
-		ztesting.AssertEqual(t, "copied content not match", "", conn.content.String())
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CauseCopyResponse, Code: -1}, err)
+		ztesting.AssertEqual(t, "", buf.String())
+		ztesting.AssertEqual(t, "", conn.content.String())
 	})
 	t.Run("copy front to back error", func(t *testing.T) {
 		respRW := bufio.NewReadWriter(nil, bufio.NewWriter(&bytes.Buffer{}))
@@ -476,9 +476,9 @@ func TestHandleUpgradeResponse(t *testing.T) {
 		res := &http.Response{Header: http.Header{"Connection": {"Upgrade"}, "Upgrade": {"test"}}, Body: body}
 
 		err := handleUpgradeResponse(rw, req, res)
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CauseCopyResponse, Code: -1}, err)
-		ztesting.AssertEqual(t, "copied content not match", "f", buf.String())
-		// ztesting.AssertEqual(t, "copied content not match", "bar", conn.content.String()) // Do not check.
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CauseCopyResponse, Code: -1}, err)
+		ztesting.AssertEqual(t, "f", buf.String())
+		// ztesting.AssertEqual(t,  "bar", conn.content.String()) // Do not check.
 	})
 	t.Run("copy back to front error", func(t *testing.T) {
 		respRW := bufio.NewReadWriter(nil, bufio.NewWriter(&bytes.Buffer{}))
@@ -491,9 +491,9 @@ func TestHandleUpgradeResponse(t *testing.T) {
 		res := &http.Response{Header: http.Header{"Connection": {"Upgrade"}, "Upgrade": {"test"}}, Body: body}
 
 		err := handleUpgradeResponse(rw, req, res)
-		ztesting.AssertEqualErr(t, "error not match", &HTTPError{Cause: CauseCopyResponse, Code: -1}, err)
-		// ztesting.AssertEqual(t, "copied content not match", "foo", buf.String()) // Do not check.
-		ztesting.AssertEqual(t, "copied content not match", "b", conn.content.String())
+		ztesting.AssertEqualErr(t, &HTTPError{Cause: CauseCopyResponse, Code: -1}, err)
+		// ztesting.AssertEqual(t,  "foo", buf.String()) // Do not check.
+		ztesting.AssertEqual(t, "b", conn.content.String())
 	})
 }
 
@@ -519,8 +519,8 @@ func TestCopyResponseBody(t *testing.T) {
 		w := &testFlushResponse{ResponseWriter: rec}
 		res := &http.Response{ContentLength: -1, Body: io.NopCloser(strings.NewReader("test"))}
 		copyResponseBody(w, res)
-		ztesting.AssertEqual(t, "flush not called", true, w.flushed)
-		ztesting.AssertEqual(t, "written body not match not", "test", w.body.String())
+		ztesting.AssertEqual(t, true, w.flushed)
+		ztesting.AssertEqual(t, "test", w.body.String())
 	})
 	t.Run("sse", func(t *testing.T) {
 		rec := httptest.NewRecorder()
@@ -529,8 +529,8 @@ func TestCopyResponseBody(t *testing.T) {
 			Header: http.Header{"Content-Type": {"text/event-stream"}},
 			Body:   io.NopCloser(strings.NewReader("test"))}
 		copyResponseBody(w, res)
-		ztesting.AssertEqual(t, "flush not called", true, w.flushed)
-		ztesting.AssertEqual(t, "written body not match not", "test", w.body.String())
+		ztesting.AssertEqual(t, true, w.flushed)
+		ztesting.AssertEqual(t, "test", w.body.String())
 	})
 	t.Run("chunked", func(t *testing.T) {
 		rec := httptest.NewRecorder()
@@ -539,16 +539,16 @@ func TestCopyResponseBody(t *testing.T) {
 			Header: http.Header{"Transfer-Encoding": {"chunked"}},
 			Body:   io.NopCloser(strings.NewReader("test"))}
 		copyResponseBody(w, res)
-		ztesting.AssertEqual(t, "flush not called", true, w.flushed)
-		ztesting.AssertEqual(t, "written body not match not", "test", w.body.String())
+		ztesting.AssertEqual(t, true, w.flushed)
+		ztesting.AssertEqual(t, "test", w.body.String())
 	})
 	t.Run("default", func(t *testing.T) {
 		rec := httptest.NewRecorder()
 		w := &testFlushResponse{ResponseWriter: rec}
 		res := &http.Response{Body: io.NopCloser(strings.NewReader("test"))}
 		copyResponseBody(w, res)
-		ztesting.AssertEqual(t, "flush should not be called", false, w.flushed)
-		ztesting.AssertEqual(t, "written body not match not", "test", w.body.String())
+		ztesting.AssertEqual(t, false, w.flushed)
+		ztesting.AssertEqual(t, "test", w.body.String())
 	})
 }
 
@@ -572,19 +572,19 @@ func TestWithImmediateFlushWriter(t *testing.T) {
 		rec := httptest.NewRecorder()
 		w := withImmediateFlushWriter(rec)
 		w.Write([]byte("test"))
-		ztesting.AssertEqual(t, "body not written", "test", rec.Body.String())
+		ztesting.AssertEqual(t, "test", rec.Body.String())
 	})
 	t.Run("unwrap flush", func(t *testing.T) {
 		rec := httptest.NewRecorder()
 		tr := &testResponseWrapper{ResponseWriter: rec}
 		w := withImmediateFlushWriter(tr)
 		w.Write([]byte("test"))
-		ztesting.AssertEqual(t, "body not written", "test", tr.body.String())
-		ztesting.AssertEqual(t, "body not written", "test", rec.Body.String())
+		ztesting.AssertEqual(t, "test", tr.body.String())
+		ztesting.AssertEqual(t, "test", rec.Body.String())
 	})
 	t.Run("no flusher", func(t *testing.T) {
 		tr := &testResponseWrapper{ResponseWriter: nil}
 		w := withImmediateFlushWriter(tr)
-		ztesting.AssertEqual(t, "writer not match", io.Writer(tr), w)
+		ztesting.AssertEqual(t, io.Writer(tr), w)
 	})
 }

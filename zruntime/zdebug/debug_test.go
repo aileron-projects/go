@@ -55,9 +55,9 @@ func TestDumpTo(t *testing.T) {
 			var buf bytes.Buffer
 			zdebug.DumpTo(&buf, "", tc.a...)
 			result := buf.String()
-			ztesting.AssertEqual(t, "dump result does not contain date and time.", true, strings.Contains(result, "1970-01-01 00:00:00 [DUMP]"))
+			ztesting.AssertEqual(t, true, strings.Contains(result, "1970-01-01 00:00:00 [DUMP]"))
 			for _, w := range tc.wants {
-				ztesting.AssertEqual(t, "expected dump result not output.", true, strings.Contains(result, w))
+				ztesting.AssertEqual(t, true, strings.Contains(result, w))
 			}
 		})
 	}
@@ -67,9 +67,9 @@ func TestHookDumpFunc(t *testing.T) {
 	returnBool := false
 	hookDumpFunc := zdebug.HookDumpFunc
 	zdebug.HookDumpFunc = func(w io.Writer, f zruntime.Frame, a ...any) bool {
-		ztesting.AssertEqual(t, "length does not match.", 2, len(a))
-		ztesting.AssertEqual(t, "unexpected value.", int(0), a[0].(int))
-		ztesting.AssertEqual(t, "unexpected value.", int(1), a[1].(int))
+		ztesting.AssertEqual(t, 2, len(a))
+		ztesting.AssertEqual(t, int(0), a[0].(int))
+		ztesting.AssertEqual(t, int(1), a[1].(int))
 		return returnBool
 	}
 	defer func() {
@@ -80,12 +80,12 @@ func TestHookDumpFunc(t *testing.T) {
 		var buf bytes.Buffer
 		returnBool = true // Set value true.
 		zdebug.DumpTo(&buf, "", int(0), int(1))
-		ztesting.AssertEqual(t, "dump continued after HookDumpFunc returned true.", "", buf.String())
+		ztesting.AssertEqual(t, "", buf.String())
 	})
 	t.Run("func returns false", func(t *testing.T) {
 		var buf bytes.Buffer
 		returnBool = false // Set value false.
 		zdebug.DumpTo(&buf, "", int(0), int(1))
-		ztesting.AssertEqual(t, "dump should output information.", false, buf.String() == "")
+		ztesting.AssertEqual(t, false, buf.String() == "")
 	})
 }

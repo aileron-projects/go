@@ -19,7 +19,7 @@ func TestServerRunner(t *testing.T) {
 			Shutdown: func(context.Context) error { return nil },
 		}
 		err := r.Run(context.Background())
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 	t.Run("serve error", func(t *testing.T) {
 		t.Run("already closed", func(t *testing.T) {
@@ -28,7 +28,7 @@ func TestServerRunner(t *testing.T) {
 				Shutdown: func(context.Context) error { return nil },
 			}
 			err := r.Run(context.Background())
-			ztesting.AssertEqualErr(t, "error not match", net.ErrClosed, err)
+			ztesting.AssertEqualErr(t, net.ErrClosed, err)
 		})
 		t.Run("non-nil error", func(t *testing.T) {
 			testErr := errors.New("serve error")
@@ -37,7 +37,7 @@ func TestServerRunner(t *testing.T) {
 				Shutdown: func(context.Context) error { return nil },
 			}
 			err := r.Run(context.Background())
-			ztesting.AssertEqualErr(t, "error not match", testErr, err)
+			ztesting.AssertEqualErr(t, testErr, err)
 		})
 	})
 	t.Run("shutdown error", func(t *testing.T) {
@@ -52,8 +52,8 @@ func TestServerRunner(t *testing.T) {
 			ctx, cancel := context.WithCancel(context.Background())
 			cancel()
 			err := r.Run(ctx)
-			ztesting.AssertEqualErr(t, "error not match", context.DeadlineExceeded, err)
-			ztesting.AssertEqual(t, "close is not called", true, closeCalled)
+			ztesting.AssertEqualErr(t, context.DeadlineExceeded, err)
+			ztesting.AssertEqual(t, true, closeCalled)
 		})
 		t.Run("non-nil error", func(t *testing.T) {
 			testErr := errors.New("shutdown error")
@@ -66,8 +66,8 @@ func TestServerRunner(t *testing.T) {
 			ctx, cancel := context.WithCancel(context.Background())
 			cancel()
 			err := r.Run(ctx)
-			ztesting.AssertEqualErr(t, "error not match", testErr, err)
-			ztesting.AssertEqual(t, "close is called", false, closeCalled)
+			ztesting.AssertEqualErr(t, testErr, err)
+			ztesting.AssertEqual(t, false, closeCalled)
 		})
 	})
 }

@@ -34,9 +34,9 @@ func TestCutLeftByte(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			before, after, found := zstrings.CutLeftByte(tc.s, tc.c)
-			ztesting.AssertEqual(t, "before not matched.", tc.before, before)
-			ztesting.AssertEqual(t, "after not matched.", tc.after, after)
-			ztesting.AssertEqual(t, "found not matched.", tc.found, found)
+			ztesting.AssertEqual(t, tc.before, before)
+			ztesting.AssertEqual(t, tc.after, after)
+			ztesting.AssertEqual(t, tc.found, found)
 		})
 	}
 }
@@ -67,9 +67,9 @@ func TestCutRightByte(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			before, after, found := zstrings.CutRightByte(tc.s, tc.c)
-			ztesting.AssertEqual(t, "before not matched.", tc.before, before)
-			ztesting.AssertEqual(t, "after not matched.", tc.after, after)
-			ztesting.AssertEqual(t, "found not matched.", tc.found, found)
+			ztesting.AssertEqual(t, tc.before, before)
+			ztesting.AssertEqual(t, tc.after, after)
+			ztesting.AssertEqual(t, tc.found, found)
 		})
 	}
 }
@@ -106,9 +106,9 @@ func TestCutLeftRune(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			before, after, found := zstrings.CutLeftRune(tc.s, tc.r)
-			ztesting.AssertEqual(t, "before not matched.", tc.before, before)
-			ztesting.AssertEqual(t, "after not matched.", tc.after, after)
-			ztesting.AssertEqual(t, "found not matched.", tc.found, found)
+			ztesting.AssertEqual(t, tc.before, before)
+			ztesting.AssertEqual(t, tc.after, after)
+			ztesting.AssertEqual(t, tc.found, found)
 		})
 	}
 }
@@ -145,9 +145,9 @@ func TestCutRightRune(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			before, after, found := zstrings.CutRightRune(tc.s, tc.r)
-			ztesting.AssertEqual(t, "before not matched.", tc.before, before)
-			ztesting.AssertEqual(t, "after not matched.", tc.after, after)
-			ztesting.AssertEqual(t, "found not matched.", tc.found, found)
+			ztesting.AssertEqual(t, tc.before, before)
+			ztesting.AssertEqual(t, tc.after, after)
+			ztesting.AssertEqual(t, tc.found, found)
 		})
 	}
 }

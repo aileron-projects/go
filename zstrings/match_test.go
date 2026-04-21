@@ -30,8 +30,8 @@ func TestMatch_error(t *testing.T) {
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			matched, err := Match(tc.pattern, tc.str)
-			ztesting.AssertEqual(t, "unexpectedly mismatched.", false, matched)
-			ztesting.AssertEqual(t, "unexpectedly error.", ErrBadPattern, err)
+			ztesting.AssertEqual(t, false, matched)
+			ztesting.AssertEqual(t, ErrBadPattern, err)
 		})
 	}
 }
@@ -79,8 +79,8 @@ func TestMatch(t *testing.T) {
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			matched, err := Match(tc.pattern, tc.str)
-			ztesting.AssertEqual(t, "matched mismatch.", tc.matched, matched)
-			ztesting.AssertEqual(t, "err mismatch.", tc.err, err)
+			ztesting.AssertEqual(t, tc.matched, matched)
+			ztesting.AssertEqual(t, tc.err, err)
 		})
 	}
 }
@@ -119,9 +119,9 @@ func TestScanChunk(t *testing.T) {
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			star, chunk, rest := scanChunk(tc.pattern)
-			ztesting.AssertEqual(t, "star mismatch.", tc.star, star)
-			ztesting.AssertEqual(t, "chunk mismatch.", tc.chunk, chunk)
-			ztesting.AssertEqual(t, "rest mismatch.", tc.rest, rest)
+			ztesting.AssertEqual(t, tc.star, star)
+			ztesting.AssertEqual(t, tc.chunk, chunk)
+			ztesting.AssertEqual(t, tc.rest, rest)
 		})
 	}
 }
@@ -164,8 +164,8 @@ func TestMatchChunk(t *testing.T) {
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			ok, rest := matchChunk(tc.chunk, tc.str)
-			ztesting.AssertEqual(t, "unexpected match result.", tc.ok, ok)
-			ztesting.AssertEqual(t, "rest string is wrong.", tc.rest, rest)
+			ztesting.AssertEqual(t, tc.ok, ok)
+			ztesting.AssertEqual(t, tc.rest, rest)
 		})
 	}
 }

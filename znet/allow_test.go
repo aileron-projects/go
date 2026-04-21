@@ -13,11 +13,11 @@ func TestAllowList(t *testing.T) {
 	list := znet.NewWhiteList()
 	t.Run("allow fails", func(t *testing.T) {
 		err := list.Allow("127.0.0.1") // No CIDR
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 	t.Run("disallow fails", func(t *testing.T) {
 		err := list.Disallow("127.0.0.1") // No CIDR
-		ztesting.AssertEqual(t, "error should not be nil", true, err != nil)
+		ztesting.AssertEqual(t, true, err != nil)
 	})
 }
 
@@ -58,12 +58,12 @@ func TestWhiteList(t *testing.T) {
 			for _, ip := range tc.allowed {
 				allowed := l.Allowed(ip)
 				t.Log(ip, allowed)
-				ztesting.AssertEqual(t, "ip should be allowed", true, allowed)
+				ztesting.AssertEqual(t, true, allowed)
 			}
 			for _, ip := range tc.disallowed {
 				allowed := l.Allowed(ip)
 				t.Log(ip, allowed)
-				ztesting.AssertEqual(t, "ip should not be allowed", false, allowed)
+				ztesting.AssertEqual(t, false, allowed)
 			}
 		})
 	}
@@ -106,12 +106,12 @@ func TestBlackList(t *testing.T) {
 			for _, ip := range tc.allowed {
 				allowed := l.Allowed(ip)
 				t.Log(ip, allowed)
-				ztesting.AssertEqual(t, "ip should be allowed", true, allowed)
+				ztesting.AssertEqual(t, true, allowed)
 			}
 			for _, ip := range tc.disallowed {
 				allowed := l.Allowed(ip)
 				t.Log(ip, allowed)
-				ztesting.AssertEqual(t, "ip should not be allowed", false, allowed)
+				ztesting.AssertEqual(t, false, allowed)
 			}
 		})
 	}
@@ -122,11 +122,11 @@ func TestAllowAddr(t *testing.T) {
 	t.Run("blacklist zero addr", func(t *testing.T) {
 		l := znet.NewBlackList()
 		allowed := l.AllowedAddr(netip.Addr{})
-		ztesting.AssertEqual(t, "ip should not be allowed", false, allowed)
+		ztesting.AssertEqual(t, false, allowed)
 	})
 	t.Run("whitelist zero addr", func(t *testing.T) {
 		l := znet.NewWhiteList()
 		allowed := l.AllowedAddr(netip.Addr{})
-		ztesting.AssertEqual(t, "ip should not be allowed", false, allowed)
+		ztesting.AssertEqual(t, false, allowed)
 	})
 }

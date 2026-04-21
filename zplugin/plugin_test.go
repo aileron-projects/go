@@ -26,8 +26,8 @@ func TestLookup(t *testing.T) {
 		})
 		defer done()
 		s, err := zplugin.Lookup("test.so", "MyFunc")
-		ztesting.AssertEqual(t, "symbol not match", nil, s)
-		ztesting.AssertEqualErr(t, "error not match", openErr, err)
+		ztesting.AssertEqual(t, nil, s)
+		ztesting.AssertEqualErr(t, openErr, err)
 	})
 	t.Run("lookup error", func(t *testing.T) {
 		lookupErr := errors.New("open error")
@@ -36,8 +36,8 @@ func TestLookup(t *testing.T) {
 		})
 		defer done()
 		s, err := zplugin.Lookup("test.so", "MyFunc")
-		ztesting.AssertEqual(t, "symbol not match", nil, s)
-		ztesting.AssertEqualErr(t, "error not match", lookupErr, err)
+		ztesting.AssertEqual(t, nil, s)
+		ztesting.AssertEqualErr(t, lookupErr, err)
 	})
 	t.Run("lookup success", func(t *testing.T) {
 		done := zplugin.WithTestOpenFunc(func(path string) (zplugin.Lookupper, error) {
@@ -45,8 +45,8 @@ func TestLookup(t *testing.T) {
 		})
 		defer done()
 		s, err := zplugin.Lookup("test.so", "MyVar")
-		ztesting.AssertEqual(t, "symbol not match", plugin.Symbol("value"), s)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, plugin.Symbol("value"), s)
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 }
 
@@ -58,8 +58,8 @@ func TestLookupAll(t *testing.T) {
 		})
 		defer done()
 		ss, err := zplugin.LookupAll("test.so", "MyFunc", "MyVar")
-		ztesting.AssertEqual(t, "unexpectedly symbol returned", 0, len(ss))
-		ztesting.AssertEqualErr(t, "error not match", openErr, err)
+		ztesting.AssertEqual(t, 0, len(ss))
+		ztesting.AssertEqualErr(t, openErr, err)
 	})
 	t.Run("lookup error", func(t *testing.T) {
 		lookupErr := errors.New("open error")
@@ -68,8 +68,8 @@ func TestLookupAll(t *testing.T) {
 		})
 		defer done()
 		ss, err := zplugin.LookupAll("test.so", "MyFunc", "MyVar")
-		ztesting.AssertEqual(t, "unexpectedly symbol returned", 0, len(ss))
-		ztesting.AssertEqualErr(t, "error not match", lookupErr, err)
+		ztesting.AssertEqual(t, 0, len(ss))
+		ztesting.AssertEqualErr(t, lookupErr, err)
 	})
 	t.Run("lookup success", func(t *testing.T) {
 		done := zplugin.WithTestOpenFunc(func(path string) (zplugin.Lookupper, error) {
@@ -80,9 +80,9 @@ func TestLookupAll(t *testing.T) {
 		})
 		defer done()
 		ss, err := zplugin.LookupAll("test.so", "MyVar1", "MyVar2")
-		ztesting.AssertEqual(t, "symbol not match", plugin.Symbol("value1"), ss["MyVar1"])
-		ztesting.AssertEqual(t, "symbol not match", plugin.Symbol("value2"), ss["MyVar2"])
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, plugin.Symbol("value1"), ss["MyVar1"])
+		ztesting.AssertEqual(t, plugin.Symbol("value2"), ss["MyVar2"])
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 }
 
@@ -94,9 +94,9 @@ func TestUse(t *testing.T) {
 		})
 		defer done()
 		s, v, err := zplugin.Use[int]("test.so", "MyVar")
-		ztesting.AssertEqual(t, "symbol not match", nil, s)
-		ztesting.AssertEqual(t, "value not match", 0, v)
-		ztesting.AssertEqualErr(t, "error not match", openErr, err)
+		ztesting.AssertEqual(t, nil, s)
+		ztesting.AssertEqual(t, 0, v)
+		ztesting.AssertEqualErr(t, openErr, err)
 	})
 	t.Run("lookup error", func(t *testing.T) {
 		lookupErr := errors.New("open error")
@@ -105,9 +105,9 @@ func TestUse(t *testing.T) {
 		})
 		defer done()
 		s, v, err := zplugin.Use[int]("test.so", "MyVar")
-		ztesting.AssertEqual(t, "symbol not match", nil, s)
-		ztesting.AssertEqual(t, "value not match", 0, v)
-		ztesting.AssertEqualErr(t, "error not match", lookupErr, err)
+		ztesting.AssertEqual(t, nil, s)
+		ztesting.AssertEqual(t, 0, v)
+		ztesting.AssertEqualErr(t, lookupErr, err)
 	})
 	t.Run("type assertion error", func(t *testing.T) {
 		done := zplugin.WithTestOpenFunc(func(path string) (zplugin.Lookupper, error) {
@@ -117,9 +117,9 @@ func TestUse(t *testing.T) {
 		})
 		defer done()
 		s, v, err := zplugin.Use[string]("test.so", "MyVar")
-		ztesting.AssertEqual(t, "symbol not match", plugin.Symbol(12345), s)
-		ztesting.AssertEqual(t, "value not match", "", v)
-		ztesting.AssertEqualErr(t, "error not match", zplugin.ErrAssert, err)
+		ztesting.AssertEqual(t, plugin.Symbol(12345), s)
+		ztesting.AssertEqual(t, "", v)
+		ztesting.AssertEqualErr(t, zplugin.ErrAssert, err)
 	})
 	t.Run("lookup success", func(t *testing.T) {
 		done := zplugin.WithTestOpenFunc(func(path string) (zplugin.Lookupper, error) {
@@ -129,8 +129,8 @@ func TestUse(t *testing.T) {
 		})
 		defer done()
 		s, v, err := zplugin.Use[int]("test.so", "MyVar")
-		ztesting.AssertEqual(t, "symbol not match", plugin.Symbol(12345), s)
-		ztesting.AssertEqual(t, "value not match", 12345, v)
-		ztesting.AssertEqualErr(t, "error not match", nil, err)
+		ztesting.AssertEqual(t, plugin.Symbol(12345), s)
+		ztesting.AssertEqual(t, 12345, v)
+		ztesting.AssertEqualErr(t, nil, err)
 	})
 }

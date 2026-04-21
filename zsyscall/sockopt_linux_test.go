@@ -30,7 +30,7 @@ func TestSockSOOption_Controllers(t *testing.T) {
 		SendBufferForce:    18,
 	}
 	cs := opt.Controllers()
-	ztesting.AssertEqual(t, "number of controllers not match", 14, len(cs))
+	ztesting.AssertEqual(t, 14, len(cs))
 }
 
 func TestSockIPOption_Controllers(t *testing.T) {
@@ -44,7 +44,7 @@ func TestSockIPOption_Controllers(t *testing.T) {
 		TTL:                 12,
 	}
 	cs := opt.Controllers()
-	ztesting.AssertEqual(t, "number of controllers not match", 5, len(cs))
+	ztesting.AssertEqual(t, 5, len(cs))
 }
 
 func TestSockIPV6Option_Controllers(t *testing.T) {
@@ -53,7 +53,7 @@ func TestSockIPV6Option_Controllers(t *testing.T) {
 		V6Only: true,
 	}
 	cs := opt.Controllers()
-	ztesting.AssertEqual(t, "number of controllers not match", 1, len(cs))
+	ztesting.AssertEqual(t, 1, len(cs))
 }
 
 func TestSockTCPOption_Controllers(t *testing.T) {
@@ -75,7 +75,7 @@ func TestSockTCPOption_Controllers(t *testing.T) {
 		FastOpenConnect: true,
 	}
 	cs := opt.Controllers()
-	ztesting.AssertEqual(t, "number of controllers not match", 14, len(cs))
+	ztesting.AssertEqual(t, 14, len(cs))
 }
 
 func TestSockUDPOption_Controllers(t *testing.T) {
@@ -86,7 +86,7 @@ func TestSockUDPOption_Controllers(t *testing.T) {
 		GRO:     true,
 	}
 	cs := opt.Controllers()
-	ztesting.AssertEqual(t, "number of controllers not match", 3, len(cs))
+	ztesting.AssertEqual(t, 3, len(cs))
 }
 
 func TestSoBindToIFindex(t *testing.T) {
@@ -95,17 +95,17 @@ func TestSoBindToIFindex(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soBindToIFindex(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", SO_BINDTOIFINDEX, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, SO_BINDTOIFINDEX, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := soBindToIFindex(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -113,7 +113,7 @@ func TestSoBindToIFindex(t *testing.T) {
 		}
 		c := soBindToIFindex(1)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_BINDTOIFINDEX"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -123,17 +123,17 @@ func TestSoBindToDevice(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soBindToDevice("")
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptString = func(fd int, level, opt int, s string) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_BINDTODEVICE, opt)
-			ztesting.AssertEqual(t, "value not match", "eth0", s)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_BINDTODEVICE, opt)
+			ztesting.AssertEqual(t, "eth0", s)
 			return nil
 		}
 		c := soBindToDevice("eth0")
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptString = func(fd int, level, opt int, s string) (err error) {
@@ -141,7 +141,7 @@ func TestSoBindToDevice(t *testing.T) {
 		}
 		c := soBindToDevice("eth0")
 		want := &SocketError{Opts: "SOL_SOCKET.SO_BINDTODEVICE"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -151,17 +151,17 @@ func TestSoDebug(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soDebug(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_DEBUG, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_DEBUG, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := soDebug(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -169,7 +169,7 @@ func TestSoDebug(t *testing.T) {
 		}
 		c := soDebug(true)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_DEBUG"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -179,17 +179,17 @@ func TestSoKeepAlive(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soKeepAlive(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_KEEPALIVE, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_KEEPALIVE, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := soKeepAlive(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -197,7 +197,7 @@ func TestSoKeepAlive(t *testing.T) {
 		}
 		c := soKeepAlive(true)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_KEEPALIVE"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -207,29 +207,29 @@ func TestSoLinger(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soLinger(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("on", func(t *testing.T) {
 		setsockoptLinger = func(fd int, level, opt int, l *syscall.Linger) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_LINGER, opt)
-			ztesting.AssertEqual(t, "onoff not match", 1, l.Onoff)
-			ztesting.AssertEqual(t, "linger not match", 9, l.Linger)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_LINGER, opt)
+			ztesting.AssertEqual(t, 1, l.Onoff)
+			ztesting.AssertEqual(t, 9, l.Linger)
 			return nil
 		}
 		c := soLinger(9)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("off", func(t *testing.T) {
 		setsockoptLinger = func(fd int, level, opt int, l *syscall.Linger) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_LINGER, opt)
-			ztesting.AssertEqual(t, "onoff not match", 0, l.Onoff)
-			ztesting.AssertEqual(t, "linger not match", 0, l.Linger)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_LINGER, opt)
+			ztesting.AssertEqual(t, 0, l.Onoff)
+			ztesting.AssertEqual(t, 0, l.Linger)
 			return nil
 		}
 		c := soLinger(-9)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptLinger = func(fd int, level, opt int, l *syscall.Linger) (err error) {
@@ -237,7 +237,7 @@ func TestSoLinger(t *testing.T) {
 		}
 		c := soLinger(9)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_LINGER"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -247,17 +247,17 @@ func TestSoMark(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soMark(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_MARK, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_MARK, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := soMark(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -265,7 +265,7 @@ func TestSoMark(t *testing.T) {
 		}
 		c := soMark(1)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_MARK"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -275,17 +275,17 @@ func TestSoRcvbuf(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soRcvbuf(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_RCVBUF, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_RCVBUF, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := soRcvbuf(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -293,7 +293,7 @@ func TestSoRcvbuf(t *testing.T) {
 		}
 		c := soRcvbuf(1)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_RCVBUF"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -303,17 +303,17 @@ func TestSoRcvbufForce(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soRcvbufForce(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_RCVBUFFORCE, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_RCVBUFFORCE, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := soRcvbufForce(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -321,7 +321,7 @@ func TestSoRcvbufForce(t *testing.T) {
 		}
 		c := soRcvbufForce(1)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_RCVBUFFORCE"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -331,17 +331,17 @@ func TestSoSndbuf(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soSndbuf(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_SNDBUF, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_SNDBUF, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := soSndbuf(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -349,7 +349,7 @@ func TestSoSndbuf(t *testing.T) {
 		}
 		c := soSndbuf(1)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_SNDBUF"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -359,17 +359,17 @@ func TestSoSndbufForce(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soSndbufForce(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_SNDBUFFORCE, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_SNDBUFFORCE, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := soSndbufForce(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -377,7 +377,7 @@ func TestSoSndbufForce(t *testing.T) {
 		}
 		c := soSndbufForce(1)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_SNDBUFFORCE"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -387,17 +387,17 @@ func TestSoSndtimeo(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soSndtimeo(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptTimeval = func(fd int, level, opt int, tv *syscall.Timeval) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_SNDTIMEO, opt)
-			ztesting.AssertEqual(t, "value not match", syscall.NsecToTimeval(int64(time.Second)), *tv)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_SNDTIMEO, opt)
+			ztesting.AssertEqual(t, syscall.NsecToTimeval(int64(time.Second)), *tv)
 			return nil
 		}
 		c := soSndtimeo(time.Second)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptTimeval = func(fd int, level, opt int, tv *syscall.Timeval) (err error) {
@@ -405,7 +405,7 @@ func TestSoSndtimeo(t *testing.T) {
 		}
 		c := soSndtimeo(time.Second)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_SNDTIMEO"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -415,17 +415,17 @@ func TestSoRcvtimeo(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soRcvtimeo(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptTimeval = func(fd int, level, opt int, tv *syscall.Timeval) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_RCVTIMEO, opt)
-			ztesting.AssertEqual(t, "value not match", syscall.NsecToTimeval(int64(time.Second)), *tv)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_RCVTIMEO, opt)
+			ztesting.AssertEqual(t, syscall.NsecToTimeval(int64(time.Second)), *tv)
 			return nil
 		}
 		c := soRcvtimeo(time.Second)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptTimeval = func(fd int, level, opt int, tv *syscall.Timeval) (err error) {
@@ -433,7 +433,7 @@ func TestSoRcvtimeo(t *testing.T) {
 		}
 		c := soRcvtimeo(time.Second)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_RCVTIMEO"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -443,17 +443,17 @@ func TestSoReuseaddr(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soReuseaddr(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", syscall.SO_REUSEADDR, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, syscall.SO_REUSEADDR, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := soReuseaddr(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -461,7 +461,7 @@ func TestSoReuseaddr(t *testing.T) {
 		}
 		c := soReuseaddr(true)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_REUSEADDR"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -471,17 +471,17 @@ func TestSoReuseport(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := soReuseport(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.SOL_SOCKET, level)
-			ztesting.AssertEqual(t, "option not match", SO_REUSEPORT, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.SOL_SOCKET, level)
+			ztesting.AssertEqual(t, SO_REUSEPORT, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := soReuseport(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -489,7 +489,7 @@ func TestSoReuseport(t *testing.T) {
 		}
 		c := soReuseport(true)
 		want := &SocketError{Opts: "SOL_SOCKET.SO_REUSEPORT"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -499,17 +499,17 @@ func TestIPBindAddressNoPort(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := ipBindAddressNoPort(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_IP, level)
-			ztesting.AssertEqual(t, "option not match", IP_BIND_ADDRESS_NO_PORT, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_IP, level)
+			ztesting.AssertEqual(t, IP_BIND_ADDRESS_NO_PORT, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := ipBindAddressNoPort(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -517,7 +517,7 @@ func TestIPBindAddressNoPort(t *testing.T) {
 		}
 		c := ipBindAddressNoPort(true)
 		want := &SocketError{Opts: "IPPROTO_IP.IP_BIND_ADDRESS_NO_PORT"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -527,17 +527,17 @@ func TestIPFreeBind(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := ipFreeBind(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_IP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.IP_FREEBIND, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_IP, level)
+			ztesting.AssertEqual(t, syscall.IP_FREEBIND, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := ipFreeBind(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -545,7 +545,7 @@ func TestIPFreeBind(t *testing.T) {
 		}
 		c := ipFreeBind(true)
 		want := &SocketError{Opts: "IPPROTO_IP.IP_FREEBIND"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -555,17 +555,17 @@ func TestIPLocalPortRange(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := ipLocalPortRange(0, 0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_IP, level)
-			ztesting.AssertEqual(t, "option not match", IP_LOCAL_PORT_RANGE, opt)
-			ztesting.AssertEqual(t, "value not match", int(uint32(2048)<<16|uint32(2000)), value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_IP, level)
+			ztesting.AssertEqual(t, IP_LOCAL_PORT_RANGE, opt)
+			ztesting.AssertEqual(t, int(uint32(2048)<<16|uint32(2000)), value)
 			return nil
 		}
 		c := ipLocalPortRange(2048, 2000)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -573,7 +573,7 @@ func TestIPLocalPortRange(t *testing.T) {
 		}
 		c := ipLocalPortRange(2048, 2000)
 		want := &SocketError{Opts: "IPPROTO_IP.IP_LOCAL_PORT_RANGE"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -583,17 +583,17 @@ func TestIPTransparent(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := ipTransparent(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_IP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.IP_TRANSPARENT, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_IP, level)
+			ztesting.AssertEqual(t, syscall.IP_TRANSPARENT, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := ipTransparent(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -601,7 +601,7 @@ func TestIPTransparent(t *testing.T) {
 		}
 		c := ipTransparent(true)
 		want := &SocketError{Opts: "IPPROTO_IP.IP_TRANSPARENT"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -611,17 +611,17 @@ func TestIPTTL(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := ipTTL(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_IP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.IP_TTL, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_IP, level)
+			ztesting.AssertEqual(t, syscall.IP_TTL, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := ipTTL(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -629,7 +629,7 @@ func TestIPTTL(t *testing.T) {
 		}
 		c := ipTTL(1)
 		want := &SocketError{Opts: "IPPROTO_IP.IP_TTL"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -639,17 +639,17 @@ func TestIPV6V6Only(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := ipv6V6Only(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_IPV6, level)
-			ztesting.AssertEqual(t, "option not match", syscall.IPV6_V6ONLY, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_IPV6, level)
+			ztesting.AssertEqual(t, syscall.IPV6_V6ONLY, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := ipv6V6Only(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -657,7 +657,7 @@ func TestIPV6V6Only(t *testing.T) {
 		}
 		c := ipv6V6Only(true)
 		want := &SocketError{Opts: "IPPROTO_IPV6.IPV6_V6ONLY"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -667,17 +667,17 @@ func TestTCPCORK(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpCORK(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.TCP_CORK, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, syscall.TCP_CORK, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpCORK(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -685,7 +685,7 @@ func TestTCPCORK(t *testing.T) {
 		}
 		c := tcpCORK(true)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_CORK"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -695,17 +695,17 @@ func TestTCPDeferAccept(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpDeferAccept(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.TCP_DEFER_ACCEPT, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, syscall.TCP_DEFER_ACCEPT, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpDeferAccept(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -713,7 +713,7 @@ func TestTCPDeferAccept(t *testing.T) {
 		}
 		c := tcpDeferAccept(1)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_DEFER_ACCEPT"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -723,17 +723,17 @@ func TestTCPKeepCount(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpKeepCount(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.TCP_KEEPCNT, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, syscall.TCP_KEEPCNT, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpKeepCount(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -741,7 +741,7 @@ func TestTCPKeepCount(t *testing.T) {
 		}
 		c := tcpKeepCount(1)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_KEEPCNT"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -751,17 +751,17 @@ func TestTCPKeepIdle(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpKeepIdle(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.TCP_KEEPIDLE, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, syscall.TCP_KEEPIDLE, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpKeepIdle(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -769,7 +769,7 @@ func TestTCPKeepIdle(t *testing.T) {
 		}
 		c := tcpKeepIdle(1)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_KEEPIDLE"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -779,17 +779,17 @@ func TestTCPKeepInterval(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpKeepInterval(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.TCP_KEEPINTVL, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, syscall.TCP_KEEPINTVL, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpKeepInterval(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -797,7 +797,7 @@ func TestTCPKeepInterval(t *testing.T) {
 		}
 		c := tcpKeepInterval(1)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_KEEPINTVL"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -807,29 +807,29 @@ func TestTCPLinger2(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpLinger2(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("on", func(t *testing.T) {
 		setsockoptLinger = func(fd int, level, opt int, l *syscall.Linger) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.TCP_LINGER2, opt)
-			ztesting.AssertEqual(t, "onoff not match", 1, l.Onoff)
-			ztesting.AssertEqual(t, "linger not match", 9, l.Linger)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, syscall.TCP_LINGER2, opt)
+			ztesting.AssertEqual(t, 1, l.Onoff)
+			ztesting.AssertEqual(t, 9, l.Linger)
 			return nil
 		}
 		c := tcpLinger2(9)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("off", func(t *testing.T) {
 		setsockoptLinger = func(fd int, level, opt int, l *syscall.Linger) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.TCP_LINGER2, opt)
-			ztesting.AssertEqual(t, "onoff not match", 0, l.Onoff)
-			ztesting.AssertEqual(t, "linger not match", 0, l.Linger)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, syscall.TCP_LINGER2, opt)
+			ztesting.AssertEqual(t, 0, l.Onoff)
+			ztesting.AssertEqual(t, 0, l.Linger)
 			return nil
 		}
 		c := tcpLinger2(-9)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptLinger = func(fd int, level, opt int, l *syscall.Linger) (err error) {
@@ -837,7 +837,7 @@ func TestTCPLinger2(t *testing.T) {
 		}
 		c := tcpLinger2(9)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_LINGER2"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -847,17 +847,17 @@ func TestTCPMaxSegment(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpMaxSegment(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.TCP_MAXSEG, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, syscall.TCP_MAXSEG, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpMaxSegment(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -865,7 +865,7 @@ func TestTCPMaxSegment(t *testing.T) {
 		}
 		c := tcpMaxSegment(1)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_MAXSEG"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -875,17 +875,17 @@ func TestTCPNoDelay(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpNoDelay(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.TCP_NODELAY, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, syscall.TCP_NODELAY, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpNoDelay(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -893,7 +893,7 @@ func TestTCPNoDelay(t *testing.T) {
 		}
 		c := tcpNoDelay(true)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_NODELAY"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -903,17 +903,17 @@ func TestTCPQuickAck(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpQuickAck(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.TCP_QUICKACK, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, syscall.TCP_QUICKACK, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpQuickAck(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -921,7 +921,7 @@ func TestTCPQuickAck(t *testing.T) {
 		}
 		c := tcpQuickAck(true)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_QUICKACK"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -931,17 +931,17 @@ func TestTCPSynCount(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpSynCount(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.TCP_SYNCNT, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, syscall.TCP_SYNCNT, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpSynCount(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -949,7 +949,7 @@ func TestTCPSynCount(t *testing.T) {
 		}
 		c := tcpSynCount(1)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_SYNCNT"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -959,17 +959,17 @@ func TestTCPUserTimeout(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpUserTimeout(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", TCP_USER_TIMEOUT, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, TCP_USER_TIMEOUT, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpUserTimeout(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -977,7 +977,7 @@ func TestTCPUserTimeout(t *testing.T) {
 		}
 		c := tcpUserTimeout(1)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_USER_TIMEOUT"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -987,17 +987,17 @@ func TestTCPWindowClamp(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpWindowClamp(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", syscall.TCP_WINDOW_CLAMP, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, syscall.TCP_WINDOW_CLAMP, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpWindowClamp(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -1005,7 +1005,7 @@ func TestTCPWindowClamp(t *testing.T) {
 		}
 		c := tcpWindowClamp(1)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_WINDOW_CLAMP"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -1015,17 +1015,17 @@ func TestTCPFastOpen(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpFastOpen(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", TCP_FASTOPEN, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, TCP_FASTOPEN, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpFastOpen(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -1033,7 +1033,7 @@ func TestTCPFastOpen(t *testing.T) {
 		}
 		c := tcpFastOpen(true)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_FASTOPEN"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -1043,17 +1043,17 @@ func TestTCPFastOpenConnect(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := tcpFastOpenConnect(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_TCP, level)
-			ztesting.AssertEqual(t, "option not match", TCP_FASTOPEN_CONNECT, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_TCP, level)
+			ztesting.AssertEqual(t, TCP_FASTOPEN_CONNECT, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := tcpFastOpenConnect(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -1061,7 +1061,7 @@ func TestTCPFastOpenConnect(t *testing.T) {
 		}
 		c := tcpFastOpenConnect(true)
 		want := &SocketError{Opts: "IPPROTO_TCP.TCP_FASTOPEN_CONNECT"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -1071,17 +1071,17 @@ func TestUDPCORK(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := udpCORK(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_UDP, level)
-			ztesting.AssertEqual(t, "option not match", UDP_CORK, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_UDP, level)
+			ztesting.AssertEqual(t, UDP_CORK, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := udpCORK(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -1089,7 +1089,7 @@ func TestUDPCORK(t *testing.T) {
 		}
 		c := udpCORK(true)
 		want := &SocketError{Opts: "IPPROTO_UDP.UDP_CORK"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -1099,17 +1099,17 @@ func TestUDPSegment(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := udpSegment(0)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_UDP, level)
-			ztesting.AssertEqual(t, "option not match", UDP_SEGMENT, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_UDP, level)
+			ztesting.AssertEqual(t, UDP_SEGMENT, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := udpSegment(1)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -1117,7 +1117,7 @@ func TestUDPSegment(t *testing.T) {
 		}
 		c := udpSegment(1)
 		want := &SocketError{Opts: "IPPROTO_UDP.UDP_SEGMENT"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }
 
@@ -1127,17 +1127,17 @@ func TestUDPGRO(t *testing.T) {
 	}()
 	t.Run("disabled", func(t *testing.T) {
 		c := udpGRO(false)
-		ztesting.AssertEqual(t, "controller should be nil", true, c == nil)
+		ztesting.AssertEqual(t, true, c == nil)
 	})
 	t.Run("enabled", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
-			ztesting.AssertEqual(t, "level not match", syscall.IPPROTO_UDP, level)
-			ztesting.AssertEqual(t, "option not match", UDP_GRO, opt)
-			ztesting.AssertEqual(t, "value not match", 1, value)
+			ztesting.AssertEqual(t, syscall.IPPROTO_UDP, level)
+			ztesting.AssertEqual(t, UDP_GRO, opt)
+			ztesting.AssertEqual(t, 1, value)
 			return nil
 		}
 		c := udpGRO(true)
-		ztesting.AssertEqualErr(t, "error not match", nil, c(0))
+		ztesting.AssertEqualErr(t, nil, c(0))
 	})
 	t.Run("error", func(t *testing.T) {
 		setsockoptInt = func(fd int, level, opt, value int) (err error) {
@@ -1145,6 +1145,6 @@ func TestUDPGRO(t *testing.T) {
 		}
 		c := udpGRO(true)
 		want := &SocketError{Opts: "IPPROTO_UDP.UDP_GRO"}
-		ztesting.AssertEqualErr(t, "error not match", want, c(0))
+		ztesting.AssertEqualErr(t, want, c(0))
 	})
 }

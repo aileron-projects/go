@@ -101,11 +101,11 @@ func TestPriority_Get(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			lb := zlb.NewRoundRobin(tc.targets...)
 			tt, found := lb.Get(0)
-			ztesting.AssertEqual(t, "found not match", tc.found, found)
+			ztesting.AssertEqual(t, tc.found, found)
 			if !tc.found {
 				return
 			}
-			ztesting.AssertEqual(t, "target not match", tc.name, tt.name)
+			ztesting.AssertEqual(t, tc.name, tt.name)
 		})
 	}
 }
@@ -119,8 +119,8 @@ func TestPriority_Remove(t *testing.T) {
 		lb := zlb.NewPriority(t0, t1, t2)
 		lb.Remove(0)
 		tt, found := lb.Get(0)
-		ztesting.AssertEqual(t, "found not match", true, found)
-		ztesting.AssertEqual(t, "target not match", "t1", tt.name)
+		ztesting.AssertEqual(t, true, found)
+		ztesting.AssertEqual(t, "t1", tt.name)
 	})
 	t.Run("remove middle", func(t *testing.T) {
 		t0 := &Target{name: "t0", id: 0, weight: 2, active: true}
@@ -129,8 +129,8 @@ func TestPriority_Remove(t *testing.T) {
 		lb := zlb.NewPriority(t0, t1, t2)
 		lb.Remove(1)
 		tt, found := lb.Get(0)
-		ztesting.AssertEqual(t, "found not match", true, found)
-		ztesting.AssertEqual(t, "target not match", "t0", tt.name)
+		ztesting.AssertEqual(t, true, found)
+		ztesting.AssertEqual(t, "t0", tt.name)
 	})
 	t.Run("remove last", func(t *testing.T) {
 		t0 := &Target{name: "t0", id: 0, weight: 1, active: true}
@@ -139,7 +139,7 @@ func TestPriority_Remove(t *testing.T) {
 		lb := zlb.NewPriority(t0, t1, t2)
 		lb.Remove(2)
 		tt, found := lb.Get(0)
-		ztesting.AssertEqual(t, "found not match", true, found)
-		ztesting.AssertEqual(t, "target not match", "t1", tt.name)
+		ztesting.AssertEqual(t, true, found)
+		ztesting.AssertEqual(t, "t1", tt.name)
 	})
 }
