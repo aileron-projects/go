@@ -153,10 +153,10 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	RemoveHopByHopHeaders(outReq.Header)
 	p.Rewrite(r, outReq)
 
-	if httpguts.HeaderValuesContainsToken(r.Header["Te"], "trailers") {
+	if httpguts.HeaderValuesContainsToken(r.Header.Values("TE"), "trailers") {
 		// The TE request header specifies the transfer encodings the user agent is willing to accept.
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/TE
-		outReq.Header.Set("Te", "trailers")
+		outReq.Header.Set("TE", "trailers")
 	}
 	if httpguts.HeaderValuesContainsToken(r.Header["Connection"], "Upgrade") {
 		// The Upgrade header can be used to upgrade an already-established client/server connection to a different protocol.

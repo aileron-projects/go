@@ -57,7 +57,7 @@ func SetMultiCookie(w http.ResponseWriter, cookie *http.Cookie) map[int]*http.Co
 	m := n/maxLen + 1      // Number of cookies.
 	l := (n + m - 1) / m   // Length of each values.
 	for i := range m {
-		copied := *cookie
+		copied := *cookie //nolint:gosec // G124: http.Cookie missing or has insecure Secure, HttpOnly, or SameSite attribute (gosec)
 		ck := &(copied)
 		ck.Name = cookie.Name + strconv.Itoa(i)
 		ck.Value = cookie.Value[i*l : min((i+1)*l, n)]
